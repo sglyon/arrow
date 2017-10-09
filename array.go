@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	byteBitWidth = 8
+	byteBitWidth   = 8
+	bytePaddingLen = 8
 
 	int32Width   = 4
 	int64Width   = 8
@@ -23,38 +24,40 @@ var order binary.ByteOrder = binary.LittleEndian
 
 type Buffer []byte
 
-type array Buffer
-
-func newEmptyArray(size int32, typeWidth int, buf Buffer) (a array) {
-	n := int32Width*2 + nullBitmapLen(size) + int(size)*typeWidth
-	if buf != nil {
-		if cap(buf) < n {
-			panic("provided buffer not large enough")
-		}
-		a = array(buf[:n])
-		// Zero null counter and null bitmap
-		order.PutUint32(a[startNullCountBytes:startNullBitmapBytes], 0)
-		nbm := a.nullBitmap()
-		for i := range nbm {
-			nbm[i] = 0
-		}
-	} else {
-		a = make(array, n)
+// newBuffer allocates a new buffer for the given size, ensuring the buffer is padded to 8 bytes.
+func newBuffer(size int) Buffer {
+	n := size
+	remainder := (size % bytePaddingLen)
+	if remainder > 0 {
+		n += bytePaddingLen - remainder
 	}
-	order.PutUint32(a[startLenBytes:startNullCountBytes], uint32(size))
-	a.setNullCount(size)
+	//TODO: Possibly allocate in larger 64 byte aligned []byte
+	buf := make([]byte, n)
+	return buf[:size]
+}
+
+type array struct {
+	len       int32
+	nullCount int32
+
+	nullBitmap Buffer
+	values     Buffer
+}
+
+func newEmptyArray(size int32, typeWidth int) (a array) {
+	a.len = size
+	a.nullCount = size
+	a.nullBitmap = newBuffer(nullBitmapLen(size))
+	a.values = newBuffer(int(size) * typeWidth)
 	return
 }
 
-func (a array) Len() int32 {
-	return int32(order.Uint32(a[startLenBytes:startNullCountBytes]))
+func (a *array) Len() int32 {
+	return a.len
 }
 
-func (a array) NullCount() int32 {
-	return int32(order.Uint32(a[startNullCountBytes:startNullBitmapBytes]))
-}
-func (a array) setNullCount(c int32) {
-	order.PutUint32(a[startNullCountBytes:startNullBitmapBytes], uint32(c))
+func (a *array) NullCount() int32 {
+	return a.nullCount
 }
 
 func nullBitmapLen(l int32) int {
@@ -65,48 +68,44 @@ func nullBitmapLen(l int32) int {
 	return n
 }
 
-func (a array) nullBitmap() Buffer {
-	n := nullBitmapLen(a.Len())
-	return Buffer(a[startNullBitmapBytes : startNullBitmapBytes+n])
-}
+var bitmask = [8]byte{1, 2, 4, 8, 16, 32, 64, 128}
 
-func (a array) values() Buffer {
-	n := nullBitmapLen(a.Len())
-	return Buffer(a[startNullBitmapBytes+n:])
-}
-
-func (a array) IsNull(i int) bool {
-	bm := a.nullBitmap()
+func (a *array) IsNull(i int) bool {
 	b := i / byteBitWidth
-	mask := byte(1 << uint8(i%byteBitWidth))
-	return bm[b]&mask == 0
+	// Use a simple lookup instead of bit shifting.
+	mask := bitmask[int(i%byteBitWidth)]
+	return a.nullBitmap[b]&mask == 0
 }
 
-func (a array) clearNull(i int32) {
-	bm := a.nullBitmap()
+func (a *array) clearNullBit(i int32) {
 	b := int(i / byteBitWidth)
-	mask := byte(1 << uint8(i%byteBitWidth))
-	bm[b] = bm[b] | mask
-	a.setNullCount(a.NullCount() - 1)
+	// Use a simple lookup instead of bit shifting.
+	mask := bitmask[int(i%byteBitWidth)]
+	if a.nullBitmap[b]&mask == 0 {
+		a.nullCount--
+		a.nullBitmap[b] = a.nullBitmap[b] | mask
+	}
 }
 
-type Float64Array array
-
-func NewEmptyFloat64Array(size int32, buf Buffer) Float64Array {
-	return Float64Array(newEmptyArray(size, float64Width, buf))
+type Float64Array struct {
+	array
 }
 
-func (a Float64Array) Set(i int32, v float64) {
-	start := i * int64Width
-	stop := start + int64Width
-	array(a).clearNull(i)
-	order.PutUint64(array(a).values()[start:stop], math.Float64bits(v))
+func NewEmptyFloat64Array(size int32) *Float64Array {
+	return &Float64Array{array: newEmptyArray(size, float64Width)}
 }
 
-func (a Float64Array) At(i int32) float64 {
+func (a *Float64Array) Set(i int32, v float64) {
 	start := i * float64Width
 	stop := start + float64Width
-	return math.Float64frombits(order.Uint64(array(a).values()[start:stop]))
+	a.clearNullBit(i)
+	order.PutUint64(a.values[start:stop], math.Float64bits(v))
+}
+
+func (a *Float64Array) At(i int32) float64 {
+	start := i * float64Width
+	stop := start + float64Width
+	return math.Float64frombits(order.Uint64(a.values[start:stop]))
 }
 
 type NullChecker interface {
@@ -114,39 +113,39 @@ type NullChecker interface {
 	NullCount() int32
 }
 
-func (a Float64Array) Do(f func([]float64, NullChecker)) {
-	values := array(a).values()
-	header := *(*reflect.SliceHeader)(unsafe.Pointer(&values))
+func (a *Float64Array) Do(f func([]float64, NullChecker)) {
+	header := *(*reflect.SliceHeader)(unsafe.Pointer(&a.values))
 	header.Len /= float64Width
 	header.Cap /= float64Width
 	floatValues := *(*[]float64)(unsafe.Pointer(&header))
-	f(floatValues, array(a))
+	f(floatValues, a)
 }
 
-type Int64Array array
-
-func NewEmptyInt64Array(size int32, buf Buffer) Int64Array {
-	return Int64Array(newEmptyArray(size, int64Width, buf))
+type Int64Array struct {
+	array
 }
 
-func (a Int64Array) Set(i int32, v int64) {
+func NewEmptyInt64Array(size int32) *Int64Array {
+	return &Int64Array{array: newEmptyArray(size, int64Width)}
+}
+
+func (a *Int64Array) Set(i int32, v int64) {
 	start := i * int64Width
 	stop := start + int64Width
-	array(a).clearNull(i)
-	order.PutUint64(array(a).values()[start:stop], uint64(v))
+	a.clearNullBit(i)
+	order.PutUint64(a.values[start:stop], uint64(v))
 }
 
-func (a Int64Array) At(i int32) int64 {
+func (a *Int64Array) At(i int32) int64 {
 	start := i * int64Width
 	stop := start + int64Width
-	return int64(order.Uint64(array(a).values()[start:stop]))
+	return int64(order.Uint64(a.values[start:stop]))
 }
 
-func (a Int64Array) Do(f func([]int64, NullChecker)) {
-	values := array(a).values()
-	header := *(*reflect.SliceHeader)(unsafe.Pointer(&values))
+func (a *Int64Array) Do(f func([]int64, NullChecker)) {
+	header := *(*reflect.SliceHeader)(unsafe.Pointer(&a.values))
 	header.Len /= int64Width
 	header.Cap /= int64Width
 	intValues := *(*[]int64)(unsafe.Pointer(&header))
-	f(intValues, array(a))
+	f(intValues, a)
 }

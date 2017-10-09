@@ -9,7 +9,7 @@ import (
 
 func TestArrowNulls(t *testing.T) {
 	size := int32(10)
-	a := arrow.NewEmptyFloat64Array(size, nil)
+	a := arrow.NewEmptyFloat64Array(size)
 
 	n := 0
 	a.Do(func(fs []float64, nc arrow.NullChecker) {
