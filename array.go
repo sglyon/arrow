@@ -8,31 +8,32 @@ import (
 )
 
 const (
-	byteBitWidth   = 8
-	bytePaddingLen = 8
+	byteBitWidth = 8
+	// bufferPaddingLen is the length to which buffers should be byte-aligned when allocated.
+	bufferPaddingLen = 64
 
 	int32Width   = 4
 	int64Width   = 8
 	float64Width = 8
-
-	startLenBytes        = 0
-	startNullCountBytes  = int32Width
-	startNullBitmapBytes = int32Width * 2
 )
 
 var order binary.ByteOrder = binary.LittleEndian
 
 type Buffer []byte
 
-// newBuffer allocates a new buffer for the given size, ensuring the buffer is padded to 8 bytes.
+// newBuffer allocates a new buffer for the given size, ensuring the buffer is aligned.
 func newBuffer(size int) Buffer {
 	n := size
-	remainder := (size % bytePaddingLen)
+	remainder := (size % bufferPaddingLen)
 	if remainder > 0 {
-		n += bytePaddingLen - remainder
+		n += bufferPaddingLen - remainder
 	}
-	//TODO: Possibly allocate in larger 64 byte aligned []byte
 	buf := make([]byte, n)
+	// Sanity check that the byte data pointer is 64-byte aligned
+	r := (*(*reflect.SliceHeader)(unsafe.Pointer(&buf))).Data % bufferPaddingLen
+	if r != 0 {
+		panic("buffer allocation is not 64-byte aligned")
+	}
 	return buf[:size]
 }
 
