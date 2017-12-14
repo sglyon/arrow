@@ -150,3 +150,34 @@ func (a *Int64Array) Do(f func([]int64, NullChecker)) {
 	intValues := *(*[]int64)(unsafe.Pointer(&header))
 	f(intValues, a)
 }
+
+type Int32Array struct {
+	array
+}
+
+func NewEmptyInt32Array(size int32) *Int32Array {
+	return &Int32Array{
+		array: newEmptyArray(size, int32Width),
+	}
+}
+
+func (a *Int32Array) Set(i int32, v int32) {
+	start := i * int32Width
+	stop := start + int32Width
+	a.clearNullBit(i)
+	order.PutUint32(a.values[start:stop], uint32(v))
+}
+
+func (a *Int32Array) At(i int32) int32 {
+	start := i * int32Width
+	stop := start + int32Width
+	return int32(order.Uint32(a.values[start:stop]))
+}
+
+func (a *Int32Array) Do(f func([]int32, NullChecker)) {
+	header := *(*reflect.SliceHeader)(unsafe.Pointer(&a.values))
+	header.Len /= int32Width
+	header.Cap /= int32Width
+	intValues := *(*[]int32)(unsafe.Pointer(&header))
+	f(intValues, a)
+}
