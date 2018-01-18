@@ -7,7 +7,7 @@ type Buffer struct {
 }
 
 func NewBuffer(data []byte) *Buffer {
-	return &Buffer{bytes: data, mutable: false}
+	return &Buffer{bytes: data}
 }
 
 func (b *Buffer) Bytes() []byte { return b.bytes }

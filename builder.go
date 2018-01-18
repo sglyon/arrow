@@ -27,7 +27,7 @@ func NewFloat64ArrayBuilder(pool memory.Allocator) *Float64ArrayBuilder {
 
 func (b *Float64ArrayBuilder) arrayBuilderUnsafeAppendBoolsToBitmap(valid []bool) {
 	byteOffset := b.length / 8
-	bitOffset := b.length % 8
+	bitOffset := byte(b.length % 8)
 	nullBitmap := b.nullBitmap.Bytes()
 	bitSet := nullBitmap[byteOffset]
 
