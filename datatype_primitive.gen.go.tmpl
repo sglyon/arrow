@@ -1,0 +1,22 @@
+package arrow
+
+{{range .}}
+type {{.Name}}Type struct {}
+
+func (d *{{.Name}}Type) ID() Type { return {{.Name|upcase}} }
+func (d *{{.Name}}Type) Name() string { return "{{.Name|downcase}}" }
+
+
+{{end}}
+
+var (
+        PrimitiveTypes = struct {
+{{range .}}
+                {{.Name}} DataType
+{{- end}}
+        }{
+{{range .}}
+                {{.Name}}: &{{.Name}}Type{},
+{{- end}}
+        }
+)

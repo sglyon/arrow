@@ -1,0 +1,20 @@
+[
+  {
+    "Name": "Int64",
+    "name": "int64",
+    "Type": "int64",
+    "Default": "0"
+  },
+  {
+    "Name": "Uint64",
+    "name": "uint64",
+    "Type": "uint64",
+    "Default": "0"
+  },
+  {
+    "Name": "Float64",
+    "name": "float64",
+    "Type": "float64",
+    "Default": "0"
+  }
+]

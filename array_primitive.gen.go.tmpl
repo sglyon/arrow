@@ -1,0 +1,91 @@
+package arrow
+
+import (
+	"reflect"
+	"unsafe"
+)
+
+// Primitive Array types
+{{range .}}
+
+type {{.Name}}Array struct {
+	data            *ArrayData
+	nullBitmapBytes []byte
+	values          []{{.Type}}
+}
+
+func New{{.Name}}Array(data *ArrayData) *{{.Name}}Array {
+	a := &{{.Name}}Array{}
+	a.setData(data)
+	return a
+}
+
+func (a *{{.Name}}Array) DataType() DataType       { return a.data.typE }
+func (a *{{.Name}}Array) NullN() int               { return a.data.nullN }
+func (a *{{.Name}}Array) NullBitmapBytes() []byte  { return a.nullBitmapBytes }
+func (a *{{.Name}}Array) {{.Name}}Values() []{{.Type}} { return a.values }
+func (a *{{.Name}}Array) Data() *ArrayData { return a.data }
+func (a *{{.Name}}Array) Len() int{ return a.data.length }
+
+// IsNull returns true if value at index is null. Does not check bounds.
+func (a *{{.Name}}Array) IsNull(i int) bool {
+	return len(a.nullBitmapBytes) != 0 && bitIsNotSet(a.nullBitmapBytes, i)
+}
+
+// IsValid returns true if value at index is not null. Does not check bounds.
+func (a *{{.Name}}Array) IsValid(i int) bool {
+	return len(a.nullBitmapBytes) == 0 || bitIsSet(a.nullBitmapBytes, i)
+}
+
+func (a *{{.Name}}Array) arraySetData(data *ArrayData) {
+	if len(data.buffers) > 0 && data.buffers[0] != nil {
+		a.nullBitmapBytes = data.buffers[0].Bytes()
+	}
+	a.data = data
+}
+
+func (a *{{.Name}}Array) setData(data *ArrayData) {
+	a.arraySetData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = {{.Name}}Traits{}.CastFromBytes(vals.Bytes())
+	}
+}
+
+// {{.Name}} traits
+
+const (
+	{{.name}}SizeBytes = int(unsafe.Sizeof({{.Type}}({{.Default}})))
+)
+
+type {{.Name}}Traits struct{}
+
+// BytesRequired returns the number of bytes required to store the requested number of elements.
+func ({{.Name}}Traits) BytesRequired(elements int) int { return {{.name}}SizeBytes * elements }
+
+func ({{.Name}}Traits) CastFromBytes(b []byte) []{{.Type}} {
+	s := reflect.SliceHeader{
+		Data: uintptr(unsafe.Pointer(&b[0])),
+		Len:  len(b) / {{.name}}SizeBytes,
+		Cap:  cap(b) / {{.name}}SizeBytes,
+	}
+
+	return *(*[]{{.Type}})(unsafe.Pointer(&s))
+}
+
+func ({{.Name}}Traits) CastToBytes(b []{{.Type}}) []byte {
+	s := reflect.SliceHeader{
+		Data: uintptr(unsafe.Pointer(&b[0])),
+		Len:  len(b) * {{.name}}SizeBytes,
+		Cap:  cap(b) * {{.name}}SizeBytes,
+	}
+
+	return *(*[]byte)(unsafe.Pointer(&s))
+}
+
+func (t {{.Name}}Traits) Copy(dst, src []{{.Type}}) {
+	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
+	copy(dstB, srcB)
+}
+
+{{end}}
