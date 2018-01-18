@@ -1,11 +1,6 @@
 package arrow
 
-import (
-	"reflect"
-	"unsafe"
-)
-
-// Primitive Array types
+// Numeric Array types
 {{range .}}
 
 type {{.Name}}Array struct {
@@ -51,41 +46,4 @@ func (a *{{.Name}}Array) setData(data *ArrayData) {
 		a.values = {{.Name}}Traits{}.CastFromBytes(vals.Bytes())
 	}
 }
-
-// {{.Name}} traits
-
-const (
-	{{.name}}SizeBytes = int(unsafe.Sizeof({{.Type}}({{.Default}})))
-)
-
-type {{.Name}}Traits struct{}
-
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func ({{.Name}}Traits) BytesRequired(elements int) int { return {{.name}}SizeBytes * elements }
-
-func ({{.Name}}Traits) CastFromBytes(b []byte) []{{.Type}} {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) / {{.name}}SizeBytes,
-		Cap:  cap(b) / {{.name}}SizeBytes,
-	}
-
-	return *(*[]{{.Type}})(unsafe.Pointer(&s))
-}
-
-func ({{.Name}}Traits) CastToBytes(b []{{.Type}}) []byte {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) * {{.name}}SizeBytes,
-		Cap:  cap(b) * {{.name}}SizeBytes,
-	}
-
-	return *(*[]byte)(unsafe.Pointer(&s))
-}
-
-func (t {{.Name}}Traits) Copy(dst, src []{{.Type}}) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
-}
-
 {{end}}

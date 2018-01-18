@@ -2,16 +2,11 @@
 // https://github.com/benbjohnson/tmpl
 //
 // DO NOT EDIT!
-// Source: array_primitive.gen.go.tmpl
+// Source: array_numeric.gen.go.tmpl
 
 package arrow
 
-import (
-	"reflect"
-	"unsafe"
-)
-
-// Primitive Array types
+// Numeric Array types
 
 type Int64Array struct {
 	data            *ArrayData
@@ -55,42 +50,6 @@ func (a *Int64Array) setData(data *ArrayData) {
 	if vals != nil {
 		a.values = Int64Traits{}.CastFromBytes(vals.Bytes())
 	}
-}
-
-// Int64 traits
-
-const (
-	int64SizeBytes = int(unsafe.Sizeof(int64(0)))
-)
-
-type Int64Traits struct{}
-
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func (Int64Traits) BytesRequired(elements int) int { return int64SizeBytes * elements }
-
-func (Int64Traits) CastFromBytes(b []byte) []int64 {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) / int64SizeBytes,
-		Cap:  cap(b) / int64SizeBytes,
-	}
-
-	return *(*[]int64)(unsafe.Pointer(&s))
-}
-
-func (Int64Traits) CastToBytes(b []int64) []byte {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) * int64SizeBytes,
-		Cap:  cap(b) * int64SizeBytes,
-	}
-
-	return *(*[]byte)(unsafe.Pointer(&s))
-}
-
-func (t Int64Traits) Copy(dst, src []int64) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
 }
 
 type Uint64Array struct {
@@ -137,42 +96,6 @@ func (a *Uint64Array) setData(data *ArrayData) {
 	}
 }
 
-// Uint64 traits
-
-const (
-	uint64SizeBytes = int(unsafe.Sizeof(uint64(0)))
-)
-
-type Uint64Traits struct{}
-
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func (Uint64Traits) BytesRequired(elements int) int { return uint64SizeBytes * elements }
-
-func (Uint64Traits) CastFromBytes(b []byte) []uint64 {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) / uint64SizeBytes,
-		Cap:  cap(b) / uint64SizeBytes,
-	}
-
-	return *(*[]uint64)(unsafe.Pointer(&s))
-}
-
-func (Uint64Traits) CastToBytes(b []uint64) []byte {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) * uint64SizeBytes,
-		Cap:  cap(b) * uint64SizeBytes,
-	}
-
-	return *(*[]byte)(unsafe.Pointer(&s))
-}
-
-func (t Uint64Traits) Copy(dst, src []uint64) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
-}
-
 type Float64Array struct {
 	data            *ArrayData
 	nullBitmapBytes []byte
@@ -215,40 +138,4 @@ func (a *Float64Array) setData(data *ArrayData) {
 	if vals != nil {
 		a.values = Float64Traits{}.CastFromBytes(vals.Bytes())
 	}
-}
-
-// Float64 traits
-
-const (
-	float64SizeBytes = int(unsafe.Sizeof(float64(0)))
-)
-
-type Float64Traits struct{}
-
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func (Float64Traits) BytesRequired(elements int) int { return float64SizeBytes * elements }
-
-func (Float64Traits) CastFromBytes(b []byte) []float64 {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) / float64SizeBytes,
-		Cap:  cap(b) / float64SizeBytes,
-	}
-
-	return *(*[]float64)(unsafe.Pointer(&s))
-}
-
-func (Float64Traits) CastToBytes(b []float64) []byte {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) * float64SizeBytes,
-		Cap:  cap(b) * float64SizeBytes,
-	}
-
-	return *(*[]byte)(unsafe.Pointer(&s))
-}
-
-func (t Float64Traits) Copy(dst, src []float64) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
 }

@@ -2,7 +2,7 @@
 // https://github.com/benbjohnson/tmpl
 //
 // DO NOT EDIT!
-// Source: datatype_primitive.gen.go.tmpl
+// Source: datatype_numeric.gen.go.tmpl
 
 package arrow
 

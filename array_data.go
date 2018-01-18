@@ -11,7 +11,7 @@ type ArrayData struct {
 	nullN     int
 	length    int
 	buffers   []*memory.Buffer // TODO(sgc): should this be an interface?
-	childData []*memory.Buffer // TODO(sgc): should this be an interface?
+	childData []*ArrayData     // TODO(sgc): used by ListArray, StructArray and UnionArray
 }
 
 func NewArrayData(typE DataType, length int, buffers []*memory.Buffer, nullN int) *ArrayData {
