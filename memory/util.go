@@ -15,10 +15,3 @@ func roundUpToMultipleOf64(v int) int {
 func addressOf(b []byte) uintptr {
 	return uintptr(unsafe.Pointer(&b[0]))
 }
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}

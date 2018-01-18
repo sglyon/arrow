@@ -5,50 +5,17 @@ import (
 )
 
 type Float64ArrayBuilder struct {
-	pool       memory.Allocator
-	nullBitmap *memory.PoolBuffer
-	nullN      int
-	length     int
-	capacity   int
+	arrayBuilder
 
 	data    *memory.PoolBuffer
 	rawData []float64
 }
 
 func NewFloat64ArrayBuilder(pool memory.Allocator) *Float64ArrayBuilder {
-	return &Float64ArrayBuilder{pool: pool}
+	return &Float64ArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}}
 }
 
 //region: append
-
-func (b *Float64ArrayBuilder) arrayBuilderUnsafeAppendBoolsToBitmap(valid []bool) {
-	byteOffset := b.length / 8
-	bitOffset := byte(b.length % 8)
-	nullBitmap := b.nullBitmap.Bytes()
-	bitSet := nullBitmap[byteOffset]
-
-	for _, v := range valid {
-		if bitOffset == 8 {
-			bitOffset = 0
-			nullBitmap[byteOffset] = bitSet
-			byteOffset++
-			bitSet = nullBitmap[byteOffset]
-		}
-
-		if v {
-			bitSet |= bitMask[bitOffset]
-		} else {
-			bitSet &= flippedBitMask[bitOffset]
-			b.nullN++
-		}
-		bitOffset++
-	}
-
-	if bitOffset != 0 {
-		nullBitmap[byteOffset] = bitSet
-	}
-	b.length += len(valid)
-}
 
 func (b *Float64ArrayBuilder) Append(v float64) {
 	b.Reserve(1)
@@ -84,21 +51,13 @@ func (b *Float64ArrayBuilder) AppendValues(v []float64, valid []bool) {
 	if len(v) > 0 {
 		Float64Traits{}.Copy(b.rawData[b.length:], v)
 	}
-	b.arrayBuilderUnsafeAppendBoolsToBitmap(valid)
+	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid)
 }
 
 //endregion
 
-func (b *Float64ArrayBuilder) arrayBuilderInit(capacity int) {
-	toAlloc := ceilByte(capacity) / 8
-	b.nullBitmap = memory.NewPoolBuffer(b.pool)
-	b.nullBitmap.Resize(toAlloc)
-	b.capacity = capacity
-	memory.Set(b.nullBitmap.Bytes(), 0)
-}
-
 func (b *Float64ArrayBuilder) Init(capacity int) {
-	b.arrayBuilderInit(capacity)
+	b.arrayBuilder.init(capacity)
 
 	b.data = memory.NewPoolBuffer(b.pool)
 	bytesN := Float64Traits{}.BytesRequired(capacity)
@@ -106,33 +65,10 @@ func (b *Float64ArrayBuilder) Init(capacity int) {
 	b.rawData = Float64Traits{}.CastFromBytes(b.data.Bytes())
 }
 
-func (b *Float64ArrayBuilder) arrayBuilderReserve(elements int) {
-	if b.length+elements > b.capacity {
-		newCap := nextPowerOf2(b.length + elements)
-		b.Resize(newCap)
-	}
-}
-
 // Reserve ensures there is enough space for adding the specified number of elements
 // by checking the capacity and calling Resize if necessary.
 func (b *Float64ArrayBuilder) Reserve(elements int) {
-	b.arrayBuilderReserve(elements)
-}
-
-func (b *Float64ArrayBuilder) arrayBuilderResize(newBits int) {
-	if b.nullBitmap == nil {
-		b.Init(newBits)
-		return
-	}
-
-	newBytesN := ceilByte(newBits) / 8
-	oldBytesN := b.nullBitmap.Len()
-	b.nullBitmap.Resize(newBytesN)
-	b.capacity = newBits
-	if oldBytesN < newBytesN {
-		// TODO(sgc): necessary?
-		memory.Set(b.nullBitmap.Bytes()[oldBytesN:], 0)
-	}
+	b.arrayBuilder.reserve(elements, b.Resize)
 }
 
 func (b *Float64ArrayBuilder) Resize(capacity int) {
@@ -143,7 +79,7 @@ func (b *Float64ArrayBuilder) Resize(capacity int) {
 	if b.capacity == 0 {
 		b.Init(capacity)
 	} else {
-		b.arrayBuilderResize(capacity)
+		b.arrayBuilder.resize(capacity, b.Init)
 		b.data.Resize(Float64Traits{}.BytesRequired(capacity))
 		b.rawData = Float64Traits{}.CastFromBytes(b.data.Bytes())
 	}
@@ -162,7 +98,7 @@ func (b *Float64ArrayBuilder) finishInternal() *ArrayData {
 	}
 	res := NewArrayData(PrimitiveTypes.Float64, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
 
-	*b = Float64ArrayBuilder{pool: b.pool} // clear
+	*b = Float64ArrayBuilder{arrayBuilder: arrayBuilder{pool: b.pool}} // clear
 
 	return res
 }
