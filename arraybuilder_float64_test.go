@@ -16,9 +16,16 @@ func TestNewFloat64ArrayBuilder(t *testing.T) {
 	b.AppendNull()
 	b.Append(5)
 	b.Append(6)
-	b.Append(7)
+	b.AppendNull()
 	b.Append(8)
 
 	a := b.Finish()
+	t.Log(a.NullN(), a.Float64Values())
+
+	b.Append(7)
+	b.Append(8)
+
+	a = b.Finish()
 	t.Log(a.Float64Values())
+
 }
