@@ -63,17 +63,10 @@ func (b *BooleanArrayBuilder) Init(capacity int) {
 	b.rawData = BooleanTraits{}.CastFromBytes(b.data.Bytes())
 }
 
-func (b *BooleanArrayBuilder) arrayBuilderReserve(elements int) {
-	if b.length+elements > b.capacity {
-		newCap := nextPowerOf2(b.length + elements)
-		b.Resize(newCap)
-	}
-}
-
 // Reserve ensures there is enough space for adding the specified number of elements
 // by checking the capacity and calling Resize if necessary.
 func (b *BooleanArrayBuilder) Reserve(elements int) {
-	b.reserve(elements, b.Resize)
+	b.arrayBuilder.reserve(elements, b.Resize)
 }
 
 func (b *BooleanArrayBuilder) Resize(capacity int) {
