@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/influxdata/arrow"
-	"github.com/influxdata/arrow/internal/tools"
+	"github.com/influxdata/arrow/internal/testing/tools"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
 )
