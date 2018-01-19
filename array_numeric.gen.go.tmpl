@@ -1,5 +1,9 @@
 package arrow
 
+import (
+	"github.com/influxdata/arrow/memory"
+)
+
 // Numeric Array types
 {{range .}}
 
@@ -21,6 +25,7 @@ func (a *{{.Name}}Array) NullBitmapBytes() []byte  { return a.nullBitmapBytes }
 func (a *{{.Name}}Array) {{.Name}}Values() []{{.Type}} { return a.values }
 func (a *{{.Name}}Array) Data() *ArrayData { return a.data }
 func (a *{{.Name}}Array) Len() int{ return a.data.length }
+func (a *{{.Name}}Array) Values() *memory.Buffer { return a.data.buffers[1] }
 
 // IsNull returns true if value at index is null. Does not check bounds.
 func (a *{{.Name}}Array) IsNull(i int) bool {

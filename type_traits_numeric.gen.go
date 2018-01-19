@@ -23,23 +23,27 @@ type Int64Traits struct{}
 func (Int64Traits) BytesRequired(elements int) int { return int64SizeBytes * elements }
 
 func (Int64Traits) CastFromBytes(b []byte) []int64 {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) / int64SizeBytes,
-		Cap:  cap(b) / int64SizeBytes,
-	}
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
-	return *(*[]int64)(unsafe.Pointer(&s))
+	var res []int64
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len / int64SizeBytes
+	s.Cap = h.Cap / int64SizeBytes
+
+	return res
 }
 
 func (Int64Traits) CastToBytes(b []int64) []byte {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) * int64SizeBytes,
-		Cap:  cap(b) * int64SizeBytes,
-	}
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
-	return *(*[]byte)(unsafe.Pointer(&s))
+	var res []byte
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len * int64SizeBytes
+	s.Cap = h.Cap * int64SizeBytes
+
+	return res
 }
 
 func (t Int64Traits) Copy(dst, src []int64) {
@@ -59,23 +63,27 @@ type Uint64Traits struct{}
 func (Uint64Traits) BytesRequired(elements int) int { return uint64SizeBytes * elements }
 
 func (Uint64Traits) CastFromBytes(b []byte) []uint64 {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) / uint64SizeBytes,
-		Cap:  cap(b) / uint64SizeBytes,
-	}
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
-	return *(*[]uint64)(unsafe.Pointer(&s))
+	var res []uint64
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len / uint64SizeBytes
+	s.Cap = h.Cap / uint64SizeBytes
+
+	return res
 }
 
 func (Uint64Traits) CastToBytes(b []uint64) []byte {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) * uint64SizeBytes,
-		Cap:  cap(b) * uint64SizeBytes,
-	}
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
-	return *(*[]byte)(unsafe.Pointer(&s))
+	var res []byte
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len * uint64SizeBytes
+	s.Cap = h.Cap * uint64SizeBytes
+
+	return res
 }
 
 func (t Uint64Traits) Copy(dst, src []uint64) {
@@ -95,23 +103,27 @@ type Float64Traits struct{}
 func (Float64Traits) BytesRequired(elements int) int { return float64SizeBytes * elements }
 
 func (Float64Traits) CastFromBytes(b []byte) []float64 {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) / float64SizeBytes,
-		Cap:  cap(b) / float64SizeBytes,
-	}
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
-	return *(*[]float64)(unsafe.Pointer(&s))
+	var res []float64
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len / float64SizeBytes
+	s.Cap = h.Cap / float64SizeBytes
+
+	return res
 }
 
 func (Float64Traits) CastToBytes(b []float64) []byte {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) * float64SizeBytes,
-		Cap:  cap(b) * float64SizeBytes,
-	}
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
-	return *(*[]byte)(unsafe.Pointer(&s))
+	var res []byte
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len * float64SizeBytes
+	s.Cap = h.Cap * float64SizeBytes
+
+	return res
 }
 
 func (t Float64Traits) Copy(dst, src []float64) {

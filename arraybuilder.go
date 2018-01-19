@@ -6,6 +6,7 @@ const (
 	minBuilderCapacity = 1 << 5
 )
 
+// arrayBuilder provides common functionality to array builders for managing the validity bitmap (nulls).
 type arrayBuilder struct {
 	pool       memory.Allocator
 	nullBitmap *memory.PoolBuffer
@@ -13,6 +14,15 @@ type arrayBuilder struct {
 	length     int
 	capacity   int
 }
+
+// Len returns the length of the array.
+func (b *arrayBuilder) Len() int { return b.length }
+
+// Cap returns the total number of elements that can be stored without allocating additional memory.
+func (b *arrayBuilder) Cap() int { return b.capacity }
+
+// NullN returns the number of null values in the array.
+func (b *arrayBuilder) NullN() int { return b.nullN }
 
 func (b *arrayBuilder) init(capacity int) {
 	toAlloc := ceilByte(capacity) / 8
@@ -45,7 +55,14 @@ func (b *arrayBuilder) reserve(elements int, resize func(int)) {
 	}
 }
 
-func (b *arrayBuilder) unsafeAppendBoolsToBitmap(valid []bool) {
+// unsafeAppendBoolsToBitmap appends the values in the valid slice to the validity bitmap.
+// As an optimization, if the valid slice is empty, the next length bits will be set to valid (not null).
+func (b *arrayBuilder) unsafeAppendBoolsToBitmap(valid []bool, length int) {
+	if len(valid) == 0 {
+		b.unsafeSetValid(length)
+		return
+	}
+
 	byteOffset := b.length / 8
 	bitOffset := byte(b.length % 8)
 	nullBitmap := b.nullBitmap.Bytes()
@@ -74,7 +91,7 @@ func (b *arrayBuilder) unsafeAppendBoolsToBitmap(valid []bool) {
 	b.length += len(valid)
 }
 
-// unsafeSetValid sets the next length bits to valid (in the validity bitmap.
+// unsafeSetValid sets the next length bits to valid in the validity bitmap.
 func (b *arrayBuilder) unsafeSetValid(length int) {
 	padToByte := min(8-(b.length%8), length)
 	if padToByte == 8 {
@@ -85,7 +102,7 @@ func (b *arrayBuilder) unsafeSetValid(length int) {
 		setBit(bits, i)
 	}
 
-	start := (length + padToByte) / 8
+	start := (b.length + padToByte) / 8
 	fastLength := (length - padToByte) / 8
 	memory.Set(bits[start:start+fastLength], 0xff)
 

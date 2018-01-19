@@ -42,16 +42,19 @@ func (b *Float64ArrayBuilder) UnsafeAppendBoolToBitmap(isValid bool) {
 	b.length++
 }
 
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
 func (b *Float64ArrayBuilder) AppendValues(v []float64, valid []bool) {
-	b.Reserve(len(v))
-	if len(v) != len(valid) {
-		panic("len(v) != len(valid)")
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
 	}
 
+	b.Reserve(len(v))
 	if len(v) > 0 {
 		Float64Traits{}.Copy(b.rawData[b.length:], v)
 	}
-	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid)
+	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
 
 //endregion

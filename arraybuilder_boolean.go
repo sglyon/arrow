@@ -41,16 +41,15 @@ func (b *BooleanArrayBuilder) UnsafeAppend(v bool) {
 }
 
 func (b *BooleanArrayBuilder) AppendValues(v []bool, valid []bool) {
-	b.Reserve(len(v))
-	if len(v) != len(valid) {
-		panic("len(v) != len(valid)")
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
 	}
 
-	if len(v) > 0 {
-		panic("not implemented")
-		//BooleanTraits{}.Copy(b.rawData[b.length:], v)
+	b.Reserve(len(v))
+	for i, vv := range v {
+		setBitTo(b.rawData, b.length+i, vv)
 	}
-	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid)
+	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
 
 //endregion
@@ -91,9 +90,9 @@ func (b *BooleanArrayBuilder) Resize(capacity int) {
 	}
 }
 
-func (b *BooleanArrayBuilder) Finish() *Float64Array {
+func (b *BooleanArrayBuilder) Finish() *BooleanArray {
 	data := b.finishInternal()
-	return NewFloat64Array(data)
+	return NewBooleanArray(data)
 }
 
 func (b *BooleanArrayBuilder) finishInternal() *ArrayData {
@@ -102,7 +101,7 @@ func (b *BooleanArrayBuilder) finishInternal() *ArrayData {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewArrayData(PrimitiveTypes.Float64, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewArrayData(FixedWidthTypes.Boolean, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
 
 	*b = BooleanArrayBuilder{arrayBuilder: arrayBuilder{pool: b.pool}} // clear
 

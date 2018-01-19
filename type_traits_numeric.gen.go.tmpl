@@ -18,23 +18,27 @@ type {{.Name}}Traits struct{}
 func ({{.Name}}Traits) BytesRequired(elements int) int { return {{.name}}SizeBytes * elements }
 
 func ({{.Name}}Traits) CastFromBytes(b []byte) []{{.Type}} {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) / {{.name}}SizeBytes,
-		Cap:  cap(b) / {{.name}}SizeBytes,
-	}
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
-	return *(*[]{{.Type}})(unsafe.Pointer(&s))
+	var res []{{.Type}}
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len/{{.name}}SizeBytes
+	s.Cap = h.Cap/{{.name}}SizeBytes
+
+	return res
 }
 
 func ({{.Name}}Traits) CastToBytes(b []{{.Type}}) []byte {
-	s := reflect.SliceHeader{
-		Data: uintptr(unsafe.Pointer(&b[0])),
-		Len:  len(b) * {{.name}}SizeBytes,
-		Cap:  cap(b) * {{.name}}SizeBytes,
-	}
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
-	return *(*[]byte)(unsafe.Pointer(&s))
+	var res []byte
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len*{{.name}}SizeBytes
+	s.Cap = h.Cap*{{.name}}SizeBytes
+
+	return res
 }
 
 func (t {{.Name}}Traits) Copy(dst, src []{{.Type}}) {

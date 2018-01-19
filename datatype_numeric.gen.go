@@ -8,53 +8,53 @@ package arrow
 
 type Int8Type struct{}
 
-func (d *Int8Type) ID() Type     { return INT8 }
-func (d *Int8Type) Name() string { return "int8" }
+func (t *Int8Type) ID() Type     { return INT8 }
+func (t *Int8Type) Name() string { return "int8" }
 
 type Int16Type struct{}
 
-func (d *Int16Type) ID() Type     { return INT16 }
-func (d *Int16Type) Name() string { return "int16" }
+func (t *Int16Type) ID() Type     { return INT16 }
+func (t *Int16Type) Name() string { return "int16" }
 
 type Int32Type struct{}
 
-func (d *Int32Type) ID() Type     { return INT32 }
-func (d *Int32Type) Name() string { return "int32" }
+func (t *Int32Type) ID() Type     { return INT32 }
+func (t *Int32Type) Name() string { return "int32" }
 
 type Int64Type struct{}
 
-func (d *Int64Type) ID() Type     { return INT64 }
-func (d *Int64Type) Name() string { return "int64" }
+func (t *Int64Type) ID() Type     { return INT64 }
+func (t *Int64Type) Name() string { return "int64" }
 
 type Uint8Type struct{}
 
-func (d *Uint8Type) ID() Type     { return UINT8 }
-func (d *Uint8Type) Name() string { return "uint8" }
+func (t *Uint8Type) ID() Type     { return UINT8 }
+func (t *Uint8Type) Name() string { return "uint8" }
 
 type Uint16Type struct{}
 
-func (d *Uint16Type) ID() Type     { return UINT16 }
-func (d *Uint16Type) Name() string { return "uint16" }
+func (t *Uint16Type) ID() Type     { return UINT16 }
+func (t *Uint16Type) Name() string { return "uint16" }
 
 type Uint32Type struct{}
 
-func (d *Uint32Type) ID() Type     { return UINT32 }
-func (d *Uint32Type) Name() string { return "uint32" }
+func (t *Uint32Type) ID() Type     { return UINT32 }
+func (t *Uint32Type) Name() string { return "uint32" }
 
 type Uint64Type struct{}
 
-func (d *Uint64Type) ID() Type     { return UINT64 }
-func (d *Uint64Type) Name() string { return "uint64" }
+func (t *Uint64Type) ID() Type     { return UINT64 }
+func (t *Uint64Type) Name() string { return "uint64" }
 
 type Float32Type struct{}
 
-func (d *Float32Type) ID() Type     { return FLOAT32 }
-func (d *Float32Type) Name() string { return "float32" }
+func (t *Float32Type) ID() Type     { return FLOAT32 }
+func (t *Float32Type) Name() string { return "float32" }
 
 type Float64Type struct{}
 
-func (d *Float64Type) ID() Type     { return FLOAT64 }
-func (d *Float64Type) Name() string { return "float64" }
+func (t *Float64Type) ID() Type     { return FLOAT64 }
+func (t *Float64Type) Name() string { return "float64" }
 
 var (
 	PrimitiveTypes = struct {

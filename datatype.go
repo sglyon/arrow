@@ -100,3 +100,8 @@ type DataType interface {
 	ID() Type
 	Name() string
 }
+
+type FixedWidthDataType interface {
+	DataType
+	BitWidth() int
+}

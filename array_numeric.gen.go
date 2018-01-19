@@ -6,6 +6,10 @@
 
 package arrow
 
+import (
+	"github.com/influxdata/arrow/memory"
+)
+
 // Numeric Array types
 
 type Int64Array struct {
@@ -26,6 +30,7 @@ func (a *Int64Array) NullBitmapBytes() []byte { return a.nullBitmapBytes }
 func (a *Int64Array) Int64Values() []int64    { return a.values }
 func (a *Int64Array) Data() *ArrayData        { return a.data }
 func (a *Int64Array) Len() int                { return a.data.length }
+func (a *Int64Array) Values() *memory.Buffer  { return a.data.buffers[1] }
 
 // IsNull returns true if value at index is null. Does not check bounds.
 func (a *Int64Array) IsNull(i int) bool {
@@ -70,6 +75,7 @@ func (a *Uint64Array) NullBitmapBytes() []byte { return a.nullBitmapBytes }
 func (a *Uint64Array) Uint64Values() []uint64  { return a.values }
 func (a *Uint64Array) Data() *ArrayData        { return a.data }
 func (a *Uint64Array) Len() int                { return a.data.length }
+func (a *Uint64Array) Values() *memory.Buffer  { return a.data.buffers[1] }
 
 // IsNull returns true if value at index is null. Does not check bounds.
 func (a *Uint64Array) IsNull(i int) bool {
@@ -114,6 +120,7 @@ func (a *Float64Array) NullBitmapBytes() []byte  { return a.nullBitmapBytes }
 func (a *Float64Array) Float64Values() []float64 { return a.values }
 func (a *Float64Array) Data() *ArrayData         { return a.data }
 func (a *Float64Array) Len() int                 { return a.data.length }
+func (a *Float64Array) Values() *memory.Buffer   { return a.data.buffers[1] }
 
 // IsNull returns true if value at index is null. Does not check bounds.
 func (a *Float64Array) IsNull(i int) bool {

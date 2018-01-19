@@ -11,10 +11,17 @@ var (
 
 func nextPowerOf2(x int) int { return 1 << uint(bits.Len(uint(x))) }
 
-// ceilByte rounds size to the next multiple of 8
+// ceilByte rounds size to the next multiple of 8.
 func ceilByte(size int) int { return (size + 7) &^ 7 }
 
 func bitIsSet(bits []byte, i int) bool    { return (bits[uint(i)/8] & bitMask[byte(i)%8]) != 0 }
 func bitIsNotSet(bits []byte, i int) bool { return (bits[uint(i)/8] & bitMask[byte(i)%8]) == 0 }
 func setBit(bits []byte, i int)           { bits[uint(i)/8] |= bitMask[byte(i)%8] }
 func clearBit(bits []byte, i int)         { bits[uint(i)/8] &= flippedBitMask[byte(i)%8] }
+func setBitTo(bits []byte, i int, val bool) {
+	if val {
+		setBit(bits, i)
+	} else {
+		clearBit(bits, i)
+	}
+}
