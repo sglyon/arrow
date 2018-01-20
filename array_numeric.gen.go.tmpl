@@ -8,9 +8,8 @@ import (
 {{range .}}
 
 type {{.Name}}Array struct {
-	data            *ArrayData
-	nullBitmapBytes []byte
-	values          []{{.Type}}
+	array
+	values []{{.Type}}
 }
 
 func New{{.Name}}Array(data *ArrayData) *{{.Name}}Array {
@@ -19,33 +18,11 @@ func New{{.Name}}Array(data *ArrayData) *{{.Name}}Array {
 	return a
 }
 
-func (a *{{.Name}}Array) DataType() DataType       { return a.data.typE }
-func (a *{{.Name}}Array) NullN() int               { return a.data.nullN }
-func (a *{{.Name}}Array) NullBitmapBytes() []byte  { return a.nullBitmapBytes }
 func (a *{{.Name}}Array) {{.Name}}Values() []{{.Type}} { return a.values }
-func (a *{{.Name}}Array) Data() *ArrayData { return a.data }
-func (a *{{.Name}}Array) Len() int{ return a.data.length }
 func (a *{{.Name}}Array) Values() *memory.Buffer { return a.data.buffers[1] }
 
-// IsNull returns true if value at index is null. Does not check bounds.
-func (a *{{.Name}}Array) IsNull(i int) bool {
-	return len(a.nullBitmapBytes) != 0 && bitIsNotSet(a.nullBitmapBytes, i)
-}
-
-// IsValid returns true if value at index is not null. Does not check bounds.
-func (a *{{.Name}}Array) IsValid(i int) bool {
-	return len(a.nullBitmapBytes) == 0 || bitIsSet(a.nullBitmapBytes, i)
-}
-
-func (a *{{.Name}}Array) arraySetData(data *ArrayData) {
-	if len(data.buffers) > 0 && data.buffers[0] != nil {
-		a.nullBitmapBytes = data.buffers[0].Bytes()
-	}
-	a.data = data
-}
-
 func (a *{{.Name}}Array) setData(data *ArrayData) {
-	a.arraySetData(data)
+	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
 		a.values = {{.Name}}Traits{}.CastFromBytes(vals.Bytes())

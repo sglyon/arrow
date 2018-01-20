@@ -12,10 +12,31 @@ import (
 
 // Numeric Array types
 
+type Int32Array struct {
+	array
+	values []int32
+}
+
+func NewInt32Array(data *ArrayData) *Int32Array {
+	a := &Int32Array{}
+	a.setData(data)
+	return a
+}
+
+func (a *Int32Array) Int32Values() []int32   { return a.values }
+func (a *Int32Array) Values() *memory.Buffer { return a.data.buffers[1] }
+
+func (a *Int32Array) setData(data *ArrayData) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = Int32Traits{}.CastFromBytes(vals.Bytes())
+	}
+}
+
 type Int64Array struct {
-	data            *ArrayData
-	nullBitmapBytes []byte
-	values          []int64
+	array
+	values []int64
 }
 
 func NewInt64Array(data *ArrayData) *Int64Array {
@@ -24,33 +45,11 @@ func NewInt64Array(data *ArrayData) *Int64Array {
 	return a
 }
 
-func (a *Int64Array) DataType() DataType      { return a.data.typE }
-func (a *Int64Array) NullN() int              { return a.data.nullN }
-func (a *Int64Array) NullBitmapBytes() []byte { return a.nullBitmapBytes }
-func (a *Int64Array) Int64Values() []int64    { return a.values }
-func (a *Int64Array) Data() *ArrayData        { return a.data }
-func (a *Int64Array) Len() int                { return a.data.length }
-func (a *Int64Array) Values() *memory.Buffer  { return a.data.buffers[1] }
-
-// IsNull returns true if value at index is null. Does not check bounds.
-func (a *Int64Array) IsNull(i int) bool {
-	return len(a.nullBitmapBytes) != 0 && bitIsNotSet(a.nullBitmapBytes, i)
-}
-
-// IsValid returns true if value at index is not null. Does not check bounds.
-func (a *Int64Array) IsValid(i int) bool {
-	return len(a.nullBitmapBytes) == 0 || bitIsSet(a.nullBitmapBytes, i)
-}
-
-func (a *Int64Array) arraySetData(data *ArrayData) {
-	if len(data.buffers) > 0 && data.buffers[0] != nil {
-		a.nullBitmapBytes = data.buffers[0].Bytes()
-	}
-	a.data = data
-}
+func (a *Int64Array) Int64Values() []int64   { return a.values }
+func (a *Int64Array) Values() *memory.Buffer { return a.data.buffers[1] }
 
 func (a *Int64Array) setData(data *ArrayData) {
-	a.arraySetData(data)
+	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
 		a.values = Int64Traits{}.CastFromBytes(vals.Bytes())
@@ -58,9 +57,8 @@ func (a *Int64Array) setData(data *ArrayData) {
 }
 
 type Uint64Array struct {
-	data            *ArrayData
-	nullBitmapBytes []byte
-	values          []uint64
+	array
+	values []uint64
 }
 
 func NewUint64Array(data *ArrayData) *Uint64Array {
@@ -69,33 +67,11 @@ func NewUint64Array(data *ArrayData) *Uint64Array {
 	return a
 }
 
-func (a *Uint64Array) DataType() DataType      { return a.data.typE }
-func (a *Uint64Array) NullN() int              { return a.data.nullN }
-func (a *Uint64Array) NullBitmapBytes() []byte { return a.nullBitmapBytes }
-func (a *Uint64Array) Uint64Values() []uint64  { return a.values }
-func (a *Uint64Array) Data() *ArrayData        { return a.data }
-func (a *Uint64Array) Len() int                { return a.data.length }
-func (a *Uint64Array) Values() *memory.Buffer  { return a.data.buffers[1] }
-
-// IsNull returns true if value at index is null. Does not check bounds.
-func (a *Uint64Array) IsNull(i int) bool {
-	return len(a.nullBitmapBytes) != 0 && bitIsNotSet(a.nullBitmapBytes, i)
-}
-
-// IsValid returns true if value at index is not null. Does not check bounds.
-func (a *Uint64Array) IsValid(i int) bool {
-	return len(a.nullBitmapBytes) == 0 || bitIsSet(a.nullBitmapBytes, i)
-}
-
-func (a *Uint64Array) arraySetData(data *ArrayData) {
-	if len(data.buffers) > 0 && data.buffers[0] != nil {
-		a.nullBitmapBytes = data.buffers[0].Bytes()
-	}
-	a.data = data
-}
+func (a *Uint64Array) Uint64Values() []uint64 { return a.values }
+func (a *Uint64Array) Values() *memory.Buffer { return a.data.buffers[1] }
 
 func (a *Uint64Array) setData(data *ArrayData) {
-	a.arraySetData(data)
+	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
 		a.values = Uint64Traits{}.CastFromBytes(vals.Bytes())
@@ -103,9 +79,8 @@ func (a *Uint64Array) setData(data *ArrayData) {
 }
 
 type Float64Array struct {
-	data            *ArrayData
-	nullBitmapBytes []byte
-	values          []float64
+	array
+	values []float64
 }
 
 func NewFloat64Array(data *ArrayData) *Float64Array {
@@ -114,33 +89,11 @@ func NewFloat64Array(data *ArrayData) *Float64Array {
 	return a
 }
 
-func (a *Float64Array) DataType() DataType       { return a.data.typE }
-func (a *Float64Array) NullN() int               { return a.data.nullN }
-func (a *Float64Array) NullBitmapBytes() []byte  { return a.nullBitmapBytes }
 func (a *Float64Array) Float64Values() []float64 { return a.values }
-func (a *Float64Array) Data() *ArrayData         { return a.data }
-func (a *Float64Array) Len() int                 { return a.data.length }
 func (a *Float64Array) Values() *memory.Buffer   { return a.data.buffers[1] }
 
-// IsNull returns true if value at index is null. Does not check bounds.
-func (a *Float64Array) IsNull(i int) bool {
-	return len(a.nullBitmapBytes) != 0 && bitIsNotSet(a.nullBitmapBytes, i)
-}
-
-// IsValid returns true if value at index is not null. Does not check bounds.
-func (a *Float64Array) IsValid(i int) bool {
-	return len(a.nullBitmapBytes) == 0 || bitIsSet(a.nullBitmapBytes, i)
-}
-
-func (a *Float64Array) arraySetData(data *ArrayData) {
-	if len(data.buffers) > 0 && data.buffers[0] != nil {
-		a.nullBitmapBytes = data.buffers[0].Bytes()
-	}
-	a.data = data
-}
-
 func (a *Float64Array) setData(data *ArrayData) {
-	a.arraySetData(data)
+	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
 		a.values = Float64Traits{}.CastFromBytes(vals.Bytes())

@@ -1,6 +1,7 @@
 package arrow
 
 import (
+	"encoding/binary"
 	"reflect"
 	"unsafe"
 )
@@ -16,6 +17,20 @@ type {{.Name}}Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
 func ({{.Name}}Traits) BytesRequired(elements int) int { return {{.name}}SizeBytes * elements }
+
+func ({{.Name}}Traits) PutValue(b []byte, v {{.Type}}) {
+{{- if eq .Size "1" -}}
+	b[0] = v
+{{- else if eq .Size "2" -}}
+	binary.LittleEndian.PutUint16(b, uint16(v))
+{{- else if eq .Size "4" -}}
+	binary.LittleEndian.PutUint32(b, uint32(v))
+{{- else if eq .Size "8" -}}
+	binary.LittleEndian.PutUint64(b, uint64(v))
+{{- else -}}
+	panic("invalid type {{.Type}}")
+{{end}}
+}
 
 func ({{.Name}}Traits) CastFromBytes(b []byte) []{{.Type}} {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))

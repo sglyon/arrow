@@ -2,17 +2,21 @@ package memory
 
 type Buffer struct {
 	buf     []byte
-	bytes   []byte // slice of buf representing requested size
+	length  int
 	mutable bool
 }
 
 func NewBuffer(data []byte) *Buffer {
-	return &Buffer{bytes: data}
+	return &Buffer{buf: data, length: len(data)}
 }
 
-func (b *Buffer) Bytes() []byte { return b.bytes }
+// Buf returns the slice of memory allocated by the Buffer.
+func (b *Buffer) Buf() []byte { return b.buf }
+
+// Bytes returns a slice of size Len.
+func (b *Buffer) Bytes() []byte { return b.buf[:b.length] }
 func (b *Buffer) Mutable() bool { return b.mutable }
-func (b *Buffer) Len() int      { return len(b.bytes) }
+func (b *Buffer) Len() int      { return b.length }
 func (b *Buffer) Cap() int      { return len(b.buf) }
 
 type PoolBuffer struct {
@@ -32,8 +36,6 @@ func (b *PoolBuffer) Reserve(capacity int) {
 		} else {
 			b.buf = b.pool.Reallocate(newCap, b.buf)
 		}
-		// retain existing buffer size
-		b.bytes = b.buf[:len(b.buf):len(b.buf)]
 	}
 }
 
@@ -46,16 +48,20 @@ func (b *PoolBuffer) ResizeNoShrink(newSize int) {
 }
 
 func (b *PoolBuffer) resize(newSize int, shrink bool) {
-	if !shrink || newSize > len(b.buf) {
+	if !shrink || newSize > b.length {
 		b.Reserve(newSize)
 	} else {
+		// Buffer is not growing, so shrink to the requested size without
+		// excess space.
 		newCap := roundUpToMultipleOf64(newSize)
-		if newSize == 0 {
-			b.pool.Free(b.buf)
-			b.buf, b.bytes = nil, nil
-		} else {
-			b.buf = b.pool.Reallocate(newCap, b.buf)
+		if len(b.buf) != newCap {
+			if newSize == 0 {
+				b.pool.Free(b.buf)
+				b.buf = nil
+			} else {
+				b.buf = b.pool.Reallocate(newCap, b.buf)
+			}
 		}
 	}
-	b.bytes = b.buf[:newSize:newSize]
+	b.length = newSize
 }

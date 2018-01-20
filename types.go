@@ -9,13 +9,6 @@ type ListArray struct {
 	values          Array
 }
 
-type BinaryArray struct {
-	data            ArrayData
-	nullBitmapData  []byte
-	rawValueOffsets []int32
-	rawData         []byte
-}
-
 type FixedSizeBinaryArray struct {
 	data           ArrayData
 	nullBitmapData []byte

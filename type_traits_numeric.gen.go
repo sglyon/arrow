@@ -7,9 +7,54 @@
 package arrow
 
 import (
+	"encoding/binary"
 	"reflect"
 	"unsafe"
 )
+
+// Int32 traits
+
+const (
+	int32SizeBytes = int(unsafe.Sizeof(int32(0)))
+)
+
+type Int32Traits struct{}
+
+// BytesRequired returns the number of bytes required to store the requested number of elements.
+func (Int32Traits) BytesRequired(elements int) int { return int32SizeBytes * elements }
+
+func (Int32Traits) PutValue(b []byte, v int32) {
+	binary.LittleEndian.PutUint32(b, uint32(v))
+}
+
+func (Int32Traits) CastFromBytes(b []byte) []int32 {
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+
+	var res []int32
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len / int32SizeBytes
+	s.Cap = h.Cap / int32SizeBytes
+
+	return res
+}
+
+func (Int32Traits) CastToBytes(b []int32) []byte {
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+
+	var res []byte
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len * int32SizeBytes
+	s.Cap = h.Cap * int32SizeBytes
+
+	return res
+}
+
+func (t Int32Traits) Copy(dst, src []int32) {
+	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
+	copy(dstB, srcB)
+}
 
 // Int64 traits
 
@@ -21,6 +66,10 @@ type Int64Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
 func (Int64Traits) BytesRequired(elements int) int { return int64SizeBytes * elements }
+
+func (Int64Traits) PutValue(b []byte, v int64) {
+	binary.LittleEndian.PutUint64(b, uint64(v))
+}
 
 func (Int64Traits) CastFromBytes(b []byte) []int64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
@@ -62,6 +111,10 @@ type Uint64Traits struct{}
 // BytesRequired returns the number of bytes required to store the requested number of elements.
 func (Uint64Traits) BytesRequired(elements int) int { return uint64SizeBytes * elements }
 
+func (Uint64Traits) PutValue(b []byte, v uint64) {
+	binary.LittleEndian.PutUint64(b, uint64(v))
+}
+
 func (Uint64Traits) CastFromBytes(b []byte) []uint64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
@@ -101,6 +154,10 @@ type Float64Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
 func (Float64Traits) BytesRequired(elements int) int { return float64SizeBytes * elements }
+
+func (Float64Traits) PutValue(b []byte, v float64) {
+	binary.LittleEndian.PutUint64(b, uint64(v))
+}
 
 func (Float64Traits) CastFromBytes(b []byte) []float64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))

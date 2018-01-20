@@ -95,8 +95,7 @@ func (b *BooleanArrayBuilder) finishInternal() *ArrayData {
 		b.data.Resize(bytesRequired)
 	}
 	res := NewArrayData(FixedWidthTypes.Boolean, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
-
-	*b = BooleanArrayBuilder{arrayBuilder: arrayBuilder{pool: b.pool}} // clear
+	b.reset()
 
 	return res
 }

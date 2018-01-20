@@ -13,6 +13,8 @@ type arrayBuilder struct {
 	nullN      int
 	length     int
 	capacity   int
+
+	// TODO(sgc): store DataType per C++ implementation?
 }
 
 // Len returns the length of the array.
@@ -29,7 +31,14 @@ func (b *arrayBuilder) init(capacity int) {
 	b.nullBitmap = memory.NewPoolBuffer(b.pool)
 	b.nullBitmap.Resize(toAlloc)
 	b.capacity = capacity
-	memory.Set(b.nullBitmap.Bytes(), 0)
+	memory.Set(b.nullBitmap.Buf(), 0)
+}
+
+func (b *arrayBuilder) reset() {
+	b.nullBitmap = nil
+	b.nullN = 0
+	b.length = 0
+	b.capacity = 0
 }
 
 func (b *arrayBuilder) resize(newBits int, init func(int)) {
@@ -44,7 +53,7 @@ func (b *arrayBuilder) resize(newBits int, init func(int)) {
 	b.capacity = newBits
 	if oldBytesN < newBytesN {
 		// TODO(sgc): necessary?
-		memory.Set(b.nullBitmap.Bytes()[oldBytesN:], 0)
+		memory.Set(b.nullBitmap.Buf()[oldBytesN:], 0)
 	}
 }
 

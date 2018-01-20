@@ -100,8 +100,7 @@ func (b *Float64ArrayBuilder) finishInternal() *ArrayData {
 		b.data.Resize(bytesRequired)
 	}
 	res := NewArrayData(PrimitiveTypes.Float64, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
-
-	*b = Float64ArrayBuilder{arrayBuilder: arrayBuilder{pool: b.pool}} // clear
+	b.reset()
 
 	return res
 }
