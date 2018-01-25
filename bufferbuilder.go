@@ -2,8 +2,8 @@ package arrow
 
 import "github.com/influxdata/arrow/memory"
 
-// bufferBuilder provides common functionality for a buffer builder for populating memory with type-specific values.
-// Specialized versions provide type-safe APIs.
+// bufferBuilder provides common functionality for populating populating memory with type-specific values.
+// Specialized implementations provide type-safe APIs.
 type bufferBuilder struct {
 	pool     memory.Allocator
 	buffer   *memory.PoolBuffer
@@ -13,13 +13,16 @@ type bufferBuilder struct {
 	bytes []byte
 }
 
-// Len returns the length of the memory buffer.
+// Len returns the length of the memory buffer in bytes.
 func (b *bufferBuilder) Len() int { return b.length }
 
-// Cap returns the total number of elements that can be stored without allocating additional memory.
+// Cap returns the total number of bytes that can be stored without allocating additional memory.
 func (b *bufferBuilder) Cap() int { return b.capacity }
 
 // Bytes returns a slice of length b.Len().
+// The slice is only valid for use until the next buffer modification. That is, until the next call
+// to Advance, Reset, Finish or any Append function. The slice aliases the buffer content at least until the next
+// buffer modification.
 func (b *bufferBuilder) Bytes() []byte { return b.bytes[:b.length] }
 
 func (b *bufferBuilder) resize(elements int) {
@@ -46,24 +49,22 @@ func (b *bufferBuilder) Advance(length int) {
 	b.length += length
 }
 
-func (b *bufferBuilder) Append(data []byte) {
-	if b.capacity < b.length+len(data) {
-		newCapacity := nextPowerOf2(b.length + len(data))
+// Append appends the contents of v to the buffer and resizing it if necessary.
+func (b *bufferBuilder) Append(v []byte) {
+	if b.capacity < b.length+len(v) {
+		newCapacity := nextPowerOf2(b.length + len(v))
 		b.resize(newCapacity)
 	}
-	b.UnsafeAppend(data)
+	b.unsafeAppend(v)
 }
 
-func (b *bufferBuilder) UnsafeAppend(data []byte) {
-	copy(b.bytes[b.length:], data)
-	b.length += len(data)
-}
-
+// Reset returns the buffer to an empty state. Reset releases the memory and sets the length and capacity to zero.
 func (b *bufferBuilder) Reset() {
 	b.buffer, b.bytes = nil, nil
 	b.capacity, b.length = 0, 0
 }
 
+// Finish TODO(sgc)
 func (b *bufferBuilder) Finish() *memory.Buffer {
 	if b.length > 0 {
 		b.buffer.ResizeNoShrink(b.length)
@@ -71,4 +72,9 @@ func (b *bufferBuilder) Finish() *memory.Buffer {
 	res := &b.buffer.Buffer
 	b.Reset()
 	return res
+}
+
+func (b *bufferBuilder) unsafeAppend(data []byte) {
+	copy(b.bytes[b.length:], data)
+	b.length += len(data)
 }

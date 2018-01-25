@@ -18,11 +18,22 @@ func NewInt32BufferBuilder(pool memory.Allocator) *Int32BufferBuilder {
 	return &Int32BufferBuilder{bufferBuilder: bufferBuilder{pool: pool}}
 }
 
-func (b *Int32BufferBuilder) AppendValues(data []int32) { b.Append(Int32Traits{}.CastToBytes(data)) }
-func (b *Int32BufferBuilder) Values() []int32           { return Int32Traits{}.CastFromBytes(b.Bytes()) }
-func (b *Int32BufferBuilder) Value(i int) int32         { return b.Values()[i] }
-func (b *Int32BufferBuilder) Len() int                  { return b.length / int32SizeBytes }
+// AppendValues appends the contents of v to the buffer, growing the buffer as needed.
+func (b *Int32BufferBuilder) AppendValues(v []int32) { b.Append(Int32Traits{}.CastToBytes(v)) }
 
+// Values returns a slice of length b.Len().
+// The slice is only valid for use until the next buffer modification. That is, until the next call
+// to Advance, Reset, Finish or any Append function. The slice aliases the buffer content at least until the next
+// buffer modification.
+func (b *Int32BufferBuilder) Values() []int32 { return Int32Traits{}.CastFromBytes(b.Bytes()) }
+
+// Value returns the int32 element at the index i. Value will panic if i is negative or ≥ Len.
+func (b *Int32BufferBuilder) Value(i int) int32 { return b.Values()[i] }
+
+// Len returns the number of int32 elements in the buffer.
+func (b *Int32BufferBuilder) Len() int { return b.length / int32SizeBytes }
+
+// AppendValue appends v to the buffer, growing the buffer as needed.
 func (b *Int32BufferBuilder) AppendValue(v int32) {
 	if b.capacity < b.length+int32SizeBytes {
 		newCapacity := nextPowerOf2(b.length + int32SizeBytes)
@@ -40,11 +51,22 @@ func NewInt64BufferBuilder(pool memory.Allocator) *Int64BufferBuilder {
 	return &Int64BufferBuilder{bufferBuilder: bufferBuilder{pool: pool}}
 }
 
-func (b *Int64BufferBuilder) AppendValues(data []int64) { b.Append(Int64Traits{}.CastToBytes(data)) }
-func (b *Int64BufferBuilder) Values() []int64           { return Int64Traits{}.CastFromBytes(b.Bytes()) }
-func (b *Int64BufferBuilder) Value(i int) int64         { return b.Values()[i] }
-func (b *Int64BufferBuilder) Len() int                  { return b.length / int64SizeBytes }
+// AppendValues appends the contents of v to the buffer, growing the buffer as needed.
+func (b *Int64BufferBuilder) AppendValues(v []int64) { b.Append(Int64Traits{}.CastToBytes(v)) }
 
+// Values returns a slice of length b.Len().
+// The slice is only valid for use until the next buffer modification. That is, until the next call
+// to Advance, Reset, Finish or any Append function. The slice aliases the buffer content at least until the next
+// buffer modification.
+func (b *Int64BufferBuilder) Values() []int64 { return Int64Traits{}.CastFromBytes(b.Bytes()) }
+
+// Value returns the int64 element at the index i. Value will panic if i is negative or ≥ Len.
+func (b *Int64BufferBuilder) Value(i int) int64 { return b.Values()[i] }
+
+// Len returns the number of int64 elements in the buffer.
+func (b *Int64BufferBuilder) Len() int { return b.length / int64SizeBytes }
+
+// AppendValue appends v to the buffer, growing the buffer as needed.
 func (b *Int64BufferBuilder) AppendValue(v int64) {
 	if b.capacity < b.length+int64SizeBytes {
 		newCapacity := nextPowerOf2(b.length + int64SizeBytes)
@@ -62,11 +84,22 @@ func NewUint64BufferBuilder(pool memory.Allocator) *Uint64BufferBuilder {
 	return &Uint64BufferBuilder{bufferBuilder: bufferBuilder{pool: pool}}
 }
 
-func (b *Uint64BufferBuilder) AppendValues(data []uint64) { b.Append(Uint64Traits{}.CastToBytes(data)) }
-func (b *Uint64BufferBuilder) Values() []uint64           { return Uint64Traits{}.CastFromBytes(b.Bytes()) }
-func (b *Uint64BufferBuilder) Value(i int) uint64         { return b.Values()[i] }
-func (b *Uint64BufferBuilder) Len() int                   { return b.length / uint64SizeBytes }
+// AppendValues appends the contents of v to the buffer, growing the buffer as needed.
+func (b *Uint64BufferBuilder) AppendValues(v []uint64) { b.Append(Uint64Traits{}.CastToBytes(v)) }
 
+// Values returns a slice of length b.Len().
+// The slice is only valid for use until the next buffer modification. That is, until the next call
+// to Advance, Reset, Finish or any Append function. The slice aliases the buffer content at least until the next
+// buffer modification.
+func (b *Uint64BufferBuilder) Values() []uint64 { return Uint64Traits{}.CastFromBytes(b.Bytes()) }
+
+// Value returns the uint64 element at the index i. Value will panic if i is negative or ≥ Len.
+func (b *Uint64BufferBuilder) Value(i int) uint64 { return b.Values()[i] }
+
+// Len returns the number of uint64 elements in the buffer.
+func (b *Uint64BufferBuilder) Len() int { return b.length / uint64SizeBytes }
+
+// AppendValue appends v to the buffer, growing the buffer as needed.
 func (b *Uint64BufferBuilder) AppendValue(v uint64) {
 	if b.capacity < b.length+uint64SizeBytes {
 		newCapacity := nextPowerOf2(b.length + uint64SizeBytes)
@@ -84,13 +117,22 @@ func NewFloat64BufferBuilder(pool memory.Allocator) *Float64BufferBuilder {
 	return &Float64BufferBuilder{bufferBuilder: bufferBuilder{pool: pool}}
 }
 
-func (b *Float64BufferBuilder) AppendValues(data []float64) {
-	b.Append(Float64Traits{}.CastToBytes(data))
-}
-func (b *Float64BufferBuilder) Values() []float64   { return Float64Traits{}.CastFromBytes(b.Bytes()) }
-func (b *Float64BufferBuilder) Value(i int) float64 { return b.Values()[i] }
-func (b *Float64BufferBuilder) Len() int            { return b.length / float64SizeBytes }
+// AppendValues appends the contents of v to the buffer, growing the buffer as needed.
+func (b *Float64BufferBuilder) AppendValues(v []float64) { b.Append(Float64Traits{}.CastToBytes(v)) }
 
+// Values returns a slice of length b.Len().
+// The slice is only valid for use until the next buffer modification. That is, until the next call
+// to Advance, Reset, Finish or any Append function. The slice aliases the buffer content at least until the next
+// buffer modification.
+func (b *Float64BufferBuilder) Values() []float64 { return Float64Traits{}.CastFromBytes(b.Bytes()) }
+
+// Value returns the float64 element at the index i. Value will panic if i is negative or ≥ Len.
+func (b *Float64BufferBuilder) Value(i int) float64 { return b.Values()[i] }
+
+// Len returns the number of float64 elements in the buffer.
+func (b *Float64BufferBuilder) Len() int { return b.length / float64SizeBytes }
+
+// AppendValue appends v to the buffer, growing the buffer as needed.
 func (b *Float64BufferBuilder) AppendValue(v float64) {
 	if b.capacity < b.length+float64SizeBytes {
 		newCapacity := nextPowerOf2(b.length + float64SizeBytes)

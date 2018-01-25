@@ -20,6 +20,7 @@ func (a *BinaryArray) Value(i int) []byte {
 }
 
 // ValueString returns the string at index i without performing additional allocations.
+// The string is only valid for the lifetime of the BinaryArray.
 func (a *BinaryArray) ValueString(i int) string {
 	b := a.Value(i)
 	return *(*string)(unsafe.Pointer(&b))

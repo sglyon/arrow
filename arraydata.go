@@ -5,7 +5,7 @@ import (
 )
 
 // ArrayData is a self-contained representation of the memory and metadata
-// which represents an Arrow Array.
+// for an Arrow Array.
 type ArrayData struct {
 	typE      DataType
 	nullN     int

@@ -64,7 +64,7 @@ func (b *arrayBuilder) reserve(elements int, resize func(int)) {
 	}
 }
 
-// unsafeAppendBoolsToBitmap appends the values in the valid slice to the validity bitmap.
+// unsafeAppendBoolsToBitmap appends the contents of valid to the validity bitmap.
 // As an optimization, if the valid slice is empty, the next length bits will be set to valid (not null).
 func (b *arrayBuilder) unsafeAppendBoolsToBitmap(valid []bool, length int) {
 	if len(valid) == 0 {
