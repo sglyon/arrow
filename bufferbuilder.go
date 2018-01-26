@@ -1,6 +1,9 @@
 package arrow
 
-import "github.com/influxdata/arrow/memory"
+import (
+	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/memory"
+)
 
 // bufferBuilder provides common functionality for populating populating memory with type-specific values.
 // Specialized implementations provide type-safe APIs.
@@ -43,7 +46,7 @@ func (b *bufferBuilder) resize(elements int) {
 // Advance increases the buffer by length and initializes the skipped bytes to zero.
 func (b *bufferBuilder) Advance(length int) {
 	if b.capacity < b.length+length {
-		newCapacity := nextPowerOf2(b.length + length)
+		newCapacity := bitutil.NextPowerOf2(b.length + length)
 		b.resize(newCapacity)
 	}
 	b.length += length
@@ -52,7 +55,7 @@ func (b *bufferBuilder) Advance(length int) {
 // Append appends the contents of v to the buffer and resizing it if necessary.
 func (b *bufferBuilder) Append(v []byte) {
 	if b.capacity < b.length+len(v) {
-		newCapacity := nextPowerOf2(b.length + len(v))
+		newCapacity := bitutil.NextPowerOf2(b.length + len(v))
 		b.resize(newCapacity)
 	}
 	b.unsafeAppend(v)

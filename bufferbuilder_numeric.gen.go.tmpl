@@ -1,10 +1,13 @@
 package arrow
 
-import "github.com/influxdata/arrow/memory"
+import (
+	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/memory"
+)
 
 // Numeric Array types
 {{range .}}
-
+{{if .Opt.BufferBuilder}}
 type {{.Name}}BufferBuilder struct {
 	bufferBuilder
 }
@@ -26,16 +29,16 @@ func (b *{{.Name}}BufferBuilder) Values() []{{.Type}}           { return {{.Name
 func (b *{{.Name}}BufferBuilder) Value(i int) {{.Type}}         { return b.Values()[i] }
 
 // Len returns the number of {{.Type}} elements in the buffer.
-func (b *{{.Name}}BufferBuilder) Len() int                      { return b.length/{{.Type}}SizeBytes }
+func (b *{{.Name}}BufferBuilder) Len() int                      { return b.length/{{.Name}}SizeBytes }
 
 // AppendValue appends v to the buffer, growing the buffer as needed.
 func (b *{{.Name}}BufferBuilder) AppendValue(v {{.Type}}) {
-	if b.capacity < b.length+{{.Type}}SizeBytes {
-		newCapacity := nextPowerOf2(b.length + {{.Type}}SizeBytes)
+	if b.capacity < b.length+{{.Name}}SizeBytes {
+		newCapacity := bitutil.NextPowerOf2(b.length + {{.Name}}SizeBytes)
 		b.resize(newCapacity)
 	}
 	{{.Name}}Traits{}.PutValue(b.bytes[b.length:], v)
-	b.length+={{.Type}}SizeBytes
+	b.length+={{.Name}}SizeBytes
 }
-
+{{end}}
 {{end}}

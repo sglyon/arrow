@@ -1,9 +1,5 @@
 package arrow
 
-import (
-	"github.com/influxdata/arrow/memory"
-)
-
 // Numeric Array types
 {{range .}}
 
@@ -19,7 +15,6 @@ func New{{.Name}}Array(data *ArrayData) *{{.Name}}Array {
 }
 
 func (a *{{.Name}}Array) {{.Name}}Values() []{{.Type}} { return a.values }
-func (a *{{.Name}}Array) Values() *memory.Buffer { return a.data.buffers[1] }
 
 func (a *{{.Name}}Array) setData(data *ArrayData) {
 	a.array.setData(data)

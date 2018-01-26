@@ -10,13 +10,13 @@ import (
 // {{.Name}} traits
 
 const (
-	{{.name}}SizeBytes = int(unsafe.Sizeof({{.Type}}({{.Default}})))
+	{{.Name}}SizeBytes = int(unsafe.Sizeof({{.Type}}({{.Default}})))
 )
 
 type {{.Name}}Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
-func ({{.Name}}Traits) BytesRequired(elements int) int { return {{.name}}SizeBytes * elements }
+func ({{.Name}}Traits) BytesRequired(elements int) int { return {{.Name}}SizeBytes * elements }
 
 func ({{.Name}}Traits) PutValue(b []byte, v {{.Type}}) {
 {{- if eq .Size "1" -}}
@@ -38,8 +38,8 @@ func ({{.Name}}Traits) CastFromBytes(b []byte) []{{.Type}} {
 	var res []{{.Type}}
 	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
 	s.Data = h.Data
-	s.Len = h.Len/{{.name}}SizeBytes
-	s.Cap = h.Cap/{{.name}}SizeBytes
+	s.Len = h.Len/{{.Name}}SizeBytes
+	s.Cap = h.Cap/{{.Name}}SizeBytes
 
 	return res
 }
@@ -50,8 +50,8 @@ func ({{.Name}}Traits) CastToBytes(b []{{.Type}}) []byte {
 	var res []byte
 	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
 	s.Data = h.Data
-	s.Len = h.Len*{{.name}}SizeBytes
-	s.Cap = h.Cap*{{.name}}SizeBytes
+	s.Len = h.Len*{{.Name}}SizeBytes
+	s.Cap = h.Cap*{{.Name}}SizeBytes
 
 	return res
 }

@@ -3,8 +3,8 @@ package arrow
 {{range .}}
 type {{.Name}}Type struct {}
 
-func (t *{{.Name}}Type) ID() Type { return {{.Name|upcase}} }
-func (t *{{.Name}}Type) Name() string { return "{{.Name|downcase}}" }
+func (t *{{.Name}}Type) ID() Type { return {{.Name|upper}} }
+func (t *{{.Name}}Type) Name() string { return "{{.Name|lower}}" }
 
 
 {{end}}

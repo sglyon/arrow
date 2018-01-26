@@ -9,14 +9,22 @@ import (
 type {{.Name}}ArrayBuilder struct {
 	arrayBuilder
 
+{{if .Opt.Parametric -}}
+	typE    *{{.Name}}Type
+{{end -}}
 	data    *memory.PoolBuffer
 	rawData []{{.Type}}
 }
 
+{{if .Opt.Parametric}}
+func New{{.Name}}ArrayBuilder(pool memory.Allocator, typE *{{.Name}}Type) *{{.Name}}ArrayBuilder {
+	return &{{.Name}}ArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}, typE: typE}
+}
+{{else}}
 func New{{.Name}}ArrayBuilder(pool memory.Allocator) *{{.Name}}ArrayBuilder {
 	return &{{.Name}}ArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}}
 }
-
+{{end}}
 //region: append
 
 func (b *{{.Name}}ArrayBuilder) Append(v {{.Type}}) {
@@ -30,14 +38,14 @@ func (b *{{.Name}}ArrayBuilder) AppendNull() {
 }
 
 func (b *{{.Name}}ArrayBuilder) UnsafeAppend(v {{.Type}}) {
-	setBit(b.nullBitmap.Bytes(), b.length)
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
 	b.rawData[b.length] = v
 	b.length++
 }
 
 func (b *{{.Name}}ArrayBuilder) UnsafeAppendBoolToBitmap(isValid bool) {
 	if isValid {
-		setBit(b.nullBitmap.Bytes(), b.length)
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
 	} else {
 		b.nullN++
 	}
@@ -101,7 +109,11 @@ func (b *{{.Name}}ArrayBuilder) finishInternal() *ArrayData {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
+{{if .Opt.Parametric -}}
+	res := NewArrayData(b.typE, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+{{else -}}
 	res := NewArrayData(PrimitiveTypes.{{.Name}}, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+{{end -}}
 	b.reset()
 
 	return res

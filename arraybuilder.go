@@ -1,6 +1,9 @@
 package arrow
 
-import "github.com/influxdata/arrow/memory"
+import (
+	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/memory"
+)
 
 const (
 	minBuilderCapacity = 1 << 5
@@ -27,7 +30,7 @@ func (b *arrayBuilder) Cap() int { return b.capacity }
 func (b *arrayBuilder) NullN() int { return b.nullN }
 
 func (b *arrayBuilder) init(capacity int) {
-	toAlloc := ceilByte(capacity) / 8
+	toAlloc := bitutil.CeilByte(capacity) / 8
 	b.nullBitmap = memory.NewPoolBuffer(b.pool)
 	b.nullBitmap.Resize(toAlloc)
 	b.capacity = capacity
@@ -47,7 +50,7 @@ func (b *arrayBuilder) resize(newBits int, init func(int)) {
 		return
 	}
 
-	newBytesN := ceilByte(newBits) / 8
+	newBytesN := bitutil.CeilByte(newBits) / 8
 	oldBytesN := b.nullBitmap.Len()
 	b.nullBitmap.Resize(newBytesN)
 	b.capacity = newBits
@@ -59,7 +62,7 @@ func (b *arrayBuilder) resize(newBits int, init func(int)) {
 
 func (b *arrayBuilder) reserve(elements int, resize func(int)) {
 	if b.length+elements > b.capacity {
-		newCap := nextPowerOf2(b.length + elements)
+		newCap := bitutil.NextPowerOf2(b.length + elements)
 		resize(newCap)
 	}
 }
@@ -86,9 +89,9 @@ func (b *arrayBuilder) unsafeAppendBoolsToBitmap(valid []bool, length int) {
 		}
 
 		if v {
-			bitSet |= bitMask[bitOffset]
+			bitSet |= bitutil.BitMask[bitOffset]
 		} else {
-			bitSet &= flippedBitMask[bitOffset]
+			bitSet &= bitutil.FlippedBitMask[bitOffset]
 			b.nullN++
 		}
 		bitOffset++
@@ -108,7 +111,7 @@ func (b *arrayBuilder) unsafeSetValid(length int) {
 	}
 	bits := b.nullBitmap.Bytes()
 	for i := b.length; i < b.length+padToByte; i++ {
-		setBit(bits, i)
+		bitutil.SetBit(bits, i)
 	}
 
 	start := (b.length + padToByte) / 8
@@ -118,7 +121,7 @@ func (b *arrayBuilder) unsafeSetValid(length int) {
 	newLength := b.length + length
 	// trailing bytes
 	for i := b.length + padToByte + (fastLength * 8); i < newLength; i++ {
-		setBit(bits, i)
+		bitutil.SetBit(bits, i)
 	}
 
 	b.length = newLength
@@ -126,7 +129,7 @@ func (b *arrayBuilder) unsafeSetValid(length int) {
 
 func (b *arrayBuilder) UnsafeAppendBoolToBitmap(isValid bool) {
 	if isValid {
-		setBit(b.nullBitmap.Bytes(), b.length)
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
 	} else {
 		b.nullN++
 	}

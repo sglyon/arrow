@@ -1,6 +1,9 @@
 package arrow
 
-import "github.com/influxdata/arrow/memory"
+import (
+	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/memory"
+)
 
 type BooleanArrayBuilder struct {
 	arrayBuilder
@@ -31,11 +34,11 @@ func (b *BooleanArrayBuilder) AppendNull() {
 }
 
 func (b *BooleanArrayBuilder) UnsafeAppend(v bool) {
-	setBit(b.nullBitmap.Bytes(), b.length)
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
 	if v {
-		setBit(b.rawData, b.length)
+		bitutil.SetBit(b.rawData, b.length)
 	} else {
-		clearBit(b.rawData, b.length)
+		bitutil.ClearBit(b.rawData, b.length)
 	}
 	b.length++
 }
@@ -47,7 +50,7 @@ func (b *BooleanArrayBuilder) AppendValues(v []bool, valid []bool) {
 
 	b.Reserve(len(v))
 	for i, vv := range v {
-		setBitTo(b.rawData, b.length+i, vv)
+		bitutil.SetBitTo(b.rawData, b.length+i, vv)
 	}
 	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }

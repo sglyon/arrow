@@ -96,12 +96,17 @@ const (
 	MAP
 )
 
+// DataType is the representation of an Arrow type.
 type DataType interface {
 	ID() Type
+	// Name is name of the data type.
 	Name() string
 }
 
+// FixedWidthDataType is the representation of an Arrow type that
+// requires a fixed number of bits in memory.
 type FixedWidthDataType interface {
 	DataType
+	// BitWidth returns the number of bits required to store a single element of this data type in memory.
 	BitWidth() int
 }

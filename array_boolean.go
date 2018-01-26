@@ -1,5 +1,7 @@
 package arrow
 
+import "github.com/influxdata/arrow/internal/bitutil"
+
 type BooleanArray struct {
 	array
 	values []byte
@@ -11,7 +13,7 @@ func NewBooleanArray(data *ArrayData) *BooleanArray {
 	return a
 }
 
-func (a *BooleanArray) Value(i int) bool { return bitIsSet(a.values, i) }
+func (a *BooleanArray) Value(i int) bool { return bitutil.BitIsSet(a.values, i) }
 
 func (a *BooleanArray) setData(data *ArrayData) {
 	a.array.setData(data)

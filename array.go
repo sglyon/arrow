@@ -1,8 +1,11 @@
 package arrow
 
-import "github.com/influxdata/arrow/memory"
+import (
+	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/memory"
+)
 
-// Array represents a type
+// Array is the most basic data structure
 type Array interface {
 	DataType() DataType
 
@@ -43,13 +46,13 @@ func (a *array) Values() *memory.Buffer  { return a.data.buffers[1] }
 // IsNull returns true if value at index is null.
 // IsNull will panic if NullBitmapBytes is not empty and 0 > i ≥ Len.
 func (a *array) IsNull(i int) bool {
-	return len(a.nullBitmapBytes) != 0 && bitIsNotSet(a.nullBitmapBytes, i)
+	return len(a.nullBitmapBytes) != 0 && bitutil.BitIsNotSet(a.nullBitmapBytes, i)
 }
 
 // IsValid returns true if value at index is not null.
 // IsValid will panic if NullBitmapBytes is not empty and 0 > i ≥ Len.
 func (a *array) IsValid(i int) bool {
-	return len(a.nullBitmapBytes) == 0 || bitIsSet(a.nullBitmapBytes, i)
+	return len(a.nullBitmapBytes) == 0 || bitutil.BitIsSet(a.nullBitmapBytes, i)
 }
 
 func (a *array) setData(data *ArrayData) {

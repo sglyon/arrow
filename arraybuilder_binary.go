@@ -56,7 +56,7 @@ func (b *BinaryArrayBuilder) Value(i int) []byte {
 
 func (b *BinaryArrayBuilder) Init(capacity int) {
 	b.arrayBuilder.init(capacity)
-	b.offsets.resize((capacity + 1) * int32SizeBytes)
+	b.offsets.resize((capacity + 1) * Int32SizeBytes)
 }
 
 // Reserve ensures there is enough space for adding the specified number of elements
@@ -66,7 +66,7 @@ func (b *BinaryArrayBuilder) Reserve(elements int) {
 }
 
 func (b *BinaryArrayBuilder) Resize(capacity int) {
-	b.offsets.resize((capacity + 1) * int32SizeBytes)
+	b.offsets.resize((capacity + 1) * Int32SizeBytes)
 	b.arrayBuilder.resize(capacity, b.Init)
 }
 

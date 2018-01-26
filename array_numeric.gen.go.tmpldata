@@ -4,7 +4,10 @@
     "name": "int32",
     "Type": "int32",
     "Default": "0",
-    "Size": "4"
+    "Size": "4",
+    "Opt": {
+      "BufferBuilder": true
+    }
   },
   {
     "Name": "Int64",
@@ -26,5 +29,15 @@
     "Type": "float64",
     "Default": "0",
     "Size": "8"
+  },
+  {
+    "Name": "Timestamp",
+    "name": "timestamp",
+    "Type": "Timestamp",
+    "Default": "0",
+    "Size": "8",
+    "Opt": {
+      "Parametric": true
+    }
   }
 ]

@@ -15,5 +15,5 @@ array is valid (not null). If the array has no null entries, it is possible to o
 */
 package arrow
 
-//go:generate tmpl -data=@array_numeric.gen.go.tmpldata array_numeric.gen.go.tmpl arraybuilder_numeric.gen.go.tmpl type_traits_numeric.gen.go.tmpl bufferbuilder_numeric.gen.go.tmpl
-//go:generate tmpl -data=@datatype_numeric.gen.go.tmpldata datatype_numeric.gen.go.tmpl
+//go:generate go run _tools/tmpl/main.go -i -data=array_numeric.gen.go.tmpldata array_numeric.gen.go.tmpl type_traits_numeric.gen.go.tmpl arraybuilder_numeric.gen.go.tmpl bufferbuilder_numeric.gen.go.tmpl
+//go:generate go run _tools/tmpl/main.go -i -data=datatype_numeric.gen.go.tmpldata datatype_numeric.gen.go.tmpl

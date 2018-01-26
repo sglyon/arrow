@@ -22,3 +22,7 @@ func NewArrayData(typE DataType, length int, buffers []*memory.Buffer, nullN int
 		buffers: buffers,
 	}
 }
+
+func (a *ArrayData) DataType() DataType { return a.typE }
+func (a *ArrayData) NullN() int         { return a.nullN }
+func (a *ArrayData) Len() int           { return a.length }
