@@ -2,6 +2,7 @@ package arrow
 
 import "github.com/influxdata/arrow/internal/bitutil"
 
+// BooleanArray represents an immutable sequence of boolean values.
 type BooleanArray struct {
 	array
 	values []byte

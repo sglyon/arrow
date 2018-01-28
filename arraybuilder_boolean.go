@@ -16,8 +16,6 @@ func NewBooleanArrayBuilder(pool memory.Allocator) *BooleanArrayBuilder {
 	return &BooleanArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}}
 }
 
-//region: append
-
 func (b *BooleanArrayBuilder) Append(v bool) {
 	b.Reserve(1)
 	b.UnsafeAppend(v)
@@ -54,8 +52,6 @@ func (b *BooleanArrayBuilder) AppendValues(v []bool, valid []bool) {
 	}
 	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
-
-//endregion
 
 func (b *BooleanArrayBuilder) Init(capacity int) {
 	b.arrayBuilder.init(capacity)

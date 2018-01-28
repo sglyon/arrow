@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/influxdata/arrow"
+	"github.com/influxdata/arrow/math"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,4 +17,5 @@ func TestFloat64Array_SetData(t *testing.T) {
 
 	assert.Equal(t, len(exp), fa.Len(), "unexpected Len()")
 	assert.Equal(t, exp, fa.Float64Values(), "unexpected Float64Values()")
+	math.Float64.Sum()
 }

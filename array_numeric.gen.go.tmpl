@@ -3,6 +3,7 @@ package arrow
 // Numeric Array types
 {{range .}}
 
+// {{.Name}}Array represents an immutable sequence of {{.Type}} values.
 type {{.Name}}Array struct {
 	array
 	values []{{.Type}}

@@ -8,8 +8,6 @@ import (
 	"github.com/influxdata/arrow/memory"
 )
 
-// Numeric Array types
-
 type Int32BufferBuilder struct {
 	bufferBuilder
 }

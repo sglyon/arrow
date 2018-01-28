@@ -5,6 +5,7 @@ package arrow
 
 // Numeric Array types
 
+// Int32Array represents an immutable sequence of int32 values.
 type Int32Array struct {
 	array
 	values []int32
@@ -26,6 +27,7 @@ func (a *Int32Array) setData(data *ArrayData) {
 	}
 }
 
+// Int64Array represents an immutable sequence of int64 values.
 type Int64Array struct {
 	array
 	values []int64
@@ -47,6 +49,7 @@ func (a *Int64Array) setData(data *ArrayData) {
 	}
 }
 
+// Uint64Array represents an immutable sequence of uint64 values.
 type Uint64Array struct {
 	array
 	values []uint64
@@ -68,6 +71,7 @@ func (a *Uint64Array) setData(data *ArrayData) {
 	}
 }
 
+// Float64Array represents an immutable sequence of float64 values.
 type Float64Array struct {
 	array
 	values []float64
@@ -89,6 +93,7 @@ func (a *Float64Array) setData(data *ArrayData) {
 	}
 }
 
+// TimestampArray represents an immutable sequence of Timestamp values.
 type TimestampArray struct {
 	array
 	values []Timestamp

@@ -9,15 +9,13 @@ const (
 	minBuilderCapacity = 1 << 5
 )
 
-// arrayBuilder provides common functionality to array builders for managing the validity bitmap (nulls).
+// arrayBuilder provides common functionality for managing the validity bitmap (nulls) when building arrays.
 type arrayBuilder struct {
 	pool       memory.Allocator
 	nullBitmap *memory.PoolBuffer
 	nullN      int
 	length     int
 	capacity   int
-
-	// TODO(sgc): store DataType per C++ implementation?
 }
 
 // Len returns the length of the array.

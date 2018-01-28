@@ -18,13 +18,13 @@ const (
 type Int32Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
-func (Int32Traits) BytesRequired(elements int) int { return Int32SizeBytes * elements }
+func (t Int32Traits) BytesRequired(elements int) int { return Int32SizeBytes * elements }
 
-func (Int32Traits) PutValue(b []byte, v int32) {
+func (t Int32Traits) PutValue(b []byte, v int32) {
 	binary.LittleEndian.PutUint32(b, uint32(v))
 }
 
-func (Int32Traits) CastFromBytes(b []byte) []int32 {
+func (t Int32Traits) CastFromBytes(b []byte) []int32 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []int32
@@ -36,7 +36,7 @@ func (Int32Traits) CastFromBytes(b []byte) []int32 {
 	return res
 }
 
-func (Int32Traits) CastToBytes(b []int32) []byte {
+func (t Int32Traits) CastToBytes(b []int32) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -62,13 +62,13 @@ const (
 type Int64Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
-func (Int64Traits) BytesRequired(elements int) int { return Int64SizeBytes * elements }
+func (t Int64Traits) BytesRequired(elements int) int { return Int64SizeBytes * elements }
 
-func (Int64Traits) PutValue(b []byte, v int64) {
+func (t Int64Traits) PutValue(b []byte, v int64) {
 	binary.LittleEndian.PutUint64(b, uint64(v))
 }
 
-func (Int64Traits) CastFromBytes(b []byte) []int64 {
+func (t Int64Traits) CastFromBytes(b []byte) []int64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []int64
@@ -80,7 +80,7 @@ func (Int64Traits) CastFromBytes(b []byte) []int64 {
 	return res
 }
 
-func (Int64Traits) CastToBytes(b []int64) []byte {
+func (t Int64Traits) CastToBytes(b []int64) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -106,13 +106,13 @@ const (
 type Uint64Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
-func (Uint64Traits) BytesRequired(elements int) int { return Uint64SizeBytes * elements }
+func (t Uint64Traits) BytesRequired(elements int) int { return Uint64SizeBytes * elements }
 
-func (Uint64Traits) PutValue(b []byte, v uint64) {
+func (t Uint64Traits) PutValue(b []byte, v uint64) {
 	binary.LittleEndian.PutUint64(b, uint64(v))
 }
 
-func (Uint64Traits) CastFromBytes(b []byte) []uint64 {
+func (t Uint64Traits) CastFromBytes(b []byte) []uint64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []uint64
@@ -124,7 +124,7 @@ func (Uint64Traits) CastFromBytes(b []byte) []uint64 {
 	return res
 }
 
-func (Uint64Traits) CastToBytes(b []uint64) []byte {
+func (t Uint64Traits) CastToBytes(b []uint64) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -150,13 +150,13 @@ const (
 type Float64Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
-func (Float64Traits) BytesRequired(elements int) int { return Float64SizeBytes * elements }
+func (t Float64Traits) BytesRequired(elements int) int { return Float64SizeBytes * elements }
 
-func (Float64Traits) PutValue(b []byte, v float64) {
+func (t Float64Traits) PutValue(b []byte, v float64) {
 	binary.LittleEndian.PutUint64(b, uint64(v))
 }
 
-func (Float64Traits) CastFromBytes(b []byte) []float64 {
+func (t Float64Traits) CastFromBytes(b []byte) []float64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []float64
@@ -168,7 +168,7 @@ func (Float64Traits) CastFromBytes(b []byte) []float64 {
 	return res
 }
 
-func (Float64Traits) CastToBytes(b []float64) []byte {
+func (t Float64Traits) CastToBytes(b []float64) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -194,13 +194,13 @@ const (
 type TimestampTraits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
-func (TimestampTraits) BytesRequired(elements int) int { return TimestampSizeBytes * elements }
+func (t TimestampTraits) BytesRequired(elements int) int { return TimestampSizeBytes * elements }
 
-func (TimestampTraits) PutValue(b []byte, v Timestamp) {
+func (t TimestampTraits) PutValue(b []byte, v Timestamp) {
 	binary.LittleEndian.PutUint64(b, uint64(v))
 }
 
-func (TimestampTraits) CastFromBytes(b []byte) []Timestamp {
+func (t TimestampTraits) CastFromBytes(b []byte) []Timestamp {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []Timestamp
@@ -212,7 +212,7 @@ func (TimestampTraits) CastFromBytes(b []byte) []Timestamp {
 	return res
 }
 
-func (TimestampTraits) CastToBytes(b []Timestamp) []byte {
+func (t TimestampTraits) CastToBytes(b []Timestamp) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte

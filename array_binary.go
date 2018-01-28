@@ -2,12 +2,14 @@ package arrow
 
 import "unsafe"
 
+// BinaryArray represents an immutable sequence of variable-length binary strings.
 type BinaryArray struct {
 	array
 	valueOffsets []int32
 	valueBytes   []byte
 }
 
+// NewBinaryArray constructs a new BinaryArray from data.
 func NewBinaryArray(data *ArrayData) *BinaryArray {
 	a := &BinaryArray{}
 	a.setData(data)

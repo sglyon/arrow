@@ -19,8 +19,6 @@ func NewInt32ArrayBuilder(pool memory.Allocator) *Int32ArrayBuilder {
 	return &Int32ArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}}
 }
 
-//region: append
-
 func (b *Int32ArrayBuilder) Append(v int32) {
 	b.Reserve(1)
 	b.UnsafeAppend(v)
@@ -60,8 +58,6 @@ func (b *Int32ArrayBuilder) AppendValues(v []int32, valid []bool) {
 	}
 	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
-
-//endregion
 
 func (b *Int32ArrayBuilder) Init(capacity int) {
 	b.arrayBuilder.init(capacity)
@@ -120,8 +116,6 @@ func NewInt64ArrayBuilder(pool memory.Allocator) *Int64ArrayBuilder {
 	return &Int64ArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}}
 }
 
-//region: append
-
 func (b *Int64ArrayBuilder) Append(v int64) {
 	b.Reserve(1)
 	b.UnsafeAppend(v)
@@ -161,8 +155,6 @@ func (b *Int64ArrayBuilder) AppendValues(v []int64, valid []bool) {
 	}
 	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
-
-//endregion
 
 func (b *Int64ArrayBuilder) Init(capacity int) {
 	b.arrayBuilder.init(capacity)
@@ -221,8 +213,6 @@ func NewUint64ArrayBuilder(pool memory.Allocator) *Uint64ArrayBuilder {
 	return &Uint64ArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}}
 }
 
-//region: append
-
 func (b *Uint64ArrayBuilder) Append(v uint64) {
 	b.Reserve(1)
 	b.UnsafeAppend(v)
@@ -262,8 +252,6 @@ func (b *Uint64ArrayBuilder) AppendValues(v []uint64, valid []bool) {
 	}
 	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
-
-//endregion
 
 func (b *Uint64ArrayBuilder) Init(capacity int) {
 	b.arrayBuilder.init(capacity)
@@ -322,8 +310,6 @@ func NewFloat64ArrayBuilder(pool memory.Allocator) *Float64ArrayBuilder {
 	return &Float64ArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}}
 }
 
-//region: append
-
 func (b *Float64ArrayBuilder) Append(v float64) {
 	b.Reserve(1)
 	b.UnsafeAppend(v)
@@ -363,8 +349,6 @@ func (b *Float64ArrayBuilder) AppendValues(v []float64, valid []bool) {
 	}
 	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
-
-//endregion
 
 func (b *Float64ArrayBuilder) Init(capacity int) {
 	b.arrayBuilder.init(capacity)
@@ -424,8 +408,6 @@ func NewTimestampArrayBuilder(pool memory.Allocator, typE *TimestampType) *Times
 	return &TimestampArrayBuilder{arrayBuilder: arrayBuilder{pool: pool}, typE: typE}
 }
 
-//region: append
-
 func (b *TimestampArrayBuilder) Append(v Timestamp) {
 	b.Reserve(1)
 	b.UnsafeAppend(v)
@@ -465,8 +447,6 @@ func (b *TimestampArrayBuilder) AppendValues(v []Timestamp, valid []bool) {
 	}
 	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
-
-//endregion
 
 func (b *TimestampArrayBuilder) Init(capacity int) {
 	b.arrayBuilder.init(capacity)

@@ -6,11 +6,13 @@ language-independent columnar memory format for flat and hierarchical data, orga
 operations on modern hardware. It also provides computational libraries and zero-copy streaming
 messaging and inter-process communication.
 
-Fundamentals
+Basics
 
-The most basic data structure in Arrow is an Array. It holds a sequence of values of the same type. An array
+The fundamental data structure in Arrow is an Array, which holds a sequence of values of the same type. An array
 consists of memory holding the data and an additional validity bitmap that indicates if the corresponding entry in the
 array is valid (not null). If the array has no null entries, it is possible to omit this bitmap.
+
+An array is typically constructed using one of the type-specific
 
 */
 package arrow

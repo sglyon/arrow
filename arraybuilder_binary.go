@@ -10,6 +10,7 @@ const (
 	binaryArrayMaximumCapacity = math.MaxInt32
 )
 
+// A BinaryArrayBuilder is used to build a BinaryArray using the Append methods.
 type BinaryArrayBuilder struct {
 	arrayBuilder
 
@@ -25,8 +26,6 @@ func NewBinaryArrayBuilder(pool memory.Allocator) *BinaryArrayBuilder {
 	return b
 }
 
-//region: append
-
 func (b *BinaryArrayBuilder) Append(v []byte) {
 	b.Reserve(1)
 	b.appendNextOffset()
@@ -39,8 +38,6 @@ func (b *BinaryArrayBuilder) AppendNull() {
 	b.appendNextOffset()
 	b.UnsafeAppendBoolToBitmap(false)
 }
-
-//endregion
 
 func (b *BinaryArrayBuilder) Value(i int) []byte {
 	offsets := b.offsets.Values()

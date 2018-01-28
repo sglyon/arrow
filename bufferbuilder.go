@@ -5,8 +5,8 @@ import (
 	"github.com/influxdata/arrow/memory"
 )
 
-// bufferBuilder provides common functionality for populating populating memory with type-specific values.
-// Specialized implementations provide type-safe APIs.
+// A bufferBuilder provides common functionality for populating memory with a sequence of type-specific values.
+// Specialized implementations provide type-safe APIs for appending and accessing the memory.
 type bufferBuilder struct {
 	pool     memory.Allocator
 	buffer   *memory.PoolBuffer

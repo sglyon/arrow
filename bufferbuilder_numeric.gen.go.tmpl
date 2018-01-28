@@ -5,7 +5,6 @@ import (
 	"github.com/influxdata/arrow/memory"
 )
 
-// Numeric Array types
 {{range .}}
 {{if .Opt.BufferBuilder}}
 type {{.Name}}BufferBuilder struct {

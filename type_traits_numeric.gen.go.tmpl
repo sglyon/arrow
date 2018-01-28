@@ -16,9 +16,9 @@ const (
 type {{.Name}}Traits struct{}
 
 // BytesRequired returns the number of bytes required to store the requested number of elements.
-func ({{.Name}}Traits) BytesRequired(elements int) int { return {{.Name}}SizeBytes * elements }
+func (t {{.Name}}Traits) BytesRequired(elements int) int { return {{.Name}}SizeBytes * elements }
 
-func ({{.Name}}Traits) PutValue(b []byte, v {{.Type}}) {
+func (t {{.Name}}Traits) PutValue(b []byte, v {{.Type}}) {
 {{- if eq .Size "1" -}}
 	b[0] = v
 {{- else if eq .Size "2" -}}
@@ -32,7 +32,7 @@ func ({{.Name}}Traits) PutValue(b []byte, v {{.Type}}) {
 {{end}}
 }
 
-func ({{.Name}}Traits) CastFromBytes(b []byte) []{{.Type}} {
+func (t {{.Name}}Traits) CastFromBytes(b []byte) []{{.Type}} {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []{{.Type}}
@@ -44,7 +44,7 @@ func ({{.Name}}Traits) CastFromBytes(b []byte) []{{.Type}} {
 	return res
 }
 
-func ({{.Name}}Traits) CastToBytes(b []{{.Type}}) []byte {
+func (t {{.Name}}Traits) CastToBytes(b []{{.Type}}) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
