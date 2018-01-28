@@ -25,3 +25,21 @@ func TestRoundToPowerOf2(t *testing.T) {
 		})
 	}
 }
+
+func TestIsMultipleOfPowerOf2(t *testing.T) {
+	tests := []struct {
+		v, d int
+		exp  bool
+	}{
+		{200, 256, false},
+		{256, 256, true},
+		{500, 256, false},
+		{512, 256, true},
+	}
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("%d_%d_%t", test.v, test.d, test.exp), func(t *testing.T) {
+			got := isMultipleOfPowerOf2(test.v, test.d)
+			assert.Equal(t, test.exp, got)
+		})
+	}
+}

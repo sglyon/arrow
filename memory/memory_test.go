@@ -47,8 +47,8 @@ func TestSet(t *testing.T) {
 
 func benchmarkSet(b *testing.B, n int64) {
 	buf := make([]byte, n)
-	b.ResetTimer()
 	b.SetBytes(n)
+	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		memory.Set(buf, 0x1f)
@@ -67,14 +67,42 @@ func BenchmarkSet_64(b *testing.B) {
 	benchmarkSet(b, 64)
 }
 
+func BenchmarkSet_500(b *testing.B) {
+	benchmarkSet(b, 500)
+}
+
+func BenchmarkSet_512(b *testing.B) {
+	benchmarkSet(b, 512)
+}
+
 func BenchmarkSet_1000(b *testing.B) {
 	benchmarkSet(b, 1000)
+}
+
+func BenchmarkSet_1024(b *testing.B) {
+	benchmarkSet(b, 1024)
+}
+
+func BenchmarkSet_2000(b *testing.B) {
+	benchmarkSet(b, 2000)
+}
+
+func BenchmarkSet_2048(b *testing.B) {
+	benchmarkSet(b, 2048)
+}
+
+func BenchmarkSet_4000(b *testing.B) {
+	benchmarkSet(b, 4000)
 }
 
 func BenchmarkSet_4096(b *testing.B) {
 	benchmarkSet(b, 4096)
 }
 
-func BenchmarkSet_16386(b *testing.B) {
-	benchmarkSet(b, 16384)
+func BenchmarkSet_8000(b *testing.B) {
+	benchmarkSet(b, 8000)
+}
+
+func BenchmarkSet_8192(b *testing.B) {
+	benchmarkSet(b, 8192)
 }

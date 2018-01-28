@@ -8,3 +8,10 @@ var (
 func Set(buf []byte, c byte) {
 	memset(buf, c)
 }
+
+// memory_memset_go reference implementation
+func memory_memset_go(buf []byte, c byte) {
+	for i := 0; i < len(buf); i++ {
+		buf[i] = c
+	}
+}
