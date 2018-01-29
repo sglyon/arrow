@@ -53,7 +53,7 @@ func (b *BooleanArrayBuilder) AppendValues(v []bool, valid []bool) {
 	b.arrayBuilder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
 
-func (b *BooleanArrayBuilder) Init(capacity int) {
+func (b *BooleanArrayBuilder) init(capacity int) {
 	b.arrayBuilder.init(capacity)
 
 	b.data = memory.NewPoolBuffer(b.pool)
@@ -68,16 +68,17 @@ func (b *BooleanArrayBuilder) Reserve(n int) {
 	b.arrayBuilder.reserve(n, b.Resize)
 }
 
-// Resize adjusts the length of b to n elements.
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
 func (b *BooleanArrayBuilder) Resize(n int) {
 	if n < minBuilderCapacity {
 		n = minBuilderCapacity
 	}
 
 	if b.capacity == 0 {
-		b.Init(n)
+		b.init(n)
 	} else {
-		b.arrayBuilder.resize(n, b.Init)
+		b.arrayBuilder.resize(n, b.init)
 		b.data.Resize(BooleanTraits{}.BytesRequired(n))
 		b.rawData = BooleanTraits{}.CastFromBytes(b.data.Bytes())
 	}

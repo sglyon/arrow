@@ -51,22 +51,25 @@ func (b *BinaryArrayBuilder) Value(i int) []byte {
 	return b.values.Bytes()[start:end]
 }
 
-func (b *BinaryArrayBuilder) Init(capacity int) {
+func (b *BinaryArrayBuilder) init(capacity int) {
 	b.arrayBuilder.init(capacity)
 	b.offsets.resize((capacity + 1) * Int32SizeBytes)
 }
 
-// Reserve ensures there is enough space for adding the specified number of elements
+// Reserve ensures there is enough space for appending n elements
 // by checking the capacity and calling Resize if necessary.
-func (b *BinaryArrayBuilder) Reserve(elements int) {
-	b.arrayBuilder.reserve(elements, b.Resize)
+func (b *BinaryArrayBuilder) Reserve(n int) {
+	b.arrayBuilder.reserve(n, b.Resize)
 }
 
-func (b *BinaryArrayBuilder) Resize(capacity int) {
-	b.offsets.resize((capacity + 1) * Int32SizeBytes)
-	b.arrayBuilder.resize(capacity, b.Init)
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
+func (b *BinaryArrayBuilder) Resize(n int) {
+	b.offsets.resize((n + 1) * Int32SizeBytes)
+	b.arrayBuilder.resize(n, b.init)
 }
 
+// Finish completes the transfers ownership of the buffers used to build the arrow
 func (b *BinaryArrayBuilder) Finish() *BinaryArray {
 	data := b.finishInternal()
 	return NewBinaryArray(data)
