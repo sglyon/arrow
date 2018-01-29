@@ -12,12 +12,12 @@ import (
 type Int32Builder struct {
 	builder
 
-	data    *memory.PoolBuffer
+	data    *memory.ResizableBuffer
 	rawData []int32
 }
 
-func NewInt32Builder(pool memory.Allocator) *Int32Builder {
-	return &Int32Builder{builder: builder{pool: pool}}
+func NewInt32Builder(mem memory.Allocator) *Int32Builder {
+	return &Int32Builder{builder: builder{mem: mem}}
 }
 
 func (b *Int32Builder) Append(v int32) {
@@ -63,7 +63,7 @@ func (b *Int32Builder) AppendValues(v []int32, valid []bool) {
 func (b *Int32Builder) init(capacity int) {
 	b.builder.init(capacity)
 
-	b.data = memory.NewPoolBuffer(b.pool)
+	b.data = memory.NewResizableBuffer(b.mem)
 	bytesN := arrow.Int32Traits{}.BytesRequired(capacity)
 	b.data.Resize(bytesN)
 	b.rawData = arrow.Int32Traits{}.CastFromBytes(b.data.Bytes())
@@ -111,12 +111,12 @@ func (b *Int32Builder) finishInternal() *Data {
 type Int64Builder struct {
 	builder
 
-	data    *memory.PoolBuffer
+	data    *memory.ResizableBuffer
 	rawData []int64
 }
 
-func NewInt64Builder(pool memory.Allocator) *Int64Builder {
-	return &Int64Builder{builder: builder{pool: pool}}
+func NewInt64Builder(mem memory.Allocator) *Int64Builder {
+	return &Int64Builder{builder: builder{mem: mem}}
 }
 
 func (b *Int64Builder) Append(v int64) {
@@ -162,7 +162,7 @@ func (b *Int64Builder) AppendValues(v []int64, valid []bool) {
 func (b *Int64Builder) init(capacity int) {
 	b.builder.init(capacity)
 
-	b.data = memory.NewPoolBuffer(b.pool)
+	b.data = memory.NewResizableBuffer(b.mem)
 	bytesN := arrow.Int64Traits{}.BytesRequired(capacity)
 	b.data.Resize(bytesN)
 	b.rawData = arrow.Int64Traits{}.CastFromBytes(b.data.Bytes())
@@ -210,12 +210,12 @@ func (b *Int64Builder) finishInternal() *Data {
 type Uint64Builder struct {
 	builder
 
-	data    *memory.PoolBuffer
+	data    *memory.ResizableBuffer
 	rawData []uint64
 }
 
-func NewUint64Builder(pool memory.Allocator) *Uint64Builder {
-	return &Uint64Builder{builder: builder{pool: pool}}
+func NewUint64Builder(mem memory.Allocator) *Uint64Builder {
+	return &Uint64Builder{builder: builder{mem: mem}}
 }
 
 func (b *Uint64Builder) Append(v uint64) {
@@ -261,7 +261,7 @@ func (b *Uint64Builder) AppendValues(v []uint64, valid []bool) {
 func (b *Uint64Builder) init(capacity int) {
 	b.builder.init(capacity)
 
-	b.data = memory.NewPoolBuffer(b.pool)
+	b.data = memory.NewResizableBuffer(b.mem)
 	bytesN := arrow.Uint64Traits{}.BytesRequired(capacity)
 	b.data.Resize(bytesN)
 	b.rawData = arrow.Uint64Traits{}.CastFromBytes(b.data.Bytes())
@@ -309,12 +309,12 @@ func (b *Uint64Builder) finishInternal() *Data {
 type Float64Builder struct {
 	builder
 
-	data    *memory.PoolBuffer
+	data    *memory.ResizableBuffer
 	rawData []float64
 }
 
-func NewFloat64Builder(pool memory.Allocator) *Float64Builder {
-	return &Float64Builder{builder: builder{pool: pool}}
+func NewFloat64Builder(mem memory.Allocator) *Float64Builder {
+	return &Float64Builder{builder: builder{mem: mem}}
 }
 
 func (b *Float64Builder) Append(v float64) {
@@ -360,7 +360,7 @@ func (b *Float64Builder) AppendValues(v []float64, valid []bool) {
 func (b *Float64Builder) init(capacity int) {
 	b.builder.init(capacity)
 
-	b.data = memory.NewPoolBuffer(b.pool)
+	b.data = memory.NewResizableBuffer(b.mem)
 	bytesN := arrow.Float64Traits{}.BytesRequired(capacity)
 	b.data.Resize(bytesN)
 	b.rawData = arrow.Float64Traits{}.CastFromBytes(b.data.Bytes())
@@ -409,12 +409,12 @@ type TimestampBuilder struct {
 	builder
 
 	typE    *arrow.TimestampType
-	data    *memory.PoolBuffer
+	data    *memory.ResizableBuffer
 	rawData []arrow.Timestamp
 }
 
-func NewTimestampBuilder(pool memory.Allocator, typE *arrow.TimestampType) *TimestampBuilder {
-	return &TimestampBuilder{builder: builder{pool: pool}, typE: typE}
+func NewTimestampBuilder(mem memory.Allocator, typE *arrow.TimestampType) *TimestampBuilder {
+	return &TimestampBuilder{builder: builder{mem: mem}, typE: typE}
 }
 
 func (b *TimestampBuilder) Append(v arrow.Timestamp) {
@@ -460,7 +460,7 @@ func (b *TimestampBuilder) AppendValues(v []arrow.Timestamp, valid []bool) {
 func (b *TimestampBuilder) init(capacity int) {
 	b.builder.init(capacity)
 
-	b.data = memory.NewPoolBuffer(b.pool)
+	b.data = memory.NewResizableBuffer(b.mem)
 	bytesN := arrow.TimestampTraits{}.BytesRequired(capacity)
 	b.data.Resize(bytesN)
 	b.rawData = arrow.TimestampTraits{}.CastFromBytes(b.data.Bytes())

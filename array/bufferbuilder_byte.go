@@ -6,8 +6,8 @@ type ByteBufferBuilder struct {
 	bufferBuilder
 }
 
-func NewByteBufferBuilder(pool memory.Allocator) *ByteBufferBuilder {
-	return &ByteBufferBuilder{bufferBuilder: bufferBuilder{pool: pool}}
+func NewByteBufferBuilder(mem memory.Allocator) *ByteBufferBuilder {
+	return &ByteBufferBuilder{bufferBuilder: bufferBuilder{mem: mem}}
 }
 
 func (b *ByteBufferBuilder) Values() []byte   { return b.Bytes() }

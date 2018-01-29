@@ -13,17 +13,17 @@ type {{.Name}}Builder struct {
 {{if .Opt.Parametric -}}
 	typE    *arrow.{{.Name}}Type
 {{end -}}
-	data    *memory.PoolBuffer
+	data    *memory.ResizableBuffer
 	rawData []{{or .QualifiedType .Type}}
 }
 
 {{if .Opt.Parametric}}
-func New{{.Name}}Builder(pool memory.Allocator, typE *arrow.{{.Name}}Type) *{{.Name}}Builder {
-	return &{{.Name}}Builder{builder: builder{pool: pool}, typE: typE}
+func New{{.Name}}Builder(mem memory.Allocator, typE *arrow.{{.Name}}Type) *{{.Name}}Builder {
+	return &{{.Name}}Builder{builder: builder{mem: mem}, typE: typE}
 }
 {{else}}
-func New{{.Name}}Builder(pool memory.Allocator) *{{.Name}}Builder {
-	return &{{.Name}}Builder{builder: builder{pool: pool}}
+func New{{.Name}}Builder(mem memory.Allocator) *{{.Name}}Builder {
+	return &{{.Name}}Builder{builder: builder{mem: mem}}
 }
 {{end}}
 
@@ -70,7 +70,7 @@ func (b *{{.Name}}Builder) AppendValues(v []{{or .QualifiedType .Type}}, valid [
 func (b *{{.Name}}Builder) init(capacity int) {
 	b.builder.init(capacity)
 
-	b.data = memory.NewPoolBuffer(b.pool)
+	b.data = memory.NewResizableBuffer(b.mem)
 	bytesN := arrow.{{.Name}}Traits{}.BytesRequired(capacity)
 	b.data.Resize(bytesN)
 	b.rawData = arrow.{{.Name}}Traits{}.CastFromBytes(b.data.Bytes())

@@ -19,35 +19,35 @@ func (b *Buffer) Mutable() bool { return b.mutable }
 func (b *Buffer) Len() int      { return b.length }
 func (b *Buffer) Cap() int      { return len(b.buf) }
 
-type PoolBuffer struct {
+type ResizableBuffer struct {
 	Buffer
-	pool Allocator
+	mem Allocator
 }
 
-func NewPoolBuffer(pool Allocator) *PoolBuffer {
-	return &PoolBuffer{pool: pool, Buffer: Buffer{mutable: true}}
+func NewResizableBuffer(mem Allocator) *ResizableBuffer {
+	return &ResizableBuffer{mem: mem, Buffer: Buffer{mutable: true}}
 }
 
-func (b *PoolBuffer) Reserve(capacity int) {
+func (b *ResizableBuffer) Reserve(capacity int) {
 	if capacity > len(b.buf) {
 		newCap := roundUpToMultipleOf64(capacity)
 		if len(b.buf) == 0 {
-			b.buf = b.pool.Allocate(newCap)
+			b.buf = b.mem.Allocate(newCap)
 		} else {
-			b.buf = b.pool.Reallocate(newCap, b.buf)
+			b.buf = b.mem.Reallocate(newCap, b.buf)
 		}
 	}
 }
 
-func (b *PoolBuffer) Resize(newSize int) {
+func (b *ResizableBuffer) Resize(newSize int) {
 	b.resize(newSize, true)
 }
 
-func (b *PoolBuffer) ResizeNoShrink(newSize int) {
+func (b *ResizableBuffer) ResizeNoShrink(newSize int) {
 	b.resize(newSize, false)
 }
 
-func (b *PoolBuffer) resize(newSize int, shrink bool) {
+func (b *ResizableBuffer) resize(newSize int, shrink bool) {
 	if !shrink || newSize > b.length {
 		b.Reserve(newSize)
 	} else {
@@ -56,10 +56,10 @@ func (b *PoolBuffer) resize(newSize int, shrink bool) {
 		newCap := roundUpToMultipleOf64(newSize)
 		if len(b.buf) != newCap {
 			if newSize == 0 {
-				b.pool.Free(b.buf)
+				b.mem.Free(b.buf)
 				b.buf = nil
 			} else {
-				b.buf = b.pool.Reallocate(newCap, b.buf)
+				b.buf = b.mem.Reallocate(newCap, b.buf)
 			}
 		}
 	}

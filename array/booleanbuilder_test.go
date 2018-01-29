@@ -10,8 +10,8 @@ import (
 )
 
 func TestBooleanBuilder_AppendValues(t *testing.T) {
-	pool := memory.NewGoAllocator()
-	b := array.NewBooleanBuilder(pool)
+	mem := memory.NewGoAllocator()
+	b := array.NewBooleanBuilder(mem)
 
 	exp := tools.Bools(1, 1, 0, 1, 1, 0, 1, 0)
 	got := make([]bool, len(exp))

@@ -9,12 +9,12 @@ import (
 type BooleanBuilder struct {
 	builder
 
-	data    *memory.PoolBuffer
+	data    *memory.ResizableBuffer
 	rawData []byte
 }
 
-func NewBooleanBuilder(pool memory.Allocator) *BooleanBuilder {
-	return &BooleanBuilder{builder: builder{pool: pool}}
+func NewBooleanBuilder(mem memory.Allocator) *BooleanBuilder {
+	return &BooleanBuilder{builder: builder{mem: mem}}
 }
 
 func (b *BooleanBuilder) Append(v bool) {
@@ -57,7 +57,7 @@ func (b *BooleanBuilder) AppendValues(v []bool, valid []bool) {
 func (b *BooleanBuilder) init(capacity int) {
 	b.builder.init(capacity)
 
-	b.data = memory.NewPoolBuffer(b.pool)
+	b.data = memory.NewResizableBuffer(b.mem)
 	bytesN := arrow.BooleanTraits{}.BytesRequired(capacity)
 	b.data.Resize(bytesN)
 	b.rawData = arrow.BooleanTraits{}.CastFromBytes(b.data.Bytes())

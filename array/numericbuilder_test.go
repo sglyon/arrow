@@ -9,8 +9,8 @@ import (
 )
 
 func TestNewFloat64Builder(t *testing.T) {
-	pool := memory.NewGoAllocator()
-	ab := array.NewFloat64Builder(pool)
+	mem := memory.NewGoAllocator()
+	ab := array.NewFloat64Builder(mem)
 
 	ab.Append(1)
 	ab.Append(2)

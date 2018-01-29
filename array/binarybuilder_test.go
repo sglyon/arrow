@@ -9,8 +9,8 @@ import (
 )
 
 func TestBinaryBuilder(t *testing.T) {
-	pool := memory.NewGoAllocator()
-	ab := array.NewBinaryBuilder(pool)
+	mem := memory.NewGoAllocator()
+	ab := array.NewBinaryBuilder(mem)
 
 	exp := [][]byte{[]byte("foo"), []byte("bar"), nil, []byte("sydney"), []byte("cameron")}
 	for _, v := range exp {

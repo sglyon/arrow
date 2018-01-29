@@ -21,7 +21,7 @@ func TestBuilder_Init(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ab := &builder{pool: memory.NewGoAllocator()}
+			ab := &builder{mem: memory.NewGoAllocator()}
 			ab.init(test.cap)
 			assert.Equal(t, test.cap, ab.Cap(), "invalid capacity")
 			assert.Equal(t, test.exp.size, ab.nullBitmap.Len(), "invalid length")
@@ -30,7 +30,7 @@ func TestBuilder_Init(t *testing.T) {
 }
 
 func TestBuilder_UnsafeSetValid(t *testing.T) {
-	ab := &builder{pool: memory.NewGoAllocator()}
+	ab := &builder{mem: memory.NewGoAllocator()}
 	ab.init(32)
 	ab.unsafeAppendBoolsToBitmap(tools.Bools(0, 0, 0, 0, 0), 5)
 	assert.Equal(t, 5, ab.Len())

@@ -19,11 +19,11 @@ type BinaryBuilder struct {
 	values  ByteBufferBuilder
 }
 
-func NewBinaryBuilder(pool memory.Allocator) *BinaryBuilder {
+func NewBinaryBuilder(mem memory.Allocator) *BinaryBuilder {
 	b := &BinaryBuilder{}
-	b.builder.pool = pool
-	b.offsets.pool = pool
-	b.values.pool = pool
+	b.builder.mem = mem
+	b.offsets.mem = mem
+	b.values.mem = mem
 	return b
 }
 

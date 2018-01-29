@@ -8,8 +8,8 @@ import (
 // A bufferBuilder provides common functionality for populating memory with a sequence of type-specific values.
 // Specialized implementations provide type-safe APIs for appending and accessing the memory.
 type bufferBuilder struct {
-	pool     memory.Allocator
-	buffer   *memory.PoolBuffer
+	mem      memory.Allocator
+	buffer   *memory.ResizableBuffer
 	length   int
 	capacity int
 
@@ -30,7 +30,7 @@ func (b *bufferBuilder) Bytes() []byte { return b.bytes[:b.length] }
 
 func (b *bufferBuilder) resize(elements int) {
 	if b.buffer == nil {
-		b.buffer = memory.NewPoolBuffer(b.pool)
+		b.buffer = memory.NewResizableBuffer(b.mem)
 	}
 
 	b.buffer.Resize(elements)

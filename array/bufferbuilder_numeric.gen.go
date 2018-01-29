@@ -13,8 +13,8 @@ type Int32BufferBuilder struct {
 	bufferBuilder
 }
 
-func NewInt32BufferBuilder(pool memory.Allocator) *Int32BufferBuilder {
-	return &Int32BufferBuilder{bufferBuilder: bufferBuilder{pool: pool}}
+func NewInt32BufferBuilder(mem memory.Allocator) *Int32BufferBuilder {
+	return &Int32BufferBuilder{bufferBuilder: bufferBuilder{mem: mem}}
 }
 
 // AppendValues appends the contents of v to the buffer, growing the buffer as needed.

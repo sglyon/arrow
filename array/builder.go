@@ -11,8 +11,8 @@ const (
 
 // builder provides common functionality for managing the validity bitmap (nulls) when building arrays.
 type builder struct {
-	pool       memory.Allocator
-	nullBitmap *memory.PoolBuffer
+	mem        memory.Allocator
+	nullBitmap *memory.ResizableBuffer
 	nullN      int
 	length     int
 	capacity   int
@@ -29,7 +29,7 @@ func (b *builder) NullN() int { return b.nullN }
 
 func (b *builder) init(capacity int) {
 	toAlloc := bitutil.CeilByte(capacity) / 8
-	b.nullBitmap = memory.NewPoolBuffer(b.pool)
+	b.nullBitmap = memory.NewResizableBuffer(b.mem)
 	b.nullBitmap.Resize(toAlloc)
 	b.capacity = capacity
 	memory.Set(b.nullBitmap.Buf(), 0)
