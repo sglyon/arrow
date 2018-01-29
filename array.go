@@ -66,3 +66,57 @@ func (a *array) setData(data *ArrayData) {
 	}
 	a.data = data
 }
+
+type arrayConstructorFn func(*ArrayData) Array
+
+var (
+	makeArrayFn = [...]arrayConstructorFn{
+		NULL:              unsupportedArrayType,
+		BOOL:              func(data *ArrayData) Array { return NewBooleanArray(data) },
+		UINT8:             unsupportedArrayType,
+		INT8:              unsupportedArrayType,
+		UINT16:            unsupportedArrayType,
+		INT16:             unsupportedArrayType,
+		UINT32:            unsupportedArrayType,
+		INT32:             func(data *ArrayData) Array { return NewInt32Array(data) },
+		UINT64:            func(data *ArrayData) Array { return NewUint64Array(data) },
+		INT64:             func(data *ArrayData) Array { return NewInt64Array(data) },
+		HALF_FLOAT:        unsupportedArrayType,
+		FLOAT32:           unsupportedArrayType,
+		FLOAT64:           func(data *ArrayData) Array { return NewFloat64Array(data) },
+		STRING:            unsupportedArrayType,
+		BINARY:            func(data *ArrayData) Array { return NewBinaryArray(data) },
+		FIXED_SIZE_BINARY: unsupportedArrayType,
+		DATE32:            unsupportedArrayType,
+		DATE64:            unsupportedArrayType,
+		TIMESTAMP:         func(data *ArrayData) Array { return NewTimestampArray(data) },
+		TIME32:            unsupportedArrayType,
+		TIME64:            unsupportedArrayType,
+		INTERVAL:          unsupportedArrayType,
+		DECIMAL:           unsupportedArrayType,
+		LIST:              unsupportedArrayType,
+		STRUCT:            unsupportedArrayType,
+		UNION:             unsupportedArrayType,
+		DICTIONARY:        unsupportedArrayType,
+		MAP:               unsupportedArrayType,
+
+		// invalid data types to fill out remaining
+		28: invalidDataType,
+		29: invalidDataType,
+		30: invalidDataType,
+		31: invalidDataType,
+	}
+)
+
+func unsupportedArrayType(data *ArrayData) Array {
+	panic("unsupported data type: " + data.typE.ID().String())
+}
+
+func invalidDataType(data *ArrayData) Array {
+	panic("invalid data type: " + data.typE.ID().String())
+}
+
+// MakeArray constructs a strongly-typed Array instance from generic ArrayData.
+func MakeArray(data *ArrayData) Array {
+	return makeArrayFn[byte(data.typE.ID()&0x1f)](data)
+}
