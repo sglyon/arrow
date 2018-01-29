@@ -1,15 +1,16 @@
-package arrow
+package array_test
 
 import (
 	"testing"
 
+	"github.com/influxdata/arrow/array"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBinaryArrayBuilder(t *testing.T) {
+func TestBinaryBuilder(t *testing.T) {
 	pool := memory.NewGoAllocator()
-	ab := NewBinaryArrayBuilder(pool)
+	ab := array.NewBinaryBuilder(pool)
 
 	exp := [][]byte{[]byte("foo"), []byte("bar"), nil, []byte("sydney"), []byte("cameron")}
 	for _, v := range exp {

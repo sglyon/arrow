@@ -13,7 +13,7 @@ func roundUpToMultipleOf64(v int) int {
 }
 
 func isMultipleOfPowerOf2(v int, d int) bool {
-	return (v & (d-1)) == 0
+	return (v & (d - 1)) == 0
 }
 
 func addressOf(b []byte) uintptr {

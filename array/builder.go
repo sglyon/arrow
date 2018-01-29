@@ -1,4 +1,4 @@
-package arrow
+package array
 
 import (
 	"github.com/influxdata/arrow/internal/bitutil"
@@ -9,8 +9,8 @@ const (
 	minBuilderCapacity = 1 << 5
 )
 
-// arrayBuilder provides common functionality for managing the validity bitmap (nulls) when building arrays.
-type arrayBuilder struct {
+// builder provides common functionality for managing the validity bitmap (nulls) when building arrays.
+type builder struct {
 	pool       memory.Allocator
 	nullBitmap *memory.PoolBuffer
 	nullN      int
@@ -18,16 +18,16 @@ type arrayBuilder struct {
 	capacity   int
 }
 
-// Len returns the number of elements in the array.
-func (b *arrayBuilder) Len() int { return b.length }
+// Len returns the number of elements in the array builder.
+func (b *builder) Len() int { return b.length }
 
 // Cap returns the total number of elements that can be stored without allocating additional memory.
-func (b *arrayBuilder) Cap() int { return b.capacity }
+func (b *builder) Cap() int { return b.capacity }
 
-// NullN returns the number of null values in the array.
-func (b *arrayBuilder) NullN() int { return b.nullN }
+// NullN returns the number of null values in the array builder.
+func (b *builder) NullN() int { return b.nullN }
 
-func (b *arrayBuilder) init(capacity int) {
+func (b *builder) init(capacity int) {
 	toAlloc := bitutil.CeilByte(capacity) / 8
 	b.nullBitmap = memory.NewPoolBuffer(b.pool)
 	b.nullBitmap.Resize(toAlloc)
@@ -35,14 +35,14 @@ func (b *arrayBuilder) init(capacity int) {
 	memory.Set(b.nullBitmap.Buf(), 0)
 }
 
-func (b *arrayBuilder) reset() {
+func (b *builder) reset() {
 	b.nullBitmap = nil
 	b.nullN = 0
 	b.length = 0
 	b.capacity = 0
 }
 
-func (b *arrayBuilder) resize(newBits int, init func(int)) {
+func (b *builder) resize(newBits int, init func(int)) {
 	if b.nullBitmap == nil {
 		init(newBits)
 		return
@@ -58,7 +58,7 @@ func (b *arrayBuilder) resize(newBits int, init func(int)) {
 	}
 }
 
-func (b *arrayBuilder) reserve(elements int, resize func(int)) {
+func (b *builder) reserve(elements int, resize func(int)) {
 	if b.length+elements > b.capacity {
 		newCap := bitutil.NextPowerOf2(b.length + elements)
 		resize(newCap)
@@ -67,7 +67,7 @@ func (b *arrayBuilder) reserve(elements int, resize func(int)) {
 
 // unsafeAppendBoolsToBitmap appends the contents of valid to the validity bitmap.
 // As an optimization, if the valid slice is empty, the next length bits will be set to valid (not null).
-func (b *arrayBuilder) unsafeAppendBoolsToBitmap(valid []bool, length int) {
+func (b *builder) unsafeAppendBoolsToBitmap(valid []bool, length int) {
 	if len(valid) == 0 {
 		b.unsafeSetValid(length)
 		return
@@ -102,7 +102,7 @@ func (b *arrayBuilder) unsafeAppendBoolsToBitmap(valid []bool, length int) {
 }
 
 // unsafeSetValid sets the next length bits to valid in the validity bitmap.
-func (b *arrayBuilder) unsafeSetValid(length int) {
+func (b *builder) unsafeSetValid(length int) {
 	padToByte := min(8-(b.length%8), length)
 	if padToByte == 8 {
 		padToByte = 0
@@ -125,7 +125,7 @@ func (b *arrayBuilder) unsafeSetValid(length int) {
 	b.length = newLength
 }
 
-func (b *arrayBuilder) UnsafeAppendBoolToBitmap(isValid bool) {
+func (b *builder) UnsafeAppendBoolToBitmap(isValid bool) {
 	if isValid {
 		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
 	} else {

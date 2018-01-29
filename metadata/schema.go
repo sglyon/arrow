@@ -1,4 +1,4 @@
-package arrow
+package metadata
 
 type Schema struct {
 	fields      []Field

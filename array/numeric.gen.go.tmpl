@@ -1,0 +1,30 @@
+package array
+
+import (
+	"github.com/influxdata/arrow"
+)
+
+{{range .}}
+
+// A type which represents an immutable sequence of {{or .QualifiedType .Type}} values.
+type {{.Name}} struct {
+	array
+	values []{{or .QualifiedType .Type}}
+}
+
+func New{{.Name}}Data(data *Data) *{{.Name}} {
+	a := &{{.Name}}{}
+	a.setData(data)
+	return a
+}
+
+func (a *{{.Name}}) {{.Name}}Values() []{{or .QualifiedType .Type}} { return a.values }
+
+func (a *{{.Name}}) setData(data *Data) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = arrow.{{.Name}}Traits{}.CastFromBytes(vals.Bytes())
+	}
+}
+{{end}}

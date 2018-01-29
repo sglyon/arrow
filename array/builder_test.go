@@ -1,4 +1,4 @@
-package arrow
+package array
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestArrayBuilder_Init(t *testing.T) {
+func TestBuilder_Init(t *testing.T) {
 	type exp struct{ size int }
 	tests := []struct {
 		name string
@@ -21,7 +21,7 @@ func TestArrayBuilder_Init(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ab := &arrayBuilder{pool: memory.NewGoAllocator()}
+			ab := &builder{pool: memory.NewGoAllocator()}
 			ab.init(test.cap)
 			assert.Equal(t, test.cap, ab.Cap(), "invalid capacity")
 			assert.Equal(t, test.exp.size, ab.nullBitmap.Len(), "invalid length")
@@ -29,8 +29,8 @@ func TestArrayBuilder_Init(t *testing.T) {
 	}
 }
 
-func TestArrayBuilder_UnsafeSetValid(t *testing.T) {
-	ab := &arrayBuilder{pool: memory.NewGoAllocator()}
+func TestBuilder_UnsafeSetValid(t *testing.T) {
+	ab := &builder{pool: memory.NewGoAllocator()}
 	ab.init(32)
 	ab.unsafeAppendBoolsToBitmap(tools.Bools(0, 0, 0, 0, 0), 5)
 	assert.Equal(t, 5, ab.Len())

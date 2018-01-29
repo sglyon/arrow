@@ -1,16 +1,16 @@
-package arrow_test
+package array_test
 
 import (
 	"testing"
 
-	"github.com/influxdata/arrow"
+	"github.com/influxdata/arrow/array"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewFloat64ArrayBuilder(t *testing.T) {
+func TestNewFloat64Builder(t *testing.T) {
 	pool := memory.NewGoAllocator()
-	ab := arrow.NewFloat64ArrayBuilder(pool)
+	ab := array.NewFloat64Builder(pool)
 
 	ab.Append(1)
 	ab.Append(2)

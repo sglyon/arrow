@@ -1,9 +1,10 @@
-package arrow_test
+package array_test
 
 import (
 	"testing"
 
 	"github.com/influxdata/arrow"
+	"github.com/influxdata/arrow/array"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +16,7 @@ type testDataType struct {
 func (d *testDataType) ID() arrow.Type { return d.id }
 func (d *testDataType) Name() string   { panic("implement me") }
 
-func TestMakeArray(t *testing.T) {
+func TestMakeFromData(t *testing.T) {
 	tests := []struct {
 		name     string
 		d        arrow.DataType
@@ -36,14 +37,14 @@ func TestMakeArray(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			var b [4]*memory.Buffer
-			data := arrow.NewArrayData(test.d, 0, b[:], 0)
+			data := array.NewData(test.d, 0, b[:], 0)
 
 			if test.expPanic {
 				assert.PanicsWithValue(t, test.expError, func() {
-					arrow.MakeArray(data)
+					array.MakeFromData(data)
 				})
 			} else {
-				assert.NotNil(t, arrow.MakeArray(data))
+				assert.NotNil(t, array.MakeFromData(data))
 			}
 		})
 	}

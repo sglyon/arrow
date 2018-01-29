@@ -1,17 +1,17 @@
-package arrow_test
+package array_test
 
 import (
 	"testing"
 	"unsafe"
 
-	"github.com/influxdata/arrow"
+	"github.com/influxdata/arrow/array"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestInt32BufferBuilder(t *testing.T) {
 	pool := memory.NewGoAllocator()
-	bb := arrow.NewInt32BufferBuilder(pool)
+	bb := array.NewInt32BufferBuilder(pool)
 	exp := []int32{0x01020304, 0x05060708, 0x090a0b0c, 0x0d0e0f01, 0x02030405, 0x06070809}
 	bb.AppendValues(exp[:3])
 	bb.AppendValues(exp[3:])
@@ -39,7 +39,7 @@ func TestInt32BufferBuilder(t *testing.T) {
 
 func TestInt32BufferBuilder_AppendValue(t *testing.T) {
 	pool := memory.NewGoAllocator()
-	bb := arrow.NewInt32BufferBuilder(pool)
+	bb := array.NewInt32BufferBuilder(pool)
 	exp := []int32{0x01020304, 0x05060708, 0x090a0b0c, 0x0d0e0f01, 0x02030405, 0x06070809}
 	for _, v := range exp {
 		bb.AppendValue(v)

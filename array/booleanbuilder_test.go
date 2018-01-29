@@ -1,17 +1,17 @@
-package arrow_test
+package array_test
 
 import (
 	"testing"
 
-	"github.com/influxdata/arrow"
+	"github.com/influxdata/arrow/array"
 	"github.com/influxdata/arrow/internal/testing/tools"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBooleanArrayBuilder_AppendValues(t *testing.T) {
+func TestBooleanBuilder_AppendValues(t *testing.T) {
 	pool := memory.NewGoAllocator()
-	b := arrow.NewBooleanArrayBuilder(pool)
+	b := array.NewBooleanBuilder(pool)
 
 	exp := tools.Bools(1, 1, 0, 1, 1, 0, 1, 0)
 	got := make([]bool, len(exp))

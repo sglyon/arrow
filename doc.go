@@ -12,12 +12,10 @@ The fundamental data structure in Arrow is an Array, which holds a sequence of v
 consists of memory holding the data and an additional validity bitmap that indicates if the corresponding entry in the
 array is valid (not null). If the array has no null entries, it is possible to omit this bitmap.
 
-An array is typically constructed using one of the type-specific
-
 */
 package arrow
 
-//go:generate go run _tools/tmpl/main.go -i -data=array_numeric.gen.go.tmpldata array_numeric.gen.go.tmpl type_traits_numeric.gen.go.tmpl arraybuilder_numeric.gen.go.tmpl bufferbuilder_numeric.gen.go.tmpl
+//go:generate go run _tools/tmpl/main.go -i -data=numeric.tmpldata type_traits_numeric.gen.go.tmpl array/numeric.gen.go.tmpl array/numericbuilder.gen.go.tmpl array/bufferbuilder_numeric.gen.go.tmpl
 //go:generate go run _tools/tmpl/main.go -i -data=datatype_numeric.gen.go.tmpldata datatype_numeric.gen.go.tmpl
 
 // stringer

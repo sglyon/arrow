@@ -1,4 +1,4 @@
-package arrow
+package array
 
 import "github.com/influxdata/arrow/memory"
 

@@ -3,18 +3,18 @@ package arrow_test
 import (
 	"fmt"
 
-	"github.com/influxdata/arrow"
+	"github.com/influxdata/arrow/array"
 	"github.com/influxdata/arrow/memory"
 )
 
-// This example demonstrates how to build an array of int64 values using an array builder and Append.
+// This example demonstrates how to build an array of int64 values using a builder and Append.
 // Whilst convenient for small arrays,
 func Example_minimal() {
 	// Create an allocator.
 	pool := memory.NewGoAllocator()
 
-	// Create an int64 buffer builder.
-	builder := arrow.NewInt64ArrayBuilder(pool)
+	// Create an int64 array builder.
+	builder := array.NewInt64Builder(pool)
 
 	builder.Append(1)
 	builder.Append(2)
@@ -26,12 +26,12 @@ func Example_minimal() {
 	builder.Append(8)
 
 	// Finish populating the array and reset the builder.
-	array := builder.Finish()
+	ints := builder.Finish()
 
 	// Enumerate the values.
-	for i, v := range array.Int64Values() {
-		fmt.Printf("array[%d] = ", i)
-		if array.IsNull(i) {
+	for i, v := range ints.Int64Values() {
+		fmt.Printf("ints[%d] = ", i)
+		if ints.IsNull(i) {
 			fmt.Println("(null)")
 		} else {
 			fmt.Println(v)
@@ -39,12 +39,12 @@ func Example_minimal() {
 	}
 
 	// Output:
-	// array[0] = 1
-	// array[1] = 2
-	// array[2] = 3
-	// array[3] = (null)
-	// array[4] = 5
-	// array[5] = 6
-	// array[6] = 7
-	// array[7] = 8
+	// ints[0] = 1
+	// ints[1] = 2
+	// ints[2] = 3
+	// ints[3] = (null)
+	// ints[4] = 5
+	// ints[5] = 6
+	// ints[6] = 7
+	// ints[7] = 8
 }
