@@ -25,7 +25,7 @@ func Example_minimal() {
 	builder.Append(7)
 	builder.Append(8)
 
-	// Finish populating the array and reset the builder.
+	// Finish building the int64 array and reset the builder.
 	ints := builder.Finish()
 
 	// Enumerate the values.
