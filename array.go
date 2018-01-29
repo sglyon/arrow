@@ -100,7 +100,7 @@ var (
 		DICTIONARY:        unsupportedArrayType,
 		MAP:               unsupportedArrayType,
 
-		// invalid data types to fill out remaining
+		// invalid data types to fill out array size 2⁵-1
 		28: invalidDataType,
 		29: invalidDataType,
 		30: invalidDataType,
