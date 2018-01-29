@@ -3,8 +3,6 @@
 
 package arrow
 
-// Numeric Array types
-
 // Int32Array represents an immutable sequence of int32 values.
 type Int32Array struct {
 	array

@@ -18,7 +18,7 @@ type arrayBuilder struct {
 	capacity   int
 }
 
-// Len returns the length of the array.
+// Len returns the number of elements in the array.
 func (b *arrayBuilder) Len() int { return b.length }
 
 // Cap returns the total number of elements that can be stored without allocating additional memory.

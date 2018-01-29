@@ -4,7 +4,7 @@ import (
 	"github.com/influxdata/arrow/internal/bitutil"
 )
 
-// Array is the most basic data structure and represents an immutable sequence of values.
+// Array represents an immutable sequence of values.
 type Array interface {
 	// DataType returns the type metadata for this instance.
 	DataType() DataType
@@ -35,11 +35,18 @@ type array struct {
 }
 
 // DataType returns the type metadata for this instance.
-func (a *array) DataType() DataType      { return a.data.typE }
-func (a *array) NullN() int              { return a.data.nullN }
+func (a *array) DataType() DataType { return a.data.typE }
+
+// NullN returns the number of null values in the array.
+func (a *array) NullN() int { return a.data.nullN }
+
+// NullBitmapBytes returns a byte slice of the validity bitmap.
 func (a *array) NullBitmapBytes() []byte { return a.nullBitmapBytes }
-func (a *array) Data() *ArrayData        { return a.data }
-func (a *array) Len() int                { return a.data.length }
+
+func (a *array) Data() *ArrayData { return a.data }
+
+// Len returns the number of elements in the array.
+func (a *array) Len() int { return a.data.length }
 
 // IsNull returns true if value at index is null.
 // NOTE: IsNull will panic if NullBitmapBytes is not empty and 0 > i ≥ Len.

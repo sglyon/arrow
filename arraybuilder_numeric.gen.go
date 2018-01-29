@@ -68,22 +68,23 @@ func (b *Int32ArrayBuilder) Init(capacity int) {
 	b.rawData = Int32Traits{}.CastFromBytes(b.data.Bytes())
 }
 
-// Reserve ensures there is enough space for adding the specified number of elements
+// Reserve ensures there is enough space for appending n elements
 // by checking the capacity and calling Resize if necessary.
-func (b *Int32ArrayBuilder) Reserve(elements int) {
-	b.arrayBuilder.reserve(elements, b.Resize)
+func (b *Int32ArrayBuilder) Reserve(n int) {
+	b.arrayBuilder.reserve(n, b.Resize)
 }
 
-func (b *Int32ArrayBuilder) Resize(capacity int) {
-	if capacity < minBuilderCapacity {
-		capacity = minBuilderCapacity
+// Resize adjusts the length of b to n elements.
+func (b *Int32ArrayBuilder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
 	}
 
 	if b.capacity == 0 {
-		b.Init(capacity)
+		b.Init(n)
 	} else {
-		b.arrayBuilder.resize(capacity, b.Init)
-		b.data.Resize(Int32Traits{}.BytesRequired(capacity))
+		b.arrayBuilder.resize(n, b.Init)
+		b.data.Resize(Int32Traits{}.BytesRequired(n))
 		b.rawData = Int32Traits{}.CastFromBytes(b.data.Bytes())
 	}
 }
@@ -165,22 +166,23 @@ func (b *Int64ArrayBuilder) Init(capacity int) {
 	b.rawData = Int64Traits{}.CastFromBytes(b.data.Bytes())
 }
 
-// Reserve ensures there is enough space for adding the specified number of elements
+// Reserve ensures there is enough space for appending n elements
 // by checking the capacity and calling Resize if necessary.
-func (b *Int64ArrayBuilder) Reserve(elements int) {
-	b.arrayBuilder.reserve(elements, b.Resize)
+func (b *Int64ArrayBuilder) Reserve(n int) {
+	b.arrayBuilder.reserve(n, b.Resize)
 }
 
-func (b *Int64ArrayBuilder) Resize(capacity int) {
-	if capacity < minBuilderCapacity {
-		capacity = minBuilderCapacity
+// Resize adjusts the length of b to n elements.
+func (b *Int64ArrayBuilder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
 	}
 
 	if b.capacity == 0 {
-		b.Init(capacity)
+		b.Init(n)
 	} else {
-		b.arrayBuilder.resize(capacity, b.Init)
-		b.data.Resize(Int64Traits{}.BytesRequired(capacity))
+		b.arrayBuilder.resize(n, b.Init)
+		b.data.Resize(Int64Traits{}.BytesRequired(n))
 		b.rawData = Int64Traits{}.CastFromBytes(b.data.Bytes())
 	}
 }
@@ -262,22 +264,23 @@ func (b *Uint64ArrayBuilder) Init(capacity int) {
 	b.rawData = Uint64Traits{}.CastFromBytes(b.data.Bytes())
 }
 
-// Reserve ensures there is enough space for adding the specified number of elements
+// Reserve ensures there is enough space for appending n elements
 // by checking the capacity and calling Resize if necessary.
-func (b *Uint64ArrayBuilder) Reserve(elements int) {
-	b.arrayBuilder.reserve(elements, b.Resize)
+func (b *Uint64ArrayBuilder) Reserve(n int) {
+	b.arrayBuilder.reserve(n, b.Resize)
 }
 
-func (b *Uint64ArrayBuilder) Resize(capacity int) {
-	if capacity < minBuilderCapacity {
-		capacity = minBuilderCapacity
+// Resize adjusts the length of b to n elements.
+func (b *Uint64ArrayBuilder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
 	}
 
 	if b.capacity == 0 {
-		b.Init(capacity)
+		b.Init(n)
 	} else {
-		b.arrayBuilder.resize(capacity, b.Init)
-		b.data.Resize(Uint64Traits{}.BytesRequired(capacity))
+		b.arrayBuilder.resize(n, b.Init)
+		b.data.Resize(Uint64Traits{}.BytesRequired(n))
 		b.rawData = Uint64Traits{}.CastFromBytes(b.data.Bytes())
 	}
 }
@@ -359,22 +362,23 @@ func (b *Float64ArrayBuilder) Init(capacity int) {
 	b.rawData = Float64Traits{}.CastFromBytes(b.data.Bytes())
 }
 
-// Reserve ensures there is enough space for adding the specified number of elements
+// Reserve ensures there is enough space for appending n elements
 // by checking the capacity and calling Resize if necessary.
-func (b *Float64ArrayBuilder) Reserve(elements int) {
-	b.arrayBuilder.reserve(elements, b.Resize)
+func (b *Float64ArrayBuilder) Reserve(n int) {
+	b.arrayBuilder.reserve(n, b.Resize)
 }
 
-func (b *Float64ArrayBuilder) Resize(capacity int) {
-	if capacity < minBuilderCapacity {
-		capacity = minBuilderCapacity
+// Resize adjusts the length of b to n elements.
+func (b *Float64ArrayBuilder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
 	}
 
 	if b.capacity == 0 {
-		b.Init(capacity)
+		b.Init(n)
 	} else {
-		b.arrayBuilder.resize(capacity, b.Init)
-		b.data.Resize(Float64Traits{}.BytesRequired(capacity))
+		b.arrayBuilder.resize(n, b.Init)
+		b.data.Resize(Float64Traits{}.BytesRequired(n))
 		b.rawData = Float64Traits{}.CastFromBytes(b.data.Bytes())
 	}
 }
@@ -457,22 +461,23 @@ func (b *TimestampArrayBuilder) Init(capacity int) {
 	b.rawData = TimestampTraits{}.CastFromBytes(b.data.Bytes())
 }
 
-// Reserve ensures there is enough space for adding the specified number of elements
+// Reserve ensures there is enough space for appending n elements
 // by checking the capacity and calling Resize if necessary.
-func (b *TimestampArrayBuilder) Reserve(elements int) {
-	b.arrayBuilder.reserve(elements, b.Resize)
+func (b *TimestampArrayBuilder) Reserve(n int) {
+	b.arrayBuilder.reserve(n, b.Resize)
 }
 
-func (b *TimestampArrayBuilder) Resize(capacity int) {
-	if capacity < minBuilderCapacity {
-		capacity = minBuilderCapacity
+// Resize adjusts the length of b to n elements.
+func (b *TimestampArrayBuilder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
 	}
 
 	if b.capacity == 0 {
-		b.Init(capacity)
+		b.Init(n)
 	} else {
-		b.arrayBuilder.resize(capacity, b.Init)
-		b.data.Resize(TimestampTraits{}.BytesRequired(capacity))
+		b.arrayBuilder.resize(n, b.Init)
+		b.data.Resize(TimestampTraits{}.BytesRequired(n))
 		b.rawData = TimestampTraits{}.CastFromBytes(b.data.Bytes())
 	}
 }

@@ -62,22 +62,23 @@ func (b *BooleanArrayBuilder) Init(capacity int) {
 	b.rawData = BooleanTraits{}.CastFromBytes(b.data.Bytes())
 }
 
-// Reserve ensures there is enough space for adding the specified number of elements
+// Reserve ensures there is enough space for appending n elements
 // by checking the capacity and calling Resize if necessary.
-func (b *BooleanArrayBuilder) Reserve(elements int) {
-	b.arrayBuilder.reserve(elements, b.Resize)
+func (b *BooleanArrayBuilder) Reserve(n int) {
+	b.arrayBuilder.reserve(n, b.Resize)
 }
 
-func (b *BooleanArrayBuilder) Resize(capacity int) {
-	if capacity < minBuilderCapacity {
-		capacity = minBuilderCapacity
+// Resize adjusts the length of b to n elements.
+func (b *BooleanArrayBuilder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
 	}
 
 	if b.capacity == 0 {
-		b.Init(capacity)
+		b.Init(n)
 	} else {
-		b.arrayBuilder.resize(capacity, b.Init)
-		b.data.Resize(BooleanTraits{}.BytesRequired(capacity))
+		b.arrayBuilder.resize(n, b.Init)
+		b.data.Resize(BooleanTraits{}.BytesRequired(n))
 		b.rawData = BooleanTraits{}.CastFromBytes(b.data.Bytes())
 	}
 }
