@@ -52,7 +52,7 @@ func (b *bufferBuilder) Advance(length int) {
 	b.length += length
 }
 
-// Append appends the contents of v to the buffer and resizing it if necessary.
+// Append appends the contents of v to the buffer, resizing it if necessary.
 func (b *bufferBuilder) Append(v []byte) {
 	if b.capacity < b.length+len(v) {
 		newCapacity := bitutil.NextPowerOf2(b.length + len(v))
