@@ -1,10 +1,10 @@
 	.text
 	.intel_syntax noprefix
 	.file	"_lib/memory.c"
-	.globl	memset_sse3
+	.globl	memset_sse4
 	.p2align	4, 0x90
-	.type	memset_sse3,@function
-memset_sse3:                            # @memset_sse3
+	.type	memset_sse4,@function
+memset_sse4:                            # @memset_sse4
 # BB#0:
 	push	rbp
 	mov	rbp, rsp
@@ -24,9 +24,8 @@ memset_sse3:                            # @memset_sse3
 # BB#3:
 	movzx	eax, dl
 	movd	xmm0, eax
-	punpcklbw	xmm0, xmm0      # xmm0 = xmm0[0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7]
-	pshuflw	xmm0, xmm0, 0           # xmm0 = xmm0[0,0,0,0,4,5,6,7]
-	pshufd	xmm0, xmm0, 80          # xmm0 = xmm0[0,0,1,1]
+	pxor	xmm1, xmm1
+	pshufb	xmm0, xmm1
 	lea	r9, [r10 - 32]
 	mov	ecx, r9d
 	shr	ecx, 5
@@ -90,7 +89,7 @@ memset_sse3:                            # @memset_sse3
 	pop	rbp
 	ret
 .Lfunc_end0:
-	.size	memset_sse3, .Lfunc_end0-memset_sse3
+	.size	memset_sse4, .Lfunc_end0-memset_sse4
 
 
 	.ident	"Apple LLVM version 9.0.0 (clang-900.0.39.2)"

@@ -16,6 +16,6 @@ func memory_memset_avx2(buf []byte, c byte) {
 	if len(buf) > 2000 || isMultipleOfPowerOf2(len(buf), 256) {
 		_memset_avx2(p1, p2, p3)
 	} else {
-		_memset_sse3(p1, p2, p3)
+		_memset_sse4(p1, p2, p3)
 	}
 }
