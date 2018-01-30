@@ -2,6 +2,8 @@ package bitutil
 
 import (
 	"math/bits"
+	"reflect"
+	"unsafe"
 )
 
 var (
@@ -15,23 +17,65 @@ func NextPowerOf2(x int) int { return 1 << uint(bits.Len(uint(x))) }
 // CeilByte rounds size to the next multiple of 8.
 func CeilByte(size int) int { return (size + 7) &^ 7 }
 
-// BitIsSet returns true if the bit at index i is set (1).
-func BitIsSet(bits []byte, i int) bool { return (bits[uint(i)/8] & BitMask[byte(i)%8]) != 0 }
+// BitIsSet returns true if the bit at index i in buf is set (1).
+func BitIsSet(buf []byte, i int) bool { return (buf[uint(i)/8] & BitMask[byte(i)%8]) != 0 }
 
-// BitIsNotSet returns true if the bit at index i is not set (0).
-func BitIsNotSet(bits []byte, i int) bool { return (bits[uint(i)/8] & BitMask[byte(i)%8]) == 0 }
+// BitIsNotSet returns true if the bit at index i in buf is not set (0).
+func BitIsNotSet(buf []byte, i int) bool { return (buf[uint(i)/8] & BitMask[byte(i)%8]) == 0 }
 
-// SetBit sets the bit at index i to 1.
-func SetBit(bits []byte, i int) { bits[uint(i)/8] |= BitMask[byte(i)%8] }
+// SetBit sets the bit at index i in buf to 1.
+func SetBit(buf []byte, i int) { buf[uint(i)/8] |= BitMask[byte(i)%8] }
 
-// ClearBit sets the bit at index i to 0.
-func ClearBit(bits []byte, i int) { bits[uint(i)/8] &= FlippedBitMask[byte(i)%8] }
+// ClearBit sets the bit at index i in buf to 0.
+func ClearBit(buf []byte, i int) { buf[uint(i)/8] &= FlippedBitMask[byte(i)%8] }
 
-// SetBitTo sets the bit at index i to val.
-func SetBitTo(bits []byte, i int, val bool) {
+// SetBitTo sets the bit at index i in buf to val.
+func SetBitTo(buf []byte, i int, val bool) {
 	if val {
-		SetBit(bits, i)
+		SetBit(buf, i)
 	} else {
-		ClearBit(bits, i)
+		ClearBit(buf, i)
 	}
+}
+
+// CountSetBits counts the number of 1's in buf up to n bits.
+func CountSetBits(buf []byte, n int) int {
+	popLen := uint64SizeBytes * 8
+
+	count := 0
+
+	uint64Counts := n / popLen
+	uints := bytesToUint64(buf[:uint64Counts*8])
+	for _, v := range uints {
+		count += bits.OnesCount64(v)
+	}
+
+	for _, v := range buf[(uint64Counts * 8) : n/8] {
+		count += bits.OnesCount8(v)
+	}
+
+	// tail bits
+	for i := n &^ 0x7; i < n; i++ {
+		if BitIsSet(buf, i) {
+			count++
+		}
+	}
+
+	return count
+}
+
+const (
+	uint64SizeBytes = int(unsafe.Sizeof(uint64(0)))
+)
+
+func bytesToUint64(b []byte) []uint64 {
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+
+	var res []uint64
+	s := (*reflect.SliceHeader)(unsafe.Pointer(&res))
+	s.Data = h.Data
+	s.Len = h.Len / uint64SizeBytes
+	s.Cap = h.Cap / uint64SizeBytes
+
+	return res
 }
