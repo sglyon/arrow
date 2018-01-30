@@ -82,6 +82,12 @@ func checkEnvironment() {
 				X86.HasAVX2 = false
 			case "AVX":
 				X86.HasAVX = false
+			case "SSE":
+				X86.HasSSE42 = false
+				X86.HasSSE41 = false
+				X86.HasSSSE3 = false
+				X86.HasSSE3 = false
+				X86.HasSSE2 = false
 			case "SSE4":
 				X86.HasSSE42 = false
 				X86.HasSSE41 = false

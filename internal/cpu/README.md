@@ -14,8 +14,8 @@ the running process. It should be a comma-separate list of upper-case strings as
 | `ALL`    | Disable all CPU extensions and fall back to Go implementation |
 | `AVX2`   | Disable AVX2 optimizations |  
 | `AVX`    | Disable AVX optimizations |  
-| `SSE42`  | Disable SSE42 optimizations |  
-| `SSE41`  | Disable SSE41 optimizations |  
+| `SSE`    | Disable all SSE optimizations |  
+| `SSE4`   | Disable SSE42, SSE41 optimizations |  
 | `SSSE3`  | Disable supplemental SSE3 optimizations |  
 | `SSE3`   | Disable SSE3 optimizations |  
 | `SSE2`   | Disable SSE2 optimizations |
