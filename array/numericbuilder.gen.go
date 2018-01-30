@@ -9,105 +9,6 @@ import (
 	"github.com/influxdata/arrow/memory"
 )
 
-type Int32Builder struct {
-	builder
-
-	data    *memory.ResizableBuffer
-	rawData []int32
-}
-
-func NewInt32Builder(mem memory.Allocator) *Int32Builder {
-	return &Int32Builder{builder: builder{mem: mem}}
-}
-
-func (b *Int32Builder) Append(v int32) {
-	b.Reserve(1)
-	b.UnsafeAppend(v)
-}
-
-func (b *Int32Builder) AppendNull() {
-	b.Reserve(1)
-	b.UnsafeAppendBoolToBitmap(false)
-}
-
-func (b *Int32Builder) UnsafeAppend(v int32) {
-	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
-	b.rawData[b.length] = v
-	b.length++
-}
-
-func (b *Int32Builder) UnsafeAppendBoolToBitmap(isValid bool) {
-	if isValid {
-		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
-	} else {
-		b.nullN++
-	}
-	b.length++
-}
-
-// AppendValues will append the values in the v slice. The valid slice determines which values
-// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
-// all values in v are appended and considered valid.
-func (b *Int32Builder) AppendValues(v []int32, valid []bool) {
-	if len(v) != len(valid) && len(valid) != 0 {
-		panic("len(v) != len(valid) && len(valid) != 0")
-	}
-
-	b.Reserve(len(v))
-	if len(v) > 0 {
-		arrow.Int32Traits.Copy(b.rawData[b.length:], v)
-	}
-	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
-}
-
-func (b *Int32Builder) init(capacity int) {
-	b.builder.init(capacity)
-
-	b.data = memory.NewResizableBuffer(b.mem)
-	bytesN := arrow.Int32Traits.BytesRequired(capacity)
-	b.data.Resize(bytesN)
-	b.rawData = arrow.Int32Traits.CastFromBytes(b.data.Bytes())
-}
-
-// Reserve ensures there is enough space for appending n elements
-// by checking the capacity and calling Resize if necessary.
-func (b *Int32Builder) Reserve(n int) {
-	b.builder.reserve(n, b.Resize)
-}
-
-// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
-// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
-func (b *Int32Builder) Resize(n int) {
-	if n < minBuilderCapacity {
-		n = minBuilderCapacity
-	}
-
-	if b.capacity == 0 {
-		b.init(n)
-	} else {
-		b.builder.resize(n, b.init)
-		b.data.Resize(arrow.Int32Traits.BytesRequired(n))
-		b.rawData = arrow.Int32Traits.CastFromBytes(b.data.Bytes())
-	}
-}
-
-func (b *Int32Builder) Finish() *Int32 {
-	data := b.finishInternal()
-	return NewInt32Data(data)
-}
-
-func (b *Int32Builder) finishInternal() *Data {
-	bytesRequired := arrow.Int32Traits.BytesRequired(b.length)
-	if bytesRequired > 0 && bytesRequired < b.data.Len() {
-		// trim buffers
-		b.data.Resize(bytesRequired)
-	}
-	res := NewData(arrow.PrimitiveTypes.Int32, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
-	b.reset()
-
-	return res
-}
-
 type Int64Builder struct {
 	builder
 
@@ -400,6 +301,699 @@ func (b *Float64Builder) finishInternal() *Data {
 		b.data.Resize(bytesRequired)
 	}
 	res := NewData(arrow.PrimitiveTypes.Float64, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	b.reset()
+
+	return res
+}
+
+type Int32Builder struct {
+	builder
+
+	data    *memory.ResizableBuffer
+	rawData []int32
+}
+
+func NewInt32Builder(mem memory.Allocator) *Int32Builder {
+	return &Int32Builder{builder: builder{mem: mem}}
+}
+
+func (b *Int32Builder) Append(v int32) {
+	b.Reserve(1)
+	b.UnsafeAppend(v)
+}
+
+func (b *Int32Builder) AppendNull() {
+	b.Reserve(1)
+	b.UnsafeAppendBoolToBitmap(false)
+}
+
+func (b *Int32Builder) UnsafeAppend(v int32) {
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	b.rawData[b.length] = v
+	b.length++
+}
+
+func (b *Int32Builder) UnsafeAppendBoolToBitmap(isValid bool) {
+	if isValid {
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	} else {
+		b.nullN++
+	}
+	b.length++
+}
+
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *Int32Builder) AppendValues(v []int32, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	if len(v) > 0 {
+		arrow.Int32Traits.Copy(b.rawData[b.length:], v)
+	}
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
+}
+
+func (b *Int32Builder) init(capacity int) {
+	b.builder.init(capacity)
+
+	b.data = memory.NewResizableBuffer(b.mem)
+	bytesN := arrow.Int32Traits.BytesRequired(capacity)
+	b.data.Resize(bytesN)
+	b.rawData = arrow.Int32Traits.CastFromBytes(b.data.Bytes())
+}
+
+// Reserve ensures there is enough space for appending n elements
+// by checking the capacity and calling Resize if necessary.
+func (b *Int32Builder) Reserve(n int) {
+	b.builder.reserve(n, b.Resize)
+}
+
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
+func (b *Int32Builder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
+	}
+
+	if b.capacity == 0 {
+		b.init(n)
+	} else {
+		b.builder.resize(n, b.init)
+		b.data.Resize(arrow.Int32Traits.BytesRequired(n))
+		b.rawData = arrow.Int32Traits.CastFromBytes(b.data.Bytes())
+	}
+}
+
+func (b *Int32Builder) Finish() *Int32 {
+	data := b.finishInternal()
+	return NewInt32Data(data)
+}
+
+func (b *Int32Builder) finishInternal() *Data {
+	bytesRequired := arrow.Int32Traits.BytesRequired(b.length)
+	if bytesRequired > 0 && bytesRequired < b.data.Len() {
+		// trim buffers
+		b.data.Resize(bytesRequired)
+	}
+	res := NewData(arrow.PrimitiveTypes.Int32, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	b.reset()
+
+	return res
+}
+
+type Uint32Builder struct {
+	builder
+
+	data    *memory.ResizableBuffer
+	rawData []uint32
+}
+
+func NewUint32Builder(mem memory.Allocator) *Uint32Builder {
+	return &Uint32Builder{builder: builder{mem: mem}}
+}
+
+func (b *Uint32Builder) Append(v uint32) {
+	b.Reserve(1)
+	b.UnsafeAppend(v)
+}
+
+func (b *Uint32Builder) AppendNull() {
+	b.Reserve(1)
+	b.UnsafeAppendBoolToBitmap(false)
+}
+
+func (b *Uint32Builder) UnsafeAppend(v uint32) {
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	b.rawData[b.length] = v
+	b.length++
+}
+
+func (b *Uint32Builder) UnsafeAppendBoolToBitmap(isValid bool) {
+	if isValid {
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	} else {
+		b.nullN++
+	}
+	b.length++
+}
+
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *Uint32Builder) AppendValues(v []uint32, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	if len(v) > 0 {
+		arrow.Uint32Traits.Copy(b.rawData[b.length:], v)
+	}
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
+}
+
+func (b *Uint32Builder) init(capacity int) {
+	b.builder.init(capacity)
+
+	b.data = memory.NewResizableBuffer(b.mem)
+	bytesN := arrow.Uint32Traits.BytesRequired(capacity)
+	b.data.Resize(bytesN)
+	b.rawData = arrow.Uint32Traits.CastFromBytes(b.data.Bytes())
+}
+
+// Reserve ensures there is enough space for appending n elements
+// by checking the capacity and calling Resize if necessary.
+func (b *Uint32Builder) Reserve(n int) {
+	b.builder.reserve(n, b.Resize)
+}
+
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
+func (b *Uint32Builder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
+	}
+
+	if b.capacity == 0 {
+		b.init(n)
+	} else {
+		b.builder.resize(n, b.init)
+		b.data.Resize(arrow.Uint32Traits.BytesRequired(n))
+		b.rawData = arrow.Uint32Traits.CastFromBytes(b.data.Bytes())
+	}
+}
+
+func (b *Uint32Builder) Finish() *Uint32 {
+	data := b.finishInternal()
+	return NewUint32Data(data)
+}
+
+func (b *Uint32Builder) finishInternal() *Data {
+	bytesRequired := arrow.Uint32Traits.BytesRequired(b.length)
+	if bytesRequired > 0 && bytesRequired < b.data.Len() {
+		// trim buffers
+		b.data.Resize(bytesRequired)
+	}
+	res := NewData(arrow.PrimitiveTypes.Uint32, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	b.reset()
+
+	return res
+}
+
+type Float32Builder struct {
+	builder
+
+	data    *memory.ResizableBuffer
+	rawData []float32
+}
+
+func NewFloat32Builder(mem memory.Allocator) *Float32Builder {
+	return &Float32Builder{builder: builder{mem: mem}}
+}
+
+func (b *Float32Builder) Append(v float32) {
+	b.Reserve(1)
+	b.UnsafeAppend(v)
+}
+
+func (b *Float32Builder) AppendNull() {
+	b.Reserve(1)
+	b.UnsafeAppendBoolToBitmap(false)
+}
+
+func (b *Float32Builder) UnsafeAppend(v float32) {
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	b.rawData[b.length] = v
+	b.length++
+}
+
+func (b *Float32Builder) UnsafeAppendBoolToBitmap(isValid bool) {
+	if isValid {
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	} else {
+		b.nullN++
+	}
+	b.length++
+}
+
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *Float32Builder) AppendValues(v []float32, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	if len(v) > 0 {
+		arrow.Float32Traits.Copy(b.rawData[b.length:], v)
+	}
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
+}
+
+func (b *Float32Builder) init(capacity int) {
+	b.builder.init(capacity)
+
+	b.data = memory.NewResizableBuffer(b.mem)
+	bytesN := arrow.Float32Traits.BytesRequired(capacity)
+	b.data.Resize(bytesN)
+	b.rawData = arrow.Float32Traits.CastFromBytes(b.data.Bytes())
+}
+
+// Reserve ensures there is enough space for appending n elements
+// by checking the capacity and calling Resize if necessary.
+func (b *Float32Builder) Reserve(n int) {
+	b.builder.reserve(n, b.Resize)
+}
+
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
+func (b *Float32Builder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
+	}
+
+	if b.capacity == 0 {
+		b.init(n)
+	} else {
+		b.builder.resize(n, b.init)
+		b.data.Resize(arrow.Float32Traits.BytesRequired(n))
+		b.rawData = arrow.Float32Traits.CastFromBytes(b.data.Bytes())
+	}
+}
+
+func (b *Float32Builder) Finish() *Float32 {
+	data := b.finishInternal()
+	return NewFloat32Data(data)
+}
+
+func (b *Float32Builder) finishInternal() *Data {
+	bytesRequired := arrow.Float32Traits.BytesRequired(b.length)
+	if bytesRequired > 0 && bytesRequired < b.data.Len() {
+		// trim buffers
+		b.data.Resize(bytesRequired)
+	}
+	res := NewData(arrow.PrimitiveTypes.Float32, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	b.reset()
+
+	return res
+}
+
+type Int16Builder struct {
+	builder
+
+	data    *memory.ResizableBuffer
+	rawData []int16
+}
+
+func NewInt16Builder(mem memory.Allocator) *Int16Builder {
+	return &Int16Builder{builder: builder{mem: mem}}
+}
+
+func (b *Int16Builder) Append(v int16) {
+	b.Reserve(1)
+	b.UnsafeAppend(v)
+}
+
+func (b *Int16Builder) AppendNull() {
+	b.Reserve(1)
+	b.UnsafeAppendBoolToBitmap(false)
+}
+
+func (b *Int16Builder) UnsafeAppend(v int16) {
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	b.rawData[b.length] = v
+	b.length++
+}
+
+func (b *Int16Builder) UnsafeAppendBoolToBitmap(isValid bool) {
+	if isValid {
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	} else {
+		b.nullN++
+	}
+	b.length++
+}
+
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *Int16Builder) AppendValues(v []int16, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	if len(v) > 0 {
+		arrow.Int16Traits.Copy(b.rawData[b.length:], v)
+	}
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
+}
+
+func (b *Int16Builder) init(capacity int) {
+	b.builder.init(capacity)
+
+	b.data = memory.NewResizableBuffer(b.mem)
+	bytesN := arrow.Int16Traits.BytesRequired(capacity)
+	b.data.Resize(bytesN)
+	b.rawData = arrow.Int16Traits.CastFromBytes(b.data.Bytes())
+}
+
+// Reserve ensures there is enough space for appending n elements
+// by checking the capacity and calling Resize if necessary.
+func (b *Int16Builder) Reserve(n int) {
+	b.builder.reserve(n, b.Resize)
+}
+
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
+func (b *Int16Builder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
+	}
+
+	if b.capacity == 0 {
+		b.init(n)
+	} else {
+		b.builder.resize(n, b.init)
+		b.data.Resize(arrow.Int16Traits.BytesRequired(n))
+		b.rawData = arrow.Int16Traits.CastFromBytes(b.data.Bytes())
+	}
+}
+
+func (b *Int16Builder) Finish() *Int16 {
+	data := b.finishInternal()
+	return NewInt16Data(data)
+}
+
+func (b *Int16Builder) finishInternal() *Data {
+	bytesRequired := arrow.Int16Traits.BytesRequired(b.length)
+	if bytesRequired > 0 && bytesRequired < b.data.Len() {
+		// trim buffers
+		b.data.Resize(bytesRequired)
+	}
+	res := NewData(arrow.PrimitiveTypes.Int16, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	b.reset()
+
+	return res
+}
+
+type Uint16Builder struct {
+	builder
+
+	data    *memory.ResizableBuffer
+	rawData []uint16
+}
+
+func NewUint16Builder(mem memory.Allocator) *Uint16Builder {
+	return &Uint16Builder{builder: builder{mem: mem}}
+}
+
+func (b *Uint16Builder) Append(v uint16) {
+	b.Reserve(1)
+	b.UnsafeAppend(v)
+}
+
+func (b *Uint16Builder) AppendNull() {
+	b.Reserve(1)
+	b.UnsafeAppendBoolToBitmap(false)
+}
+
+func (b *Uint16Builder) UnsafeAppend(v uint16) {
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	b.rawData[b.length] = v
+	b.length++
+}
+
+func (b *Uint16Builder) UnsafeAppendBoolToBitmap(isValid bool) {
+	if isValid {
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	} else {
+		b.nullN++
+	}
+	b.length++
+}
+
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *Uint16Builder) AppendValues(v []uint16, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	if len(v) > 0 {
+		arrow.Uint16Traits.Copy(b.rawData[b.length:], v)
+	}
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
+}
+
+func (b *Uint16Builder) init(capacity int) {
+	b.builder.init(capacity)
+
+	b.data = memory.NewResizableBuffer(b.mem)
+	bytesN := arrow.Uint16Traits.BytesRequired(capacity)
+	b.data.Resize(bytesN)
+	b.rawData = arrow.Uint16Traits.CastFromBytes(b.data.Bytes())
+}
+
+// Reserve ensures there is enough space for appending n elements
+// by checking the capacity and calling Resize if necessary.
+func (b *Uint16Builder) Reserve(n int) {
+	b.builder.reserve(n, b.Resize)
+}
+
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
+func (b *Uint16Builder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
+	}
+
+	if b.capacity == 0 {
+		b.init(n)
+	} else {
+		b.builder.resize(n, b.init)
+		b.data.Resize(arrow.Uint16Traits.BytesRequired(n))
+		b.rawData = arrow.Uint16Traits.CastFromBytes(b.data.Bytes())
+	}
+}
+
+func (b *Uint16Builder) Finish() *Uint16 {
+	data := b.finishInternal()
+	return NewUint16Data(data)
+}
+
+func (b *Uint16Builder) finishInternal() *Data {
+	bytesRequired := arrow.Uint16Traits.BytesRequired(b.length)
+	if bytesRequired > 0 && bytesRequired < b.data.Len() {
+		// trim buffers
+		b.data.Resize(bytesRequired)
+	}
+	res := NewData(arrow.PrimitiveTypes.Uint16, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	b.reset()
+
+	return res
+}
+
+type Int8Builder struct {
+	builder
+
+	data    *memory.ResizableBuffer
+	rawData []int8
+}
+
+func NewInt8Builder(mem memory.Allocator) *Int8Builder {
+	return &Int8Builder{builder: builder{mem: mem}}
+}
+
+func (b *Int8Builder) Append(v int8) {
+	b.Reserve(1)
+	b.UnsafeAppend(v)
+}
+
+func (b *Int8Builder) AppendNull() {
+	b.Reserve(1)
+	b.UnsafeAppendBoolToBitmap(false)
+}
+
+func (b *Int8Builder) UnsafeAppend(v int8) {
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	b.rawData[b.length] = v
+	b.length++
+}
+
+func (b *Int8Builder) UnsafeAppendBoolToBitmap(isValid bool) {
+	if isValid {
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	} else {
+		b.nullN++
+	}
+	b.length++
+}
+
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *Int8Builder) AppendValues(v []int8, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	if len(v) > 0 {
+		arrow.Int8Traits.Copy(b.rawData[b.length:], v)
+	}
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
+}
+
+func (b *Int8Builder) init(capacity int) {
+	b.builder.init(capacity)
+
+	b.data = memory.NewResizableBuffer(b.mem)
+	bytesN := arrow.Int8Traits.BytesRequired(capacity)
+	b.data.Resize(bytesN)
+	b.rawData = arrow.Int8Traits.CastFromBytes(b.data.Bytes())
+}
+
+// Reserve ensures there is enough space for appending n elements
+// by checking the capacity and calling Resize if necessary.
+func (b *Int8Builder) Reserve(n int) {
+	b.builder.reserve(n, b.Resize)
+}
+
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
+func (b *Int8Builder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
+	}
+
+	if b.capacity == 0 {
+		b.init(n)
+	} else {
+		b.builder.resize(n, b.init)
+		b.data.Resize(arrow.Int8Traits.BytesRequired(n))
+		b.rawData = arrow.Int8Traits.CastFromBytes(b.data.Bytes())
+	}
+}
+
+func (b *Int8Builder) Finish() *Int8 {
+	data := b.finishInternal()
+	return NewInt8Data(data)
+}
+
+func (b *Int8Builder) finishInternal() *Data {
+	bytesRequired := arrow.Int8Traits.BytesRequired(b.length)
+	if bytesRequired > 0 && bytesRequired < b.data.Len() {
+		// trim buffers
+		b.data.Resize(bytesRequired)
+	}
+	res := NewData(arrow.PrimitiveTypes.Int8, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	b.reset()
+
+	return res
+}
+
+type Uint8Builder struct {
+	builder
+
+	data    *memory.ResizableBuffer
+	rawData []uint8
+}
+
+func NewUint8Builder(mem memory.Allocator) *Uint8Builder {
+	return &Uint8Builder{builder: builder{mem: mem}}
+}
+
+func (b *Uint8Builder) Append(v uint8) {
+	b.Reserve(1)
+	b.UnsafeAppend(v)
+}
+
+func (b *Uint8Builder) AppendNull() {
+	b.Reserve(1)
+	b.UnsafeAppendBoolToBitmap(false)
+}
+
+func (b *Uint8Builder) UnsafeAppend(v uint8) {
+	bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	b.rawData[b.length] = v
+	b.length++
+}
+
+func (b *Uint8Builder) UnsafeAppendBoolToBitmap(isValid bool) {
+	if isValid {
+		bitutil.SetBit(b.nullBitmap.Bytes(), b.length)
+	} else {
+		b.nullN++
+	}
+	b.length++
+}
+
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *Uint8Builder) AppendValues(v []uint8, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	if len(v) > 0 {
+		arrow.Uint8Traits.Copy(b.rawData[b.length:], v)
+	}
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
+}
+
+func (b *Uint8Builder) init(capacity int) {
+	b.builder.init(capacity)
+
+	b.data = memory.NewResizableBuffer(b.mem)
+	bytesN := arrow.Uint8Traits.BytesRequired(capacity)
+	b.data.Resize(bytesN)
+	b.rawData = arrow.Uint8Traits.CastFromBytes(b.data.Bytes())
+}
+
+// Reserve ensures there is enough space for appending n elements
+// by checking the capacity and calling Resize if necessary.
+func (b *Uint8Builder) Reserve(n int) {
+	b.builder.reserve(n, b.Resize)
+}
+
+// Resize adjusts the space allocated by b to n elements. If n is greater than b.Cap(),
+// additional memory will be allocated. If n is smaller, the allocated memory may reduced.
+func (b *Uint8Builder) Resize(n int) {
+	if n < minBuilderCapacity {
+		n = minBuilderCapacity
+	}
+
+	if b.capacity == 0 {
+		b.init(n)
+	} else {
+		b.builder.resize(n, b.init)
+		b.data.Resize(arrow.Uint8Traits.BytesRequired(n))
+		b.rawData = arrow.Uint8Traits.CastFromBytes(b.data.Bytes())
+	}
+}
+
+func (b *Uint8Builder) Finish() *Uint8 {
+	data := b.finishInternal()
+	return NewUint8Data(data)
+}
+
+func (b *Uint8Builder) finishInternal() *Data {
+	bytesRequired := arrow.Uint8Traits.BytesRequired(b.length)
+	if bytesRequired > 0 && bytesRequired < b.data.Len() {
+		// trim buffers
+		b.data.Resize(bytesRequired)
+	}
+	res := NewData(arrow.PrimitiveTypes.Uint8, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
 	b.reset()
 
 	return res

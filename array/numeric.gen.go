@@ -7,28 +7,6 @@ import (
 	"github.com/influxdata/arrow"
 )
 
-// A type which represents an immutable sequence of int32 values.
-type Int32 struct {
-	array
-	values []int32
-}
-
-func NewInt32Data(data *Data) *Int32 {
-	a := &Int32{}
-	a.setData(data)
-	return a
-}
-
-func (a *Int32) Int32Values() []int32 { return a.values }
-
-func (a *Int32) setData(data *Data) {
-	a.array.setData(data)
-	vals := data.buffers[1]
-	if vals != nil {
-		a.values = arrow.Int32Traits.CastFromBytes(vals.Bytes())
-	}
-}
-
 // A type which represents an immutable sequence of int64 values.
 type Int64 struct {
 	array
@@ -92,6 +70,160 @@ func (a *Float64) setData(data *Data) {
 	vals := data.buffers[1]
 	if vals != nil {
 		a.values = arrow.Float64Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+// A type which represents an immutable sequence of int32 values.
+type Int32 struct {
+	array
+	values []int32
+}
+
+func NewInt32Data(data *Data) *Int32 {
+	a := &Int32{}
+	a.setData(data)
+	return a
+}
+
+func (a *Int32) Int32Values() []int32 { return a.values }
+
+func (a *Int32) setData(data *Data) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = arrow.Int32Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+// A type which represents an immutable sequence of uint32 values.
+type Uint32 struct {
+	array
+	values []uint32
+}
+
+func NewUint32Data(data *Data) *Uint32 {
+	a := &Uint32{}
+	a.setData(data)
+	return a
+}
+
+func (a *Uint32) Uint32Values() []uint32 { return a.values }
+
+func (a *Uint32) setData(data *Data) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = arrow.Uint32Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+// A type which represents an immutable sequence of float32 values.
+type Float32 struct {
+	array
+	values []float32
+}
+
+func NewFloat32Data(data *Data) *Float32 {
+	a := &Float32{}
+	a.setData(data)
+	return a
+}
+
+func (a *Float32) Float32Values() []float32 { return a.values }
+
+func (a *Float32) setData(data *Data) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = arrow.Float32Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+// A type which represents an immutable sequence of int16 values.
+type Int16 struct {
+	array
+	values []int16
+}
+
+func NewInt16Data(data *Data) *Int16 {
+	a := &Int16{}
+	a.setData(data)
+	return a
+}
+
+func (a *Int16) Int16Values() []int16 { return a.values }
+
+func (a *Int16) setData(data *Data) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = arrow.Int16Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+// A type which represents an immutable sequence of uint16 values.
+type Uint16 struct {
+	array
+	values []uint16
+}
+
+func NewUint16Data(data *Data) *Uint16 {
+	a := &Uint16{}
+	a.setData(data)
+	return a
+}
+
+func (a *Uint16) Uint16Values() []uint16 { return a.values }
+
+func (a *Uint16) setData(data *Data) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = arrow.Uint16Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+// A type which represents an immutable sequence of int8 values.
+type Int8 struct {
+	array
+	values []int8
+}
+
+func NewInt8Data(data *Data) *Int8 {
+	a := &Int8{}
+	a.setData(data)
+	return a
+}
+
+func (a *Int8) Int8Values() []int8 { return a.values }
+
+func (a *Int8) setData(data *Data) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = arrow.Int8Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+// A type which represents an immutable sequence of uint8 values.
+type Uint8 struct {
+	array
+	values []uint8
+}
+
+func NewUint8Data(data *Data) *Uint8 {
+	a := &Uint8{}
+	a.setData(data)
+	return a
+}
+
+func (a *Uint8) Uint8Values() []uint8 { return a.values }
+
+func (a *Uint8) setData(data *Data) {
+	a.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		a.values = arrow.Uint8Traits.CastFromBytes(vals.Bytes())
 	}
 }
 
