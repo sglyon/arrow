@@ -49,6 +49,6 @@ func (a *Binary) setData(data *Data) {
 	}
 
 	if valueOffsets := data.buffers[1]; valueOffsets != nil {
-		a.valueOffsets = arrow.Int32Traits{}.CastFromBytes(valueOffsets.Bytes())
+		a.valueOffsets = arrow.Int32Traits.CastFromBytes(valueOffsets.Bytes())
 	}
 }

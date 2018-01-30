@@ -62,7 +62,7 @@ func (b *{{.Name}}Builder) AppendValues(v []{{or .QualifiedType .Type}}, valid [
 
 	b.Reserve(len(v))
 	if len(v) > 0 {
-		arrow.{{.Name}}Traits{}.Copy(b.rawData[b.length:], v)
+		arrow.{{.Name}}Traits.Copy(b.rawData[b.length:], v)
 	}
 	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
@@ -71,9 +71,9 @@ func (b *{{.Name}}Builder) init(capacity int) {
 	b.builder.init(capacity)
 
 	b.data = memory.NewResizableBuffer(b.mem)
-	bytesN := arrow.{{.Name}}Traits{}.BytesRequired(capacity)
+	bytesN := arrow.{{.Name}}Traits.BytesRequired(capacity)
 	b.data.Resize(bytesN)
-	b.rawData = arrow.{{.Name}}Traits{}.CastFromBytes(b.data.Bytes())
+	b.rawData = arrow.{{.Name}}Traits.CastFromBytes(b.data.Bytes())
 }
 
 // Reserve ensures there is enough space for appending n elements
@@ -93,8 +93,8 @@ func (b *{{.Name}}Builder) Resize(n int) {
 		b.init(n)
 	} else {
 		b.builder.resize(n, b.init)
-		b.data.Resize(arrow.{{.Name}}Traits{}.BytesRequired(n))
-		b.rawData = arrow.{{.Name}}Traits{}.CastFromBytes(b.data.Bytes())
+		b.data.Resize(arrow.{{.Name}}Traits.BytesRequired(n))
+		b.rawData = arrow.{{.Name}}Traits.CastFromBytes(b.data.Bytes())
 	}
 }
 
@@ -104,7 +104,7 @@ func (b *{{.Name}}Builder) Finish() *{{.Name}} {
 }
 
 func (b *{{.Name}}Builder) finishInternal() *Data {
-	bytesRequired := arrow.{{.Name}}Traits{}.BytesRequired(b.length)
+	bytesRequired := arrow.{{.Name}}Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)

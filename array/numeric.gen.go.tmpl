@@ -24,7 +24,7 @@ func (a *{{.Name}}) setData(data *Data) {
 	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
-		a.values = arrow.{{.Name}}Traits{}.CastFromBytes(vals.Bytes())
+		a.values = arrow.{{.Name}}Traits.CastFromBytes(vals.Bytes())
 	}
 }
 {{end}}

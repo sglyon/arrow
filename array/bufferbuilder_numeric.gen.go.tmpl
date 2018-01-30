@@ -17,13 +17,13 @@ func New{{.Name}}BufferBuilder(mem memory.Allocator) *{{.Name}}BufferBuilder {
 }
 
 // AppendValues appends the contents of v to the buffer, growing the buffer as needed.
-func (b *{{.Name}}BufferBuilder) AppendValues(v []{{.Type}}) { b.Append(arrow.{{.Name}}Traits{}.CastToBytes(v)) }
+func (b *{{.Name}}BufferBuilder) AppendValues(v []{{.Type}}) { b.Append(arrow.{{.Name}}Traits.CastToBytes(v)) }
 
 // Values returns a slice of length b.Len().
 // The slice is only valid for use until the next buffer modification. That is, until the next call
 // to Advance, Reset, Finish or any Append function. The slice aliases the buffer content at least until the next
 // buffer modification.
-func (b *{{.Name}}BufferBuilder) Values() []{{.Type}}           { return arrow.{{.Name}}Traits{}.CastFromBytes(b.Bytes()) }
+func (b *{{.Name}}BufferBuilder) Values() []{{.Type}}           { return arrow.{{.Name}}Traits.CastFromBytes(b.Bytes()) }
 
 // Value returns the {{.Type}} element at the index i. Value will panic if i is negative or ≥ Len.
 func (b *{{.Name}}BufferBuilder) Value(i int) {{.Type}}         { return b.Values()[i] }
@@ -37,7 +37,7 @@ func (b *{{.Name}}BufferBuilder) AppendValue(v {{.Type}}) {
 		newCapacity := bitutil.NextPowerOf2(b.length + arrow.{{.Name}}SizeBytes)
 		b.resize(newCapacity)
 	}
-	arrow.{{.Name}}Traits{}.PutValue(b.bytes[b.length:], v)
+	arrow.{{.Name}}Traits.PutValue(b.bytes[b.length:], v)
 	b.length+=arrow.{{.Name}}SizeBytes
 }
 {{end}}

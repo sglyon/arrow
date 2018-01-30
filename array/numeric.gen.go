@@ -25,7 +25,7 @@ func (a *Int32) setData(data *Data) {
 	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
-		a.values = arrow.Int32Traits{}.CastFromBytes(vals.Bytes())
+		a.values = arrow.Int32Traits.CastFromBytes(vals.Bytes())
 	}
 }
 
@@ -47,7 +47,7 @@ func (a *Int64) setData(data *Data) {
 	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
-		a.values = arrow.Int64Traits{}.CastFromBytes(vals.Bytes())
+		a.values = arrow.Int64Traits.CastFromBytes(vals.Bytes())
 	}
 }
 
@@ -69,7 +69,7 @@ func (a *Uint64) setData(data *Data) {
 	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
-		a.values = arrow.Uint64Traits{}.CastFromBytes(vals.Bytes())
+		a.values = arrow.Uint64Traits.CastFromBytes(vals.Bytes())
 	}
 }
 
@@ -91,7 +91,7 @@ func (a *Float64) setData(data *Data) {
 	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
-		a.values = arrow.Float64Traits{}.CastFromBytes(vals.Bytes())
+		a.values = arrow.Float64Traits.CastFromBytes(vals.Bytes())
 	}
 }
 
@@ -113,6 +113,6 @@ func (a *Timestamp) setData(data *Data) {
 	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
-		a.values = arrow.TimestampTraits{}.CastFromBytes(vals.Bytes())
+		a.values = arrow.TimestampTraits.CastFromBytes(vals.Bytes())
 	}
 }

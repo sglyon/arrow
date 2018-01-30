@@ -58,9 +58,9 @@ func (b *BooleanBuilder) init(capacity int) {
 	b.builder.init(capacity)
 
 	b.data = memory.NewResizableBuffer(b.mem)
-	bytesN := arrow.BooleanTraits{}.BytesRequired(capacity)
+	bytesN := arrow.BooleanTraits.BytesRequired(capacity)
 	b.data.Resize(bytesN)
-	b.rawData = arrow.BooleanTraits{}.CastFromBytes(b.data.Bytes())
+	b.rawData = b.data.Bytes()
 }
 
 // Reserve ensures there is enough space for appending n elements
@@ -80,8 +80,8 @@ func (b *BooleanBuilder) Resize(n int) {
 		b.init(n)
 	} else {
 		b.builder.resize(n, b.init)
-		b.data.Resize(arrow.BooleanTraits{}.BytesRequired(n))
-		b.rawData = arrow.BooleanTraits{}.CastFromBytes(b.data.Bytes())
+		b.data.Resize(arrow.BooleanTraits.BytesRequired(n))
+		b.rawData = b.data.Bytes()
 	}
 }
 
@@ -91,7 +91,7 @@ func (b *BooleanBuilder) Finish() *Boolean {
 }
 
 func (b *BooleanBuilder) finishInternal() *Data {
-	bytesRequired := arrow.BooleanTraits{}.BytesRequired(b.length)
+	bytesRequired := arrow.BooleanTraits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)

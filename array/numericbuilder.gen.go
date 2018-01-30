@@ -55,7 +55,7 @@ func (b *Int32Builder) AppendValues(v []int32, valid []bool) {
 
 	b.Reserve(len(v))
 	if len(v) > 0 {
-		arrow.Int32Traits{}.Copy(b.rawData[b.length:], v)
+		arrow.Int32Traits.Copy(b.rawData[b.length:], v)
 	}
 	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
@@ -64,9 +64,9 @@ func (b *Int32Builder) init(capacity int) {
 	b.builder.init(capacity)
 
 	b.data = memory.NewResizableBuffer(b.mem)
-	bytesN := arrow.Int32Traits{}.BytesRequired(capacity)
+	bytesN := arrow.Int32Traits.BytesRequired(capacity)
 	b.data.Resize(bytesN)
-	b.rawData = arrow.Int32Traits{}.CastFromBytes(b.data.Bytes())
+	b.rawData = arrow.Int32Traits.CastFromBytes(b.data.Bytes())
 }
 
 // Reserve ensures there is enough space for appending n elements
@@ -86,8 +86,8 @@ func (b *Int32Builder) Resize(n int) {
 		b.init(n)
 	} else {
 		b.builder.resize(n, b.init)
-		b.data.Resize(arrow.Int32Traits{}.BytesRequired(n))
-		b.rawData = arrow.Int32Traits{}.CastFromBytes(b.data.Bytes())
+		b.data.Resize(arrow.Int32Traits.BytesRequired(n))
+		b.rawData = arrow.Int32Traits.CastFromBytes(b.data.Bytes())
 	}
 }
 
@@ -97,7 +97,7 @@ func (b *Int32Builder) Finish() *Int32 {
 }
 
 func (b *Int32Builder) finishInternal() *Data {
-	bytesRequired := arrow.Int32Traits{}.BytesRequired(b.length)
+	bytesRequired := arrow.Int32Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
@@ -154,7 +154,7 @@ func (b *Int64Builder) AppendValues(v []int64, valid []bool) {
 
 	b.Reserve(len(v))
 	if len(v) > 0 {
-		arrow.Int64Traits{}.Copy(b.rawData[b.length:], v)
+		arrow.Int64Traits.Copy(b.rawData[b.length:], v)
 	}
 	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
@@ -163,9 +163,9 @@ func (b *Int64Builder) init(capacity int) {
 	b.builder.init(capacity)
 
 	b.data = memory.NewResizableBuffer(b.mem)
-	bytesN := arrow.Int64Traits{}.BytesRequired(capacity)
+	bytesN := arrow.Int64Traits.BytesRequired(capacity)
 	b.data.Resize(bytesN)
-	b.rawData = arrow.Int64Traits{}.CastFromBytes(b.data.Bytes())
+	b.rawData = arrow.Int64Traits.CastFromBytes(b.data.Bytes())
 }
 
 // Reserve ensures there is enough space for appending n elements
@@ -185,8 +185,8 @@ func (b *Int64Builder) Resize(n int) {
 		b.init(n)
 	} else {
 		b.builder.resize(n, b.init)
-		b.data.Resize(arrow.Int64Traits{}.BytesRequired(n))
-		b.rawData = arrow.Int64Traits{}.CastFromBytes(b.data.Bytes())
+		b.data.Resize(arrow.Int64Traits.BytesRequired(n))
+		b.rawData = arrow.Int64Traits.CastFromBytes(b.data.Bytes())
 	}
 }
 
@@ -196,7 +196,7 @@ func (b *Int64Builder) Finish() *Int64 {
 }
 
 func (b *Int64Builder) finishInternal() *Data {
-	bytesRequired := arrow.Int64Traits{}.BytesRequired(b.length)
+	bytesRequired := arrow.Int64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
@@ -253,7 +253,7 @@ func (b *Uint64Builder) AppendValues(v []uint64, valid []bool) {
 
 	b.Reserve(len(v))
 	if len(v) > 0 {
-		arrow.Uint64Traits{}.Copy(b.rawData[b.length:], v)
+		arrow.Uint64Traits.Copy(b.rawData[b.length:], v)
 	}
 	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
@@ -262,9 +262,9 @@ func (b *Uint64Builder) init(capacity int) {
 	b.builder.init(capacity)
 
 	b.data = memory.NewResizableBuffer(b.mem)
-	bytesN := arrow.Uint64Traits{}.BytesRequired(capacity)
+	bytesN := arrow.Uint64Traits.BytesRequired(capacity)
 	b.data.Resize(bytesN)
-	b.rawData = arrow.Uint64Traits{}.CastFromBytes(b.data.Bytes())
+	b.rawData = arrow.Uint64Traits.CastFromBytes(b.data.Bytes())
 }
 
 // Reserve ensures there is enough space for appending n elements
@@ -284,8 +284,8 @@ func (b *Uint64Builder) Resize(n int) {
 		b.init(n)
 	} else {
 		b.builder.resize(n, b.init)
-		b.data.Resize(arrow.Uint64Traits{}.BytesRequired(n))
-		b.rawData = arrow.Uint64Traits{}.CastFromBytes(b.data.Bytes())
+		b.data.Resize(arrow.Uint64Traits.BytesRequired(n))
+		b.rawData = arrow.Uint64Traits.CastFromBytes(b.data.Bytes())
 	}
 }
 
@@ -295,7 +295,7 @@ func (b *Uint64Builder) Finish() *Uint64 {
 }
 
 func (b *Uint64Builder) finishInternal() *Data {
-	bytesRequired := arrow.Uint64Traits{}.BytesRequired(b.length)
+	bytesRequired := arrow.Uint64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
@@ -352,7 +352,7 @@ func (b *Float64Builder) AppendValues(v []float64, valid []bool) {
 
 	b.Reserve(len(v))
 	if len(v) > 0 {
-		arrow.Float64Traits{}.Copy(b.rawData[b.length:], v)
+		arrow.Float64Traits.Copy(b.rawData[b.length:], v)
 	}
 	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
@@ -361,9 +361,9 @@ func (b *Float64Builder) init(capacity int) {
 	b.builder.init(capacity)
 
 	b.data = memory.NewResizableBuffer(b.mem)
-	bytesN := arrow.Float64Traits{}.BytesRequired(capacity)
+	bytesN := arrow.Float64Traits.BytesRequired(capacity)
 	b.data.Resize(bytesN)
-	b.rawData = arrow.Float64Traits{}.CastFromBytes(b.data.Bytes())
+	b.rawData = arrow.Float64Traits.CastFromBytes(b.data.Bytes())
 }
 
 // Reserve ensures there is enough space for appending n elements
@@ -383,8 +383,8 @@ func (b *Float64Builder) Resize(n int) {
 		b.init(n)
 	} else {
 		b.builder.resize(n, b.init)
-		b.data.Resize(arrow.Float64Traits{}.BytesRequired(n))
-		b.rawData = arrow.Float64Traits{}.CastFromBytes(b.data.Bytes())
+		b.data.Resize(arrow.Float64Traits.BytesRequired(n))
+		b.rawData = arrow.Float64Traits.CastFromBytes(b.data.Bytes())
 	}
 }
 
@@ -394,7 +394,7 @@ func (b *Float64Builder) Finish() *Float64 {
 }
 
 func (b *Float64Builder) finishInternal() *Data {
-	bytesRequired := arrow.Float64Traits{}.BytesRequired(b.length)
+	bytesRequired := arrow.Float64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
@@ -452,7 +452,7 @@ func (b *TimestampBuilder) AppendValues(v []arrow.Timestamp, valid []bool) {
 
 	b.Reserve(len(v))
 	if len(v) > 0 {
-		arrow.TimestampTraits{}.Copy(b.rawData[b.length:], v)
+		arrow.TimestampTraits.Copy(b.rawData[b.length:], v)
 	}
 	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
@@ -461,9 +461,9 @@ func (b *TimestampBuilder) init(capacity int) {
 	b.builder.init(capacity)
 
 	b.data = memory.NewResizableBuffer(b.mem)
-	bytesN := arrow.TimestampTraits{}.BytesRequired(capacity)
+	bytesN := arrow.TimestampTraits.BytesRequired(capacity)
 	b.data.Resize(bytesN)
-	b.rawData = arrow.TimestampTraits{}.CastFromBytes(b.data.Bytes())
+	b.rawData = arrow.TimestampTraits.CastFromBytes(b.data.Bytes())
 }
 
 // Reserve ensures there is enough space for appending n elements
@@ -483,8 +483,8 @@ func (b *TimestampBuilder) Resize(n int) {
 		b.init(n)
 	} else {
 		b.builder.resize(n, b.init)
-		b.data.Resize(arrow.TimestampTraits{}.BytesRequired(n))
-		b.rawData = arrow.TimestampTraits{}.CastFromBytes(b.data.Bytes())
+		b.data.Resize(arrow.TimestampTraits.BytesRequired(n))
+		b.rawData = arrow.TimestampTraits.CastFromBytes(b.data.Bytes())
 	}
 }
 
@@ -494,7 +494,7 @@ func (b *TimestampBuilder) Finish() *Timestamp {
 }
 
 func (b *TimestampBuilder) finishInternal() *Data {
-	bytesRequired := arrow.TimestampTraits{}.BytesRequired(b.length)
+	bytesRequired := arrow.TimestampTraits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)

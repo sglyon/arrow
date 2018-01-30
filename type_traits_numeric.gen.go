@@ -9,22 +9,35 @@ import (
 	"unsafe"
 )
 
+var (
+	Int32Traits     int32Traits
+	Int64Traits     int64Traits
+	Uint64Traits    uint64Traits
+	Float64Traits   float64Traits
+	TimestampTraits timestampTraits
+)
+
 // Int32 traits
 
 const (
+	// Int32SizeBytes specifies the number of bytes required to store a single int32 in memory
 	Int32SizeBytes = int(unsafe.Sizeof(int32(0)))
 )
 
-type Int32Traits struct{}
+type int32Traits struct{}
 
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func (t Int32Traits) BytesRequired(elements int) int { return Int32SizeBytes * elements }
+// BytesRequired returns the number of bytes required to store n elements in memory.
+func (int32Traits) BytesRequired(n int) int { return Int32SizeBytes * n }
 
-func (t Int32Traits) PutValue(b []byte, v int32) {
+// PutValue
+func (int32Traits) PutValue(b []byte, v int32) {
 	binary.LittleEndian.PutUint32(b, uint32(v))
 }
 
-func (t Int32Traits) CastFromBytes(b []byte) []int32 {
+// CastFromBytes reinterprets the slice b to a slice of type int32.
+//
+// NOTE: len(b) must be a multiple of Int32SizeBytes.
+func (int32Traits) CastFromBytes(b []byte) []int32 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []int32
@@ -36,7 +49,8 @@ func (t Int32Traits) CastFromBytes(b []byte) []int32 {
 	return res
 }
 
-func (t Int32Traits) CastToBytes(b []int32) []byte {
+// CastToBytes reinterprets the slice b to a slice of bytes.
+func (int32Traits) CastToBytes(b []int32) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -48,27 +62,30 @@ func (t Int32Traits) CastToBytes(b []int32) []byte {
 	return res
 }
 
-func (t Int32Traits) Copy(dst, src []int32) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
-}
+// Copy copies src to dst.
+func (int32Traits) Copy(dst, src []int32) { copy(dst, src) }
 
 // Int64 traits
 
 const (
+	// Int64SizeBytes specifies the number of bytes required to store a single int64 in memory
 	Int64SizeBytes = int(unsafe.Sizeof(int64(0)))
 )
 
-type Int64Traits struct{}
+type int64Traits struct{}
 
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func (t Int64Traits) BytesRequired(elements int) int { return Int64SizeBytes * elements }
+// BytesRequired returns the number of bytes required to store n elements in memory.
+func (int64Traits) BytesRequired(n int) int { return Int64SizeBytes * n }
 
-func (t Int64Traits) PutValue(b []byte, v int64) {
+// PutValue
+func (int64Traits) PutValue(b []byte, v int64) {
 	binary.LittleEndian.PutUint64(b, uint64(v))
 }
 
-func (t Int64Traits) CastFromBytes(b []byte) []int64 {
+// CastFromBytes reinterprets the slice b to a slice of type int64.
+//
+// NOTE: len(b) must be a multiple of Int64SizeBytes.
+func (int64Traits) CastFromBytes(b []byte) []int64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []int64
@@ -80,7 +97,8 @@ func (t Int64Traits) CastFromBytes(b []byte) []int64 {
 	return res
 }
 
-func (t Int64Traits) CastToBytes(b []int64) []byte {
+// CastToBytes reinterprets the slice b to a slice of bytes.
+func (int64Traits) CastToBytes(b []int64) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -92,27 +110,30 @@ func (t Int64Traits) CastToBytes(b []int64) []byte {
 	return res
 }
 
-func (t Int64Traits) Copy(dst, src []int64) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
-}
+// Copy copies src to dst.
+func (int64Traits) Copy(dst, src []int64) { copy(dst, src) }
 
 // Uint64 traits
 
 const (
+	// Uint64SizeBytes specifies the number of bytes required to store a single uint64 in memory
 	Uint64SizeBytes = int(unsafe.Sizeof(uint64(0)))
 )
 
-type Uint64Traits struct{}
+type uint64Traits struct{}
 
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func (t Uint64Traits) BytesRequired(elements int) int { return Uint64SizeBytes * elements }
+// BytesRequired returns the number of bytes required to store n elements in memory.
+func (uint64Traits) BytesRequired(n int) int { return Uint64SizeBytes * n }
 
-func (t Uint64Traits) PutValue(b []byte, v uint64) {
+// PutValue
+func (uint64Traits) PutValue(b []byte, v uint64) {
 	binary.LittleEndian.PutUint64(b, uint64(v))
 }
 
-func (t Uint64Traits) CastFromBytes(b []byte) []uint64 {
+// CastFromBytes reinterprets the slice b to a slice of type uint64.
+//
+// NOTE: len(b) must be a multiple of Uint64SizeBytes.
+func (uint64Traits) CastFromBytes(b []byte) []uint64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []uint64
@@ -124,7 +145,8 @@ func (t Uint64Traits) CastFromBytes(b []byte) []uint64 {
 	return res
 }
 
-func (t Uint64Traits) CastToBytes(b []uint64) []byte {
+// CastToBytes reinterprets the slice b to a slice of bytes.
+func (uint64Traits) CastToBytes(b []uint64) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -136,27 +158,30 @@ func (t Uint64Traits) CastToBytes(b []uint64) []byte {
 	return res
 }
 
-func (t Uint64Traits) Copy(dst, src []uint64) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
-}
+// Copy copies src to dst.
+func (uint64Traits) Copy(dst, src []uint64) { copy(dst, src) }
 
 // Float64 traits
 
 const (
+	// Float64SizeBytes specifies the number of bytes required to store a single float64 in memory
 	Float64SizeBytes = int(unsafe.Sizeof(float64(0)))
 )
 
-type Float64Traits struct{}
+type float64Traits struct{}
 
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func (t Float64Traits) BytesRequired(elements int) int { return Float64SizeBytes * elements }
+// BytesRequired returns the number of bytes required to store n elements in memory.
+func (float64Traits) BytesRequired(n int) int { return Float64SizeBytes * n }
 
-func (t Float64Traits) PutValue(b []byte, v float64) {
+// PutValue
+func (float64Traits) PutValue(b []byte, v float64) {
 	binary.LittleEndian.PutUint64(b, uint64(v))
 }
 
-func (t Float64Traits) CastFromBytes(b []byte) []float64 {
+// CastFromBytes reinterprets the slice b to a slice of type float64.
+//
+// NOTE: len(b) must be a multiple of Float64SizeBytes.
+func (float64Traits) CastFromBytes(b []byte) []float64 {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []float64
@@ -168,7 +193,8 @@ func (t Float64Traits) CastFromBytes(b []byte) []float64 {
 	return res
 }
 
-func (t Float64Traits) CastToBytes(b []float64) []byte {
+// CastToBytes reinterprets the slice b to a slice of bytes.
+func (float64Traits) CastToBytes(b []float64) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -180,27 +206,30 @@ func (t Float64Traits) CastToBytes(b []float64) []byte {
 	return res
 }
 
-func (t Float64Traits) Copy(dst, src []float64) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
-}
+// Copy copies src to dst.
+func (float64Traits) Copy(dst, src []float64) { copy(dst, src) }
 
 // Timestamp traits
 
 const (
+	// TimestampSizeBytes specifies the number of bytes required to store a single Timestamp in memory
 	TimestampSizeBytes = int(unsafe.Sizeof(Timestamp(0)))
 )
 
-type TimestampTraits struct{}
+type timestampTraits struct{}
 
-// BytesRequired returns the number of bytes required to store the requested number of elements.
-func (t TimestampTraits) BytesRequired(elements int) int { return TimestampSizeBytes * elements }
+// BytesRequired returns the number of bytes required to store n elements in memory.
+func (timestampTraits) BytesRequired(n int) int { return TimestampSizeBytes * n }
 
-func (t TimestampTraits) PutValue(b []byte, v Timestamp) {
+// PutValue
+func (timestampTraits) PutValue(b []byte, v Timestamp) {
 	binary.LittleEndian.PutUint64(b, uint64(v))
 }
 
-func (t TimestampTraits) CastFromBytes(b []byte) []Timestamp {
+// CastFromBytes reinterprets the slice b to a slice of type Timestamp.
+//
+// NOTE: len(b) must be a multiple of TimestampSizeBytes.
+func (timestampTraits) CastFromBytes(b []byte) []Timestamp {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []Timestamp
@@ -212,7 +241,8 @@ func (t TimestampTraits) CastFromBytes(b []byte) []Timestamp {
 	return res
 }
 
-func (t TimestampTraits) CastToBytes(b []Timestamp) []byte {
+// CastToBytes reinterprets the slice b to a slice of bytes.
+func (timestampTraits) CastToBytes(b []Timestamp) []byte {
 	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
 
 	var res []byte
@@ -224,7 +254,5 @@ func (t TimestampTraits) CastToBytes(b []Timestamp) []byte {
 	return res
 }
 
-func (t TimestampTraits) Copy(dst, src []Timestamp) {
-	dstB, srcB := t.CastToBytes(dst), t.CastToBytes(src)
-	copy(dstB, srcB)
-}
+// Copy copies src to dst.
+func (timestampTraits) Copy(dst, src []Timestamp) { copy(dst, src) }

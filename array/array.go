@@ -30,6 +30,11 @@ type Interface interface {
 	Len() int
 }
 
+const (
+	// UnknownNullCount specifies the NullN should be calculated from the null bitmap buffer.
+	UnknownNullCount = -1
+)
+
 type array struct {
 	data            *Data
 	nullBitmapBytes []byte
@@ -39,7 +44,12 @@ type array struct {
 func (a *array) DataType() arrow.DataType { return a.data.typE }
 
 // NullN returns the number of null values in the array.
-func (a *array) NullN() int { return a.data.nullN }
+func (a *array) NullN() int {
+	if a.data.nullN < 0 {
+		a.data.nullN = a.data.length - bitutil.CountSetBits(a.nullBitmapBytes, a.data.length)
+	}
+	return a.data.nullN
+}
 
 // NullBitmapBytes returns a byte slice of the validity bitmap.
 func (a *array) NullBitmapBytes() []byte { return a.nullBitmapBytes }

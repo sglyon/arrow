@@ -3,12 +3,20 @@ package array
 import (
 	"github.com/influxdata/arrow"
 	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/memory"
 )
 
 // A type which represents an immutable sequence of boolean values.
 type Boolean struct {
 	array
 	values []byte
+}
+
+// NewBoolean creates a boolean array from the data memory.Buffer and contains length elements.
+// The nullBitmap buffer can be nil of there are no null values.
+// If nullN is not known, use UnknownNullCount to calculate the value of NullN at runtime from the nullBitmap buffer.
+func NewBoolean(length int, data *memory.Buffer, nullBitmap *memory.Buffer, nullN int) *Boolean {
+	return NewBooleanData(NewData(arrow.FixedWidthTypes.Boolean, length, []*memory.Buffer{nullBitmap, data}, nullN))
 }
 
 func NewBooleanData(data *Data) *Boolean {
@@ -23,6 +31,6 @@ func (a *Boolean) setData(data *Data) {
 	a.array.setData(data)
 	vals := data.buffers[1]
 	if vals != nil {
-		a.values = arrow.BooleanTraits{}.CastFromBytes(vals.Bytes())
+		a.values = vals.Bytes()
 	}
 }

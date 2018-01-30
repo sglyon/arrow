@@ -1,6 +1,6 @@
 package arrow
 
-// Type is a *logical* type. They can be expressed as
+// Type is a logical type. They can be expressed as
 // either a primitive physical type (bytes or bits of some fixed size), a
 // nested type consisting of other data types, or another data type (e.g. a
 // timestamp encoded as an int64)
