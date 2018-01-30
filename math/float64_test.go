@@ -39,3 +39,7 @@ func BenchmarkFloat64Funcs_Sum_256(b *testing.B) {
 func BenchmarkFloat64Funcs_Sum_1024(b *testing.B) {
 	benchmarkFloat64Funcs_Sum(b, 1024)
 }
+
+func BenchmarkFloat64Funcs_Sum_8192(b *testing.B) {
+	benchmarkFloat64Funcs_Sum(b, 8192)
+}
