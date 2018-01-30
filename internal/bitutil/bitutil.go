@@ -40,17 +40,14 @@ func SetBitTo(buf []byte, i int, val bool) {
 
 // CountSetBits counts the number of 1's in buf up to n bits.
 func CountSetBits(buf []byte, n int) int {
-	popLen := uint64SizeBytes * 8
-
 	count := 0
 
-	uint64Counts := n / popLen
-	uints := bytesToUint64(buf[:uint64Counts*8])
-	for _, v := range uints {
+	uint64Bytes := n / uint64SizeBits * 8
+	for _, v := range bytesToUint64(buf[:uint64Bytes]) {
 		count += bits.OnesCount64(v)
 	}
 
-	for _, v := range buf[(uint64Counts * 8) : n/8] {
+	for _, v := range buf[uint64Bytes : n/8] {
 		count += bits.OnesCount8(v)
 	}
 
@@ -66,6 +63,7 @@ func CountSetBits(buf []byte, n int) int {
 
 const (
 	uint64SizeBytes = int(unsafe.Sizeof(uint64(0)))
+	uint64SizeBits  = uint64SizeBytes * 8
 )
 
 func bytesToUint64(b []byte) []uint64 {

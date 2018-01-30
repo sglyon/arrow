@@ -163,7 +163,6 @@ func benchmarkCountSetBitsN(b *testing.B, n int) {
 		res = bitutil.CountSetBits(buf, n)
 	}
 	intval = res
-	b.Logf("n=%d, res=%d", n, res)
 }
 
 func BenchmarkCountSetBits_3(b *testing.B) {
