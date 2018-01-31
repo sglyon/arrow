@@ -23,6 +23,7 @@ them internally in the [ifql][] execution engine and storage layers of [InfluxDB
 **Primitive types**
 
 - [x] Signed and unsigned 8, 16, 32 and 64 bit integers
+- [x] 32 and 64 bit floats
 - [x] Packed LSB booleans
 - [x] Variable-length binary
 - [ ] String (valid UTF-8)
