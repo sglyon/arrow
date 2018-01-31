@@ -15,8 +15,8 @@ const (
 type BinaryBuilder struct {
 	builder
 
-	offsets Int32BufferBuilder
-	values  ByteBufferBuilder
+	offsets int32BufferBuilder
+	values  byteBufferBuilder
 }
 
 func NewBinaryBuilder(mem memory.Allocator) *BinaryBuilder {

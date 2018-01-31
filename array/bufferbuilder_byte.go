@@ -2,13 +2,13 @@ package array
 
 import "github.com/influxdata/arrow/memory"
 
-type ByteBufferBuilder struct {
+type byteBufferBuilder struct {
 	bufferBuilder
 }
 
-func NewByteBufferBuilder(mem memory.Allocator) *ByteBufferBuilder {
-	return &ByteBufferBuilder{bufferBuilder: bufferBuilder{mem: mem}}
+func newByteBufferBuilder(mem memory.Allocator) *byteBufferBuilder {
+	return &byteBufferBuilder{bufferBuilder: bufferBuilder{mem: mem}}
 }
 
-func (b *ByteBufferBuilder) Values() []byte   { return b.Bytes() }
-func (b *ByteBufferBuilder) Value(i int) byte { return b.bytes[i] }
+func (b *byteBufferBuilder) Values() []byte   { return b.Bytes() }
+func (b *byteBufferBuilder) Value(i int) byte { return b.bytes[i] }
