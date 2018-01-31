@@ -25,7 +25,7 @@ them internally in the [ifql][] execution engine and storage layers of [InfluxDB
 - [x] Signed and unsigned 8, 16, 32 and 64 bit integers
 - [x] Packed LSB booleans
 - [x] Variable-length binary
-- [ ] String
+- [ ] String (valid UTF-8)
 - [ ] Half-float (16-bit)
 - [ ] Null (no physical storage)
 
@@ -42,7 +42,10 @@ them internally in the [ifql][] execution engine and storage layers of [InfluxDB
 - [ ] List
 - [ ] Struct
 - [ ] Union
-
+    - [ ] Dense
+    - [ ] Sparse
+- [ ] Dictionary 
+    - [ ] Dictionary encoding
 
 ### Type metadata
 
