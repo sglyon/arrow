@@ -7,12 +7,12 @@ import (
 )
 
 var (
-{{range .}}
+{{range .In}}
 	{{.Name}}Traits {{.name}}Traits
 {{- end}}
 )
 
-{{range .}}
+{{range .In}}
 // {{.Name}} traits
 
 const (

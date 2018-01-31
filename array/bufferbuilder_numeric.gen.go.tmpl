@@ -6,7 +6,7 @@ import (
 	"github.com/influxdata/arrow/memory"
 )
 
-{{range .}}
+{{range .In}}
 {{$TypeNamePrefix := .name}}
 {{if .Opt.BufferBuilder}}
 type {{$TypeNamePrefix}}BufferBuilder struct {

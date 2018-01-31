@@ -1,6 +1,6 @@
 package arrow
 
-{{range .}}
+{{range .In}}
 type {{.Name}}Type struct {}
 
 func (t *{{.Name}}Type) ID() Type { return {{.Name|upper}} }
@@ -11,11 +11,11 @@ func (t *{{.Name}}Type) Name() string { return "{{.Name|lower}}" }
 
 var (
         PrimitiveTypes = struct {
-{{range .}}
+{{range .In}}
                 {{.Name}} DataType
 {{- end}}
         }{
-{{range .}}
+{{range .In}}
                 {{.Name}}: &{{.Name}}Type{},
 {{- end}}
         }

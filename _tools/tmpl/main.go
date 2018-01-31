@@ -35,17 +35,44 @@ func parsePath(path string) (string, string) {
 	return path[:p], path[p+1:]
 }
 
+type data struct {
+	In interface{}
+	D  listValue
+}
+
 func errExit(format string, a ...interface{}) {
 	fmt.Fprintf(os.Stderr, format, a...)
 	fmt.Fprintln(os.Stderr)
 	os.Exit(1)
 }
 
+type listValue map[string]string
+
+func (l listValue) String() string {
+	res := make([]string, 0, len(l))
+	for k, v := range l {
+		res = append(res, fmt.Sprintf("%s=%s", k, v))
+	}
+	return strings.Join(res, ", ")
+}
+
+func (l listValue) Set(v string) error {
+	nv := strings.Split(v, "=")
+	if len(nv) != 2 {
+		return fmt.Errorf("expected NAME=VALUE, got %s", v)
+	}
+	l[nv[0]] = nv[1]
+	return nil
+}
+
 func main() {
 	var (
 		dataArg = flag.String("data", "", "input JSON data")
 		gi      = flag.Bool("i", false, "run goimports")
+		in      = &data{D: make(listValue)}
 	)
+
+	flag.Var(&in.D, "d", "-d NAME=VALUE")
 
 	flag.Parse()
 	if *dataArg == "" {
@@ -72,7 +99,8 @@ func main() {
 		specs[i] = pathSpec{in: in, out: out}
 	}
 
-	process(readData(*dataArg), specs)
+	in.In = readData(*dataArg)
+	process(in, specs)
 }
 
 func mustReadAll(path string) []byte {

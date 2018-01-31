@@ -4,7 +4,7 @@ import (
 	"github.com/influxdata/arrow"
 )
 
-{{range .}}
+{{range .In}}
 
 // A type which represents an immutable sequence of {{or .QualifiedType .Type}} values.
 type {{.Name}} struct {
