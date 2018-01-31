@@ -3,8 +3,6 @@
 
 package math
 
-// <no value>
-
 import (
 	"github.com/influxdata/arrow/array"
 )
@@ -16,18 +14,6 @@ type Uint64Funcs struct {
 var (
 	Uint64 Uint64Funcs
 )
-
-func initUint64AVX2() {
-	Uint64.sum = sum_uint64_avx2
-}
-
-func initUint64SSE4() {
-	Uint64.sum = sum_uint64_sse4
-}
-
-func initUint64Go() {
-	Uint64.sum = sum_uint64_go
-}
 
 // Sum returns the summation of all elements in a.
 func (f Uint64Funcs) Sum(a *array.Uint64) uint64 {

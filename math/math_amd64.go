@@ -1,3 +1,5 @@
+// +build !noasm
+
 package math
 
 import (
