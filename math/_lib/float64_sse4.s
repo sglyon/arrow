@@ -1,6 +1,6 @@
 	.text
 	.intel_syntax noprefix
-	.file	"_lib/math/float64.c"
+	.file	"_lib/float64.c"
 	.globl	sum_float64_sse4
 	.p2align	4, 0x90
 	.type	sum_float64_sse4,@function

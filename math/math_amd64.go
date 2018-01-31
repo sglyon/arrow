@@ -15,13 +15,16 @@ func init() {
 }
 
 func initAVX2() {
-	Float64.sum = sum_float64_avx2
+	initFloat64AVX2()
+	initInt64AVX2()
 }
 
 func initSSE4() {
-	Float64.sum = sum_float64_sse4
+	initFloat64SSE4()
+	initInt64SSE4()
 }
 
 func initGo() {
-	Float64.sum = sum_go
+	initFloat64Go()
+	initInt64Go()
 }

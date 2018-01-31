@@ -7,8 +7,7 @@ import (
 )
 
 func main() {
-	mem := memory.NewGoAllocator()
-	fb := array.NewFloat64Builder(mem)
+	fb := array.NewFloat64Builder(memory.DefaultAllocator)
 
 	fb.AppendValues([]float64{1, 3, 5, 7, 9, 11}, nil)
 

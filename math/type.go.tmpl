@@ -1,0 +1,43 @@
+{{$def := .D}}
+{{with .In}}
+package math
+
+// {{$def.arch}}
+
+import (
+	"github.com/influxdata/arrow/array"
+)
+
+type {{.Name}}Funcs struct {
+	sum func(a *array.{{.Name}}) {{.Type}}
+}
+
+var (
+	{{.Name}} {{.Name}}Funcs
+)
+
+func init{{.Name}}AVX2() {
+	{{.Name}}.sum = sum_{{.Type}}_avx2
+}
+
+func init{{.Name}}SSE4() {
+	{{.Name}}.sum = sum_{{.Type}}_sse4
+}
+
+func init{{.Name}}Go() {
+	{{.Name}}.sum = sum_{{.Type}}_go
+}
+
+// Sum returns the summation of all elements in a.
+func (f {{.Name}}Funcs) Sum(a *array.{{.Name}}) {{.Type}} {
+	return f.sum(a)
+}
+
+func sum_{{.Type}}_go(a *array.{{.Name}}) {{.Type}} {
+	acc := {{.Type}}(0)
+	for _, v := range a.{{.Name}}Values() {
+		acc += v
+	}
+	return acc
+}
+{{end}}
