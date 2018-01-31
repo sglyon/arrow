@@ -18,34 +18,35 @@ them internally in the [ifql][] execution engine and storage layers of [InfluxDB
 - [x] Allocations are 64-byte aligned and padded to 8-bytes
 
 
-### Array support
+### Array and builder support
 
-- [x] Null bitmap support
-- [x] Signed and unsigned 8, 16, 32 and 64 bit integers
-- [x] Packed LSB booleans
-- [x] Variable-length binary
-- [x] 64-bit timestamps
-- Parametric types
-    - [ ] List
-    - [ ] Struct
-    - [ ] Union
-
-
-### Array builder support
+**Primitive types**
 
 - [x] Signed and unsigned 8, 16, 32 and 64 bit integers
 - [x] Packed LSB booleans
 - [x] Variable-length binary
-- [x] 64-bit timestamps
-- Parametric types
-    - [ ] List
-    - [ ] Struct
-    - [ ] Union
+- [ ] String
+- [ ] Half-float (16-bit)
+- [ ] Null (no physical storage)
+
+**Parametric types**
+
+- [x] Timestamp
+- [ ] Interval (year/month or day/time)
+- [ ] Date32 (days since UNIX epoch)
+- [ ] Date64 (milliseconds since UNIX epoch)
+- [ ] Time32 (seconds or milliseconds since midnight)
+- [ ] Time64 (microseconds or nanoseconds since midnight)
+- [ ] Decimal (128-bit)
+- [ ] Fixed-sized binary
+- [ ] List
+- [ ] Struct
+- [ ] Union
 
 
 ### Type metadata
 
-- [x] Data types for existing arrays
+- [x] Data types (implemented arrays)
 - [ ] Field
 - [ ] Schema
   
@@ -54,7 +55,7 @@ them internally in the [ifql][] execution engine and storage layers of [InfluxDB
 
 Serialization is planned for a future iteration.
 
-- [ ] Flatbuffers for serializing metadata
+- [ ] Flat buffers for serializing metadata
 - [ ] Record Batch
 - [ ] Table
 
