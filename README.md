@@ -6,6 +6,67 @@ standardized language-independent columnar memory format for flat and hierarchic
 organized for efficient analytic operations on modern hardware. It also provides computational 
 libraries and zero-copy streaming messaging and inter-process communication.
 
+Performance
+-----------
+
+The arrow package makes extensive use of [c2goasm][] to leverage LLVM's advanced optimizer and generate PLAN9 
+assembly functions from C/C++ code. The arrow package can be compiled without these optimizations using the `noasm` 
+build tag. Alternatively, by configuring an environment variable, it is possible to dynamically configure which 
+architecture optimizations are used at runtime. 
+See the `cpu` package [README](internal/cpu/README.md) for a description of this environment variable.
+
+### Example Usage
+
+The following benchmarks demonstrate summing an array of 8192 values using various optimizations. 
+
+Disable no architecture optimizations (thus using AVX2):
+
+```sh
+$ INTEL_DISABLE_EXT=NONE go test -bench=8192 -run=. ./math
+goos: darwin
+goarch: amd64
+pkg: github.com/influxdata/arrow/math
+BenchmarkFloat64Funcs_Sum_8192-8   	 2000000	       687 ns/op	95375.41 MB/s
+BenchmarkInt64Funcs_Sum_8192-8     	 2000000	       719 ns/op	91061.06 MB/s
+BenchmarkUint64Funcs_Sum_8192-8    	 2000000	       691 ns/op	94797.29 MB/s
+PASS
+ok  	github.com/influxdata/arrow/math	6.444s
+```
+
+**NOTE:** `NONE` is simply ignored, thus enabling optimizations for AVX2 and SSE4
+
+----
+
+Disable AVX2 architecture optimizations:
+
+```sh
+$ INTEL_DISABLE_EXT=AVX2 go test -bench=8192 -run=. ./math
+goos: darwin
+goarch: amd64
+pkg: github.com/influxdata/arrow/math
+BenchmarkFloat64Funcs_Sum_8192-8   	 1000000	      1912 ns/op	34263.63 MB/s
+BenchmarkInt64Funcs_Sum_8192-8     	 1000000	      1392 ns/op	47065.57 MB/s
+BenchmarkUint64Funcs_Sum_8192-8    	 1000000	      1405 ns/op	46636.41 MB/s
+PASS
+ok  	github.com/influxdata/arrow/math	4.786s
+```
+
+----
+
+Disable ALL architecture optimizations, thus using pure Go implementation:
+
+```sh
+$ INTEL_DISABLE_EXT=ALL go test -bench=8192 -run=. ./math
+goos: darwin
+goarch: amd64
+pkg: github.com/influxdata/arrow/math
+BenchmarkFloat64Funcs_Sum_8192-8   	  200000	     10285 ns/op	6371.41 MB/s
+BenchmarkInt64Funcs_Sum_8192-8     	  500000	      3892 ns/op	16837.37 MB/s
+BenchmarkUint64Funcs_Sum_8192-8    	  500000	      3929 ns/op	16680.00 MB/s
+PASS
+ok  	github.com/influxdata/arrow/math	6.179s
+```
+
 Status
 ------
 
@@ -68,3 +129,4 @@ Serialization is planned for a future iteration.
 [arrow]:    https://arrow.apache.org
 [ifql]:     https://github.com/influxdata/ifql
 [InfluxDB]: https://github.com/influxdata/influxdb
+[c2goasm]:  https://github.com/minio/c2goasm

@@ -5,6 +5,7 @@ import (
 
 	"github.com/influxdata/arrow"
 	"github.com/influxdata/arrow/array"
+	"github.com/influxdata/arrow/internal/testing/tools"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
 )
@@ -46,6 +47,32 @@ func TestMakeFromData(t *testing.T) {
 			} else {
 				assert.NotNil(t, array.MakeFromData(data))
 			}
+		})
+	}
+}
+
+func bbits(v ...int32) []byte {
+	return tools.IntsToBitsLSB(v...)
+}
+
+func TestArray_NullN(t *testing.T) {
+	tests := []struct {
+		name string
+		l    int
+		bm   []byte
+		n    int
+		exp  int
+	}{
+		{name: "unknown,l16", l: 16, bm: bbits(0x11001010, 0x00110011), n: array.UnknownNullCount, exp: 8},
+		{name: "unknown,l12,ignores last nibble", l: 12, bm: bbits(0x11001010, 0x00111111), n: array.UnknownNullCount, exp: 6},
+		{name: "unknown,l12,12 nulls", l: 12, bm: bbits(0x00000000, 0x00000000), n: array.UnknownNullCount, exp: 12},
+		{name: "unknown,l12,00 nulls", l: 12, bm: bbits(0x11111111, 0x11111111), n: array.UnknownNullCount, exp: 0},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ar := array.MakeFromData(array.NewData(arrow.FixedWidthTypes.Boolean, test.l, []*memory.Buffer{memory.NewBuffer(test.bm), nil}, test.n))
+			got := ar.NullN()
+			assert.Equal(t, test.exp, got)
 		})
 	}
 }
