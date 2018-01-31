@@ -1,10 +1,10 @@
 package bitutil_test
 
 import (
-	"math/bits"
 	"testing"
 
 	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/internal/testing/tools"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -86,15 +86,15 @@ func TestCountSetBits(t *testing.T) {
 		n    int
 		exp  int
 	}{
-		{"some 03 bits", bbits(11000000), 3, 2},
-		{"some 11 bits", bbits(11000011, 01000000), 11, 5},
-		{"some 72 bits", bbits(11001010, 11110000, 00001111, 11000011, 11001010, 11110000, 00001111, 11000011, 10001001), 9 * 8, 33},
-		{"all  03 bits", bbits(11100001), 3, 3},
-		{"all  11 bits", bbits(11111111, 11111111), 11, 11},
-		{"all  72 bits", bbits(11111111, 11111111, 11111111, 11111111, 11111111, 11111111, 11111111, 11111111, 11111111), 9 * 8, 72},
-		{"none 03 bits", bbits(00000001), 3, 0},
-		{"none 11 bits", bbits(00000000, 00000000), 11, 0},
-		{"none 72 bits", bbits(00000000, 00000000, 00000000, 00000000, 00000000, 00000000, 00000000, 00000000, 00000000), 9 * 8, 0},
+		{"some 03 bits", bbits(0x11000000), 3, 2},
+		{"some 11 bits", bbits(0x11000011, 0x01000000), 11, 5},
+		{"some 72 bits", bbits(0x11001010, 0x11110000, 0x00001111, 0x11000011, 0x11001010, 0x11110000, 0x00001111, 0x11000011, 0x10001001), 9 * 8, 35},
+		{"all  03 bits", bbits(0x11100001), 3, 3},
+		{"all  11 bits", bbits(0x11111111, 0x11111111), 11, 11},
+		{"all  72 bits", bbits(0x11111111, 0x11111111, 0x11111111, 0x11111111, 0x11111111, 0x11111111, 0x11111111, 0x11111111, 0x11111111), 9 * 8, 72},
+		{"none 03 bits", bbits(0x00000001), 3, 0},
+		{"none 11 bits", bbits(0x00000000, 0x00000000), 11, 0},
+		{"none 72 bits", bbits(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000), 9 * 8, 0},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -104,20 +104,8 @@ func TestCountSetBits(t *testing.T) {
 	}
 }
 
-func bbits(v ...int) []byte {
-	res := make([]byte, 0, len(v))
-	for _, b := range v {
-		c := uint8(0)
-		for i := uint(0); i < 8; i++ {
-			if b%10 != 0 {
-				c |= 1 << i
-			}
-			b /= 10
-		}
-		c = bits.Reverse8(c)
-		res = append(res, c)
-	}
-	return res
+func bbits(v ...int32) []byte {
+	return tools.IntsToBitsLSB(v...)
 }
 
 func BenchmarkBitIsSet(b *testing.B) {

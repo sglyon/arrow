@@ -1,3 +1,6 @@
+/*
+Package math provides optimized mathematical functions for processing Arrow arrays.
+*/
 package math
 
 //go:generate go run ../_tools/tmpl/main.go -i -data=float64.tmpldata type.go.tmpl=float64.go type_amd64.go.tmpl=float64_amd64.go type_test.go.tmpl=float64_test.go
