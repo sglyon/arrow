@@ -17,14 +17,17 @@ func init() {
 func initAVX2() {
 	initFloat64AVX2()
 	initInt64AVX2()
+	initUint64AVX2()
 }
 
 func initSSE4() {
 	initFloat64SSE4()
 	initInt64SSE4()
+	initUint64SSE4()
 }
 
 func initGo() {
 	initFloat64Go()
 	initInt64Go()
+	initUint64Go()
 }

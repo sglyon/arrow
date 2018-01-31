@@ -18,7 +18,8 @@ ALL_SOURCES := $(shell find . -path ./_lib -prune -o -name '*.go' -name '*.s' -n
 
 INTEL_SOURCES := \
 	float64_avx2_amd64.s float64_sse4_amd64.s \
-	int64_avx2_amd64.s int64_sse4_amd64.s
+	int64_avx2_amd64.s int64_sse4_amd64.s \
+	uint64_avx2_amd64.s uint64_sse4_amd64.s
 
 .PHONEY: assembly
 
@@ -31,6 +32,9 @@ generate: ../bin/tmpl
 	../bin/tmpl -i -data=int64.tmpldata type.go.tmpl=int64.go type_test.go.tmpl=int64_test.go
 	../bin/tmpl -i -data=int64.tmpldata -d arch=avx2 type_amd64.go.tmpl=int64_avx2_amd64.go
 	../bin/tmpl -i -data=int64.tmpldata -d arch=sse4 type_amd64.go.tmpl=int64_sse4_amd64.go
+	../bin/tmpl -i -data=uint64.tmpldata type.go.tmpl=uint64.go type_test.go.tmpl=uint64_test.go
+	../bin/tmpl -i -data=uint64.tmpldata -d arch=avx2 type_amd64.go.tmpl=uint64_avx2_amd64.go
+	../bin/tmpl -i -data=uint64.tmpldata -d arch=sse4 type_amd64.go.tmpl=uint64_sse4_amd64.go
 
 _lib/float64_avx2.s: _lib/float64.c
 	$(CC) -S $(C_FLAGS) $(ASM_FLAGS_AVX2) $^ -o $@ ; $(PERL_FIXUP_ROTATE) $@
@@ -54,5 +58,17 @@ int64_avx2_amd64.s: _lib/int64_avx2.s
 	$(C2GOASM) -a -f $^ $@
 
 int64_sse4_amd64.s: _lib/int64_sse4.s
+	$(C2GOASM) -a -f $^ $@
+
+_lib/uint64_avx2.s: _lib/uint64.c
+	$(CC) -S $(C_FLAGS) $(ASM_FLAGS_AVX2) $^ -o $@ ; $(PERL_FIXUP_ROTATE) $@
+
+_lib/uint64_sse4.s: _lib/uint64.c
+	$(CC) -S $(C_FLAGS) $(ASM_FLAGS_SSE4) $^ -o $@ ; $(PERL_FIXUP_ROTATE) $@
+
+uint64_avx2_amd64.s: _lib/uint64_avx2.s
+	$(C2GOASM) -a -f $^ $@
+
+uint64_sse4_amd64.s: _lib/uint64_sse4.s
 	$(C2GOASM) -a -f $^ $@
 
