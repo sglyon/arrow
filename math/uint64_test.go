@@ -30,6 +30,7 @@ func makeArrayUint64(l int) *array.Uint64 {
 func benchmarkUint64Funcs_Sum(b *testing.B, n int) {
 	vec := makeArrayUint64(n)
 	b.SetBytes(int64(vec.Len() * 8))
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		math.Uint64.Sum(vec)
 	}
@@ -45,4 +46,8 @@ func BenchmarkUint64Funcs_Sum_1024(b *testing.B) {
 
 func BenchmarkUint64Funcs_Sum_8192(b *testing.B) {
 	benchmarkUint64Funcs_Sum(b, 8192)
+}
+
+func BenchmarkUint64Funcs_Sum_1000000(b *testing.B) {
+	benchmarkUint64Funcs_Sum(b, 1e6)
 }

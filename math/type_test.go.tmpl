@@ -29,6 +29,7 @@ func makeArray{{.Name}}(l int) *array.{{.Name}} {
 func benchmark{{.Name}}Funcs_Sum(b *testing.B, n int) {
 	vec := makeArray{{.Name}}(n)
 	b.SetBytes(int64(vec.Len() * 8))
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		math.{{.Name}}.Sum(vec)
 	}
@@ -44,5 +45,9 @@ func Benchmark{{.Name}}Funcs_Sum_1024(b *testing.B) {
 
 func Benchmark{{.Name}}Funcs_Sum_8192(b *testing.B) {
 	benchmark{{.Name}}Funcs_Sum(b, 8192)
+}
+
+func Benchmark{{.Name}}Funcs_Sum_1000000(b *testing.B) {
+	benchmark{{.Name}}Funcs_Sum(b, 1e6)
 }
 {{end}}

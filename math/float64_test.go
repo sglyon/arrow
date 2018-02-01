@@ -30,6 +30,7 @@ func makeArrayFloat64(l int) *array.Float64 {
 func benchmarkFloat64Funcs_Sum(b *testing.B, n int) {
 	vec := makeArrayFloat64(n)
 	b.SetBytes(int64(vec.Len() * 8))
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		math.Float64.Sum(vec)
 	}
@@ -45,4 +46,8 @@ func BenchmarkFloat64Funcs_Sum_1024(b *testing.B) {
 
 func BenchmarkFloat64Funcs_Sum_8192(b *testing.B) {
 	benchmarkFloat64Funcs_Sum(b, 8192)
+}
+
+func BenchmarkFloat64Funcs_Sum_1000000(b *testing.B) {
+	benchmarkFloat64Funcs_Sum(b, 1e6)
 }
