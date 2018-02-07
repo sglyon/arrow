@@ -15,12 +15,13 @@ const (
 type BinaryBuilder struct {
 	builder
 
+	typE    arrow.BinaryDataType
 	offsets int32BufferBuilder
 	values  byteBufferBuilder
 }
 
-func NewBinaryBuilder(mem memory.Allocator) *BinaryBuilder {
-	b := &BinaryBuilder{}
+func NewBinaryBuilder(mem memory.Allocator, typE arrow.BinaryDataType) *BinaryBuilder {
+	b := &BinaryBuilder{typE: typE}
 	b.builder.mem = mem
 	b.offsets.mem = mem
 	b.values.mem = mem
@@ -34,10 +35,48 @@ func (b *BinaryBuilder) Append(v []byte) {
 	b.UnsafeAppendBoolToBitmap(true)
 }
 
+func (b *BinaryBuilder) AppendString(v string) {
+	b.Append([]byte(v))
+}
+
 func (b *BinaryBuilder) AppendNull() {
 	b.Reserve(1)
 	b.appendNextOffset()
 	b.UnsafeAppendBoolToBitmap(false)
+}
+
+// AppendValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *BinaryBuilder) AppendValues(v [][]byte, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	for _, vv := range v {
+		b.appendNextOffset()
+		b.values.Append(vv)
+	}
+
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
+}
+
+// AppendStringValues will append the values in the v slice. The valid slice determines which values
+// in v are valid (not null). The valid slice must either be empty or be equal in length to v. If empty,
+// all values in v are appended and considered valid.
+func (b *BinaryBuilder) AppendStringValues(v []string, valid []bool) {
+	if len(v) != len(valid) && len(valid) != 0 {
+		panic("len(v) != len(valid) && len(valid) != 0")
+	}
+
+	b.Reserve(len(v))
+	for _, vv := range v {
+		b.appendNextOffset()
+		b.values.Append([]byte(vv))
+	}
+
+	b.builder.unsafeAppendBoolsToBitmap(valid, len(v))
 }
 
 func (b *BinaryBuilder) Value(i int) []byte {
@@ -79,7 +118,7 @@ func (b *BinaryBuilder) Finish() *Binary {
 func (b *BinaryBuilder) finishInternal() *Data {
 	b.appendNextOffset()
 	offsets, values := b.offsets.Finish(), b.values.Finish()
-	res := NewData(arrow.BinaryTypes.Binary, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, offsets, values}, b.nullN)
+	res := NewData(b.typE, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, offsets, values}, b.nullN)
 
 	b.builder.reset()
 
