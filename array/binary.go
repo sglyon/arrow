@@ -21,9 +21,7 @@ func NewBinaryData(data *Data) *Binary {
 }
 
 // Value returns the slice at index i. This value should not be mutated.
-func (a *Binary) Value(i int) []byte {
-	return a.valueBytes[a.valueOffsets[i]:a.valueOffsets[i+1]]
-}
+func (a *Binary) Value(i int) []byte { return a.valueBytes[a.valueOffsets[i]:a.valueOffsets[i+1]] }
 
 // ValueString returns the string at index i without performing additional allocations.
 // The string is only valid for the lifetime of the Binary array.

@@ -18,6 +18,7 @@ func New{{.Name}}Data(data *Data) *{{.Name}} {
 	return a
 }
 
+func (a *{{.Name}}) Value(i int)      {{or .QualifiedType .Type}} { return a.values[i] }
 func (a *{{.Name}}) {{.Name}}Values() []{{or .QualifiedType .Type}} { return a.values }
 
 func (a *{{.Name}}) setData(data *Data) {
