@@ -12,7 +12,7 @@ const (
 // builder provides common functionality for managing the validity bitmap (nulls) when building arrays.
 type builder struct {
 	mem        memory.Allocator
-	nullBitmap *memory.ResizableBuffer
+	nullBitmap *memory.Buffer
 	nullN      int
 	length     int
 	capacity   int

@@ -13,7 +13,7 @@ type {{.Name}}Builder struct {
 {{if .Opt.Parametric -}}
 	typE    *arrow.{{.Name}}Type
 {{end -}}
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []{{or .QualifiedType .Type}}
 }
 
@@ -110,9 +110,9 @@ func (b *{{.Name}}Builder) finishInternal() *Data {
 		b.data.Resize(bytesRequired)
 	}
 {{if .Opt.Parametric -}}
-	res := NewData(b.typE, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 {{else -}}
-	res := NewData(arrow.PrimitiveTypes.{{.Name}}, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.{{.Name}}, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 {{end -}}
 	b.reset()
 

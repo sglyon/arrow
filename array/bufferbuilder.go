@@ -9,7 +9,7 @@ import (
 // Specialized implementations provide type-safe APIs for appending and accessing the memory.
 type bufferBuilder struct {
 	mem      memory.Allocator
-	buffer   *memory.ResizableBuffer
+	buffer   *memory.Buffer
 	length   int
 	capacity int
 
@@ -68,13 +68,13 @@ func (b *bufferBuilder) Reset() {
 }
 
 // Finish TODO(sgc)
-func (b *bufferBuilder) Finish() *memory.Buffer {
+func (b *bufferBuilder) Finish() (buffer *memory.Buffer) {
 	if b.length > 0 {
 		b.buffer.ResizeNoShrink(b.length)
 	}
-	res := &b.buffer.Buffer
+	buffer = b.buffer
 	b.Reset()
-	return res
+	return
 }
 
 func (b *bufferBuilder) unsafeAppend(data []byte) {

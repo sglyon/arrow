@@ -9,7 +9,7 @@ import (
 type BooleanBuilder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []byte
 }
 
@@ -96,7 +96,7 @@ func (b *BooleanBuilder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.FixedWidthTypes.Boolean, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.FixedWidthTypes.Boolean, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res

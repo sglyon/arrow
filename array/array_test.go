@@ -70,7 +70,7 @@ func TestArray_NullN(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ar := array.MakeFromData(array.NewData(arrow.FixedWidthTypes.Boolean, test.l, []*memory.Buffer{memory.NewBuffer(test.bm), nil}, test.n))
+			ar := array.MakeFromData(array.NewData(arrow.FixedWidthTypes.Boolean, test.l, []*memory.Buffer{memory.NewBufferBytes(test.bm), nil}, test.n))
 			got := ar.NullN()
 			assert.Equal(t, test.exp, got)
 		})

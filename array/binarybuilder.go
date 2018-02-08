@@ -118,7 +118,7 @@ func (b *BinaryBuilder) Finish() *Binary {
 func (b *BinaryBuilder) finishInternal() *Data {
 	b.appendNextOffset()
 	offsets, values := b.offsets.Finish(), b.values.Finish()
-	res := NewData(b.typE, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, offsets, values}, b.nullN)
+	res := NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, offsets, values}, b.nullN)
 
 	b.builder.reset()
 

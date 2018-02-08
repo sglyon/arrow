@@ -3,6 +3,7 @@ package array_test
 import (
 	"testing"
 
+	"github.com/influxdata/arrow"
 	"github.com/influxdata/arrow/array"
 	"github.com/influxdata/arrow/memory"
 	"github.com/stretchr/testify/assert"
@@ -10,7 +11,7 @@ import (
 
 func TestBinaryBuilder(t *testing.T) {
 	mem := memory.NewGoAllocator()
-	ab := array.NewBinaryBuilder(mem)
+	ab := array.NewBinaryBuilder(mem, arrow.BinaryTypes.Binary)
 
 	exp := [][]byte{[]byte("foo"), []byte("bar"), nil, []byte("sydney"), []byte("cameron")}
 	for _, v := range exp {

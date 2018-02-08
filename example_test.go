@@ -56,11 +56,11 @@ func Example_minimal() {
 func Example_fromMemory() {
 	// create LSB packed bits with the following pattern:
 	// 01010011 11000101
-	data := memory.NewBuffer([]byte{0xca, 0xa3})
+	data := memory.NewBufferBytes([]byte{0xca, 0xa3})
 
 	// create LSB packed validity (null) bitmap, where every 4th element is null:
 	// 11101110 11101110
-	nullBitmap := memory.NewBuffer([]byte{0x77, 0x77})
+	nullBitmap := memory.NewBufferBytes([]byte{0x77, 0x77})
 
 	// Create a boolean array and lazily determine NullN using UnknownNullCount
 	bools := array.NewBoolean(16, data, nullBitmap, array.UnknownNullCount)

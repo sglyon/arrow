@@ -12,7 +12,7 @@ import (
 type Int64Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []int64
 }
 
@@ -102,7 +102,7 @@ func (b *Int64Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Int64, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Int64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -111,7 +111,7 @@ func (b *Int64Builder) finishInternal() *Data {
 type Uint64Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []uint64
 }
 
@@ -201,7 +201,7 @@ func (b *Uint64Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Uint64, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Uint64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -210,7 +210,7 @@ func (b *Uint64Builder) finishInternal() *Data {
 type Float64Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []float64
 }
 
@@ -300,7 +300,7 @@ func (b *Float64Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Float64, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Float64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -309,7 +309,7 @@ func (b *Float64Builder) finishInternal() *Data {
 type Int32Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []int32
 }
 
@@ -399,7 +399,7 @@ func (b *Int32Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Int32, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Int32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -408,7 +408,7 @@ func (b *Int32Builder) finishInternal() *Data {
 type Uint32Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []uint32
 }
 
@@ -498,7 +498,7 @@ func (b *Uint32Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Uint32, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Uint32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -507,7 +507,7 @@ func (b *Uint32Builder) finishInternal() *Data {
 type Float32Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []float32
 }
 
@@ -597,7 +597,7 @@ func (b *Float32Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Float32, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Float32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -606,7 +606,7 @@ func (b *Float32Builder) finishInternal() *Data {
 type Int16Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []int16
 }
 
@@ -696,7 +696,7 @@ func (b *Int16Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Int16, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Int16, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -705,7 +705,7 @@ func (b *Int16Builder) finishInternal() *Data {
 type Uint16Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []uint16
 }
 
@@ -795,7 +795,7 @@ func (b *Uint16Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Uint16, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Uint16, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -804,7 +804,7 @@ func (b *Uint16Builder) finishInternal() *Data {
 type Int8Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []int8
 }
 
@@ -894,7 +894,7 @@ func (b *Int8Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Int8, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Int8, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -903,7 +903,7 @@ func (b *Int8Builder) finishInternal() *Data {
 type Uint8Builder struct {
 	builder
 
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []uint8
 }
 
@@ -993,7 +993,7 @@ func (b *Uint8Builder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Uint8, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(arrow.PrimitiveTypes.Uint8, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
@@ -1003,7 +1003,7 @@ type TimestampBuilder struct {
 	builder
 
 	typE    *arrow.TimestampType
-	data    *memory.ResizableBuffer
+	data    *memory.Buffer
 	rawData []arrow.Timestamp
 }
 
@@ -1093,7 +1093,7 @@ func (b *TimestampBuilder) finishInternal() *Data {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(b.typE, b.length, []*memory.Buffer{&b.nullBitmap.Buffer, &b.data.Buffer}, b.nullN)
+	res := NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
 	return res
