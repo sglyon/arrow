@@ -22,6 +22,7 @@ type builder struct {
 }
 
 // Retain increases the reference count by 1.
+// Retain may be called simultaneously from multiple goroutines.
 func (b *builder) Retain() {
 	atomic.AddInt64(&b.refCount, 1)
 }

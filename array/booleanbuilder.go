@@ -22,6 +22,7 @@ func NewBooleanBuilder(mem memory.Allocator) *BooleanBuilder {
 
 // Release decreases the reference count by 1.
 // When the reference count goes to zero, the memory is freed.
+// Release may be called simultaneously from multiple goroutines.
 func (b *BooleanBuilder) Release() {
 	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
 

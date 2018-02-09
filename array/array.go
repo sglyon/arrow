@@ -33,9 +33,11 @@ type Interface interface {
 	Len() int
 
 	// Retain increases the reference count by 1.
+	// Retain may be called simultaneously from multiple goroutines.
 	Retain()
 
 	// Release decreases the reference count by 1.
+	// Release may be called simultaneously from multiple goroutines.
 	// When the reference count goes to zero, the memory is freed.
 	Release()
 }
@@ -52,11 +54,13 @@ type array struct {
 }
 
 // Retain increases the reference count by 1.
+// Retain may be called simultaneously from multiple goroutines.
 func (a *array) Retain() {
 	atomic.AddInt64(&a.refCount, 1)
 }
 
 // Release decreases the reference count by 1.
+// Release may be called simultaneously from multiple goroutines.
 // When the reference count goes to zero, the memory is freed.
 func (a *array) Release() {
 	debug.Assert(atomic.LoadInt64(&a.refCount) > 0, "too many releases")

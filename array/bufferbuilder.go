@@ -21,12 +21,14 @@ type bufferBuilder struct {
 }
 
 // Retain increases the reference count by 1.
+// Retain may be called simultaneously from multiple goroutines.
 func (b *bufferBuilder) Retain() {
 	atomic.AddInt64(&b.refCount, 1)
 }
 
 // Release decreases the reference count by 1.
 // When the reference count goes to zero, the memory is freed.
+// Release may be called simultaneously from multiple goroutines.
 func (b *bufferBuilder) Release() {
 	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
 

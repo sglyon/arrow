@@ -35,12 +35,14 @@ func NewData(typE arrow.DataType, length int, buffers []*memory.Buffer, nullN in
 }
 
 // Retain increases the reference count by 1.
+// Retain may be called simultaneously from multiple goroutines.
 func (d *Data) Retain() {
 	atomic.AddInt64(&d.refCount, 1)
 }
 
 // Release decreases the reference count by 1.
 // When the reference count goes to zero, the memory is freed.
+// Release may be called simultaneously from multiple goroutines.
 func (d *Data) Release() {
 	debug.Assert(atomic.LoadInt64(&d.refCount) > 0, "too many releases")
 

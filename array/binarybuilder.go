@@ -34,6 +34,7 @@ func NewBinaryBuilder(mem memory.Allocator, typE arrow.BinaryDataType) *BinaryBu
 
 // Release decreases the reference count by 1.
 // When the reference count goes to zero, the memory is freed.
+// Release may be called simultaneously from multiple goroutines.
 func (b *BinaryBuilder) Release() {
 	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
 
