@@ -111,9 +111,9 @@ func (b *Int64Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Int64Builder
+// NewInt64Array creates a Int64 array from the memory buffers used by the builder and resets the Int64Builder
 // so it can be used to build a new array.
-func (b *Int64Builder) NewArray() (a *Int64) {
+func (b *Int64Builder) NewInt64Array() (a *Int64) {
 	data := b.newData()
 	a = NewInt64Data(data)
 	data.Release()
@@ -235,9 +235,9 @@ func (b *Uint64Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Uint64Builder
+// NewUint64Array creates a Uint64 array from the memory buffers used by the builder and resets the Uint64Builder
 // so it can be used to build a new array.
-func (b *Uint64Builder) NewArray() (a *Uint64) {
+func (b *Uint64Builder) NewUint64Array() (a *Uint64) {
 	data := b.newData()
 	a = NewUint64Data(data)
 	data.Release()
@@ -359,9 +359,9 @@ func (b *Float64Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Float64Builder
+// NewFloat64Array creates a Float64 array from the memory buffers used by the builder and resets the Float64Builder
 // so it can be used to build a new array.
-func (b *Float64Builder) NewArray() (a *Float64) {
+func (b *Float64Builder) NewFloat64Array() (a *Float64) {
 	data := b.newData()
 	a = NewFloat64Data(data)
 	data.Release()
@@ -483,9 +483,9 @@ func (b *Int32Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Int32Builder
+// NewInt32Array creates a Int32 array from the memory buffers used by the builder and resets the Int32Builder
 // so it can be used to build a new array.
-func (b *Int32Builder) NewArray() (a *Int32) {
+func (b *Int32Builder) NewInt32Array() (a *Int32) {
 	data := b.newData()
 	a = NewInt32Data(data)
 	data.Release()
@@ -607,9 +607,9 @@ func (b *Uint32Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Uint32Builder
+// NewUint32Array creates a Uint32 array from the memory buffers used by the builder and resets the Uint32Builder
 // so it can be used to build a new array.
-func (b *Uint32Builder) NewArray() (a *Uint32) {
+func (b *Uint32Builder) NewUint32Array() (a *Uint32) {
 	data := b.newData()
 	a = NewUint32Data(data)
 	data.Release()
@@ -731,9 +731,9 @@ func (b *Float32Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Float32Builder
+// NewFloat32Array creates a Float32 array from the memory buffers used by the builder and resets the Float32Builder
 // so it can be used to build a new array.
-func (b *Float32Builder) NewArray() (a *Float32) {
+func (b *Float32Builder) NewFloat32Array() (a *Float32) {
 	data := b.newData()
 	a = NewFloat32Data(data)
 	data.Release()
@@ -855,9 +855,9 @@ func (b *Int16Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Int16Builder
+// NewInt16Array creates a Int16 array from the memory buffers used by the builder and resets the Int16Builder
 // so it can be used to build a new array.
-func (b *Int16Builder) NewArray() (a *Int16) {
+func (b *Int16Builder) NewInt16Array() (a *Int16) {
 	data := b.newData()
 	a = NewInt16Data(data)
 	data.Release()
@@ -979,9 +979,9 @@ func (b *Uint16Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Uint16Builder
+// NewUint16Array creates a Uint16 array from the memory buffers used by the builder and resets the Uint16Builder
 // so it can be used to build a new array.
-func (b *Uint16Builder) NewArray() (a *Uint16) {
+func (b *Uint16Builder) NewUint16Array() (a *Uint16) {
 	data := b.newData()
 	a = NewUint16Data(data)
 	data.Release()
@@ -1103,9 +1103,9 @@ func (b *Int8Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Int8Builder
+// NewInt8Array creates a Int8 array from the memory buffers used by the builder and resets the Int8Builder
 // so it can be used to build a new array.
-func (b *Int8Builder) NewArray() (a *Int8) {
+func (b *Int8Builder) NewInt8Array() (a *Int8) {
 	data := b.newData()
 	a = NewInt8Data(data)
 	data.Release()
@@ -1227,9 +1227,9 @@ func (b *Uint8Builder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the Uint8Builder
+// NewUint8Array creates a Uint8 array from the memory buffers used by the builder and resets the Uint8Builder
 // so it can be used to build a new array.
-func (b *Uint8Builder) NewArray() (a *Uint8) {
+func (b *Uint8Builder) NewUint8Array() (a *Uint8) {
 	data := b.newData()
 	a = NewUint8Data(data)
 	data.Release()
@@ -1352,9 +1352,9 @@ func (b *TimestampBuilder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the TimestampBuilder
+// NewTimestampArray creates a Timestamp array from the memory buffers used by the builder and resets the TimestampBuilder
 // so it can be used to build a new array.
-func (b *TimestampBuilder) NewArray() (a *Timestamp) {
+func (b *TimestampBuilder) NewTimestampArray() (a *Timestamp) {
 	data := b.newData()
 	a = NewTimestampData(data)
 	data.Release()

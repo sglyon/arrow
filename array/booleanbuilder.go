@@ -106,9 +106,9 @@ func (b *BooleanBuilder) Resize(n int) {
 	}
 }
 
-// NewArray creates an array from the memory buffers used by the builder and resets the BooleanBuilder
+// NewBooleanArray creates a Boolean array from the memory buffers used by the builder and resets the BooleanBuilder
 // so it can be used to build a new array.
-func (b *BooleanBuilder) NewArray() (a *Boolean) {
+func (b *BooleanBuilder) NewBooleanArray() (a *Boolean) {
 	data := b.newData()
 	a = NewBooleanData(data)
 	data.Release()

@@ -26,7 +26,7 @@ func Example_minimal() {
 	builder.Append(8)
 
 	// Finish building the int64 array and reset the builder.
-	ints := builder.NewArray()
+	ints := builder.NewInt64Array()
 
 	// Enumerate the values.
 	for i, v := range ints.Int64Values() {

@@ -34,12 +34,12 @@ func TestBinaryBuilder(t *testing.T) {
 		assert.Equal(t, v, ab.Value(i), "unexpected BinaryArrayBuilder.Value(%d)", i)
 	}
 
-	ar := ab.NewArray()
+	ar := ab.NewBinaryArray()
 	ab.Release()
 	ar.Release()
 
-	// check state of builder after finish
-	assert.Zero(t, ab.Len(), "unexpected ArrayBuilder.Len(), NewArray did not reset state")
-	assert.Zero(t, ab.Cap(), "unexpected ArrayBuilder.Cap(), NewArray did not reset state")
-	assert.Zero(t, ab.NullN(), "unexpected ArrayBuilder.NullN(), NewArray did not reset state")
+	// check state of builder after NewBinaryArray
+	assert.Zero(t, ab.Len(), "unexpected ArrayBuilder.Len(), NewBinaryArray did not reset state")
+	assert.Zero(t, ab.Cap(), "unexpected ArrayBuilder.Cap(), NewBinaryArray did not reset state")
+	assert.Zero(t, ab.NullN(), "unexpected ArrayBuilder.NullN(), NewBinaryArray did not reset state")
 }

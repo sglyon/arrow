@@ -24,7 +24,7 @@ func makeArrayFloat64(l int) *array.Float64 {
 	for i := 0; i < l; i++ {
 		fb.Append(float64(i))
 	}
-	return fb.NewArray()
+	return fb.NewFloat64Array()
 }
 
 func benchmarkFloat64Funcs_Sum(b *testing.B, n int) {

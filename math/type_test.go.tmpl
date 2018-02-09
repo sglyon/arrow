@@ -23,7 +23,7 @@ func makeArray{{.Name}}(l int) *array.{{.Name}} {
 	for i := 0; i < l; i++ {
 		fb.Append({{.Type}}(i))
 	}
-	return fb.NewArray()
+	return fb.New{{.Name}}Array()
 }
 
 func benchmark{{.Name}}Funcs_Sum(b *testing.B, n int) {
