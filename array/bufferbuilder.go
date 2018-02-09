@@ -1,19 +1,41 @@
 package array
 
 import (
+	"sync/atomic"
+
 	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/internal/debug"
 	"github.com/influxdata/arrow/memory"
 )
 
 // A bufferBuilder provides common functionality for populating memory with a sequence of type-specific values.
 // Specialized implementations provide type-safe APIs for appending and accessing the memory.
 type bufferBuilder struct {
+	refCount int64
 	mem      memory.Allocator
 	buffer   *memory.Buffer
 	length   int
 	capacity int
 
 	bytes []byte
+}
+
+// Retain increases the reference count by 1.
+func (b *bufferBuilder) Retain() {
+	atomic.AddInt64(&b.refCount, 1)
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *bufferBuilder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.buffer != nil {
+			b.buffer.Release()
+			b.buffer, b.bytes = nil, nil
+		}
+	}
 }
 
 // Len returns the length of the memory buffer in bytes.

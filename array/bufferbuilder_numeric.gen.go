@@ -14,7 +14,7 @@ type int32BufferBuilder struct {
 }
 
 func newInt32BufferBuilder(mem memory.Allocator) *int32BufferBuilder {
-	return &int32BufferBuilder{bufferBuilder: bufferBuilder{mem: mem}}
+	return &int32BufferBuilder{bufferBuilder: bufferBuilder{refCount: 1, mem: mem}}
 }
 
 // AppendValues appends the contents of v to the buffer, growing the buffer as needed.

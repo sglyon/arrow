@@ -2,8 +2,10 @@ package array
 
 import (
 	"math"
+	"sync/atomic"
 
 	"github.com/influxdata/arrow"
+	"github.com/influxdata/arrow/internal/debug"
 	"github.com/influxdata/arrow/memory"
 )
 
@@ -16,16 +18,39 @@ type BinaryBuilder struct {
 	builder
 
 	typE    arrow.BinaryDataType
-	offsets int32BufferBuilder
-	values  byteBufferBuilder
+	offsets *int32BufferBuilder
+	values  *byteBufferBuilder
 }
 
 func NewBinaryBuilder(mem memory.Allocator, typE arrow.BinaryDataType) *BinaryBuilder {
-	b := &BinaryBuilder{typE: typE}
-	b.builder.mem = mem
-	b.offsets.mem = mem
-	b.values.mem = mem
+	b := &BinaryBuilder{
+		builder: builder{refCount: 1, mem: mem},
+		typE:    typE,
+		offsets: newInt32BufferBuilder(mem),
+		values:  newByteBufferBuilder(mem),
+	}
 	return b
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *BinaryBuilder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.offsets != nil {
+			b.offsets.Release()
+			b.offsets = nil
+		}
+		if b.values != nil {
+			b.values.Release()
+			b.values = nil
+		}
+	}
 }
 
 func (b *BinaryBuilder) Append(v []byte) {
@@ -110,19 +135,23 @@ func (b *BinaryBuilder) Resize(n int) {
 }
 
 // Finish completes the transfers ownership of the buffers used to build the arrow
-func (b *BinaryBuilder) Finish() *Binary {
+func (b *BinaryBuilder) Finish() (a *Binary) {
 	data := b.finishInternal()
-	return NewBinaryData(data)
+	a = NewBinaryData(data)
+	data.Release()
+	return
 }
 
-func (b *BinaryBuilder) finishInternal() *Data {
+func (b *BinaryBuilder) finishInternal() (data *Data) {
 	b.appendNextOffset()
 	offsets, values := b.offsets.Finish(), b.values.Finish()
-	res := NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, offsets, values}, b.nullN)
+	data = NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, offsets, values}, b.nullN)
+	offsets.Release()
+	values.Release()
 
 	b.builder.reset()
 
-	return res
+	return
 }
 
 func (b *BinaryBuilder) appendNextOffset() {

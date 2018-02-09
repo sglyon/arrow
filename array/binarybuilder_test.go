@@ -10,7 +10,9 @@ import (
 )
 
 func TestBinaryBuilder(t *testing.T) {
-	mem := memory.NewGoAllocator()
+	mem := memory.NewCheckedAllocator(memory.NewGoAllocator())
+	defer mem.AssertSize(t, 0)
+
 	ab := array.NewBinaryBuilder(mem, arrow.BinaryTypes.Binary)
 
 	exp := [][]byte{[]byte("foo"), []byte("bar"), nil, []byte("sydney"), []byte("cameron")}
@@ -32,7 +34,9 @@ func TestBinaryBuilder(t *testing.T) {
 		assert.Equal(t, v, ab.Value(i), "unexpected BinaryArrayBuilder.Value(%d)", i)
 	}
 
-	ab.Finish()
+	ar := ab.Finish()
+	ab.Release()
+	ar.Release()
 
 	// check state of builder after finish
 	assert.Zero(t, ab.Len(), "unexpected ArrayBuilder.Len(), Finish did not reset state")

@@ -1,26 +1,53 @@
 package memory
 
+import (
+	"sync/atomic"
+
+	"github.com/influxdata/arrow/internal/debug"
+)
+
 type Buffer struct {
-	buf     []byte
-	length  int
-	mutable bool
-	mem     Allocator
+	refCount int64
+	buf      []byte
+	length   int
+	mutable  bool
+	mem      Allocator
 }
 
 // NewBufferBytes creates a fixed-size buffer from the specified data.
 func NewBufferBytes(data []byte) *Buffer {
-	return &Buffer{buf: data, length: len(data)}
+	return &Buffer{refCount: 0, buf: data, length: len(data)}
 }
 
 // NewBuffer creates a mutable, resizable buffer with an Allocator for managing memory.
 func NewResizableBuffer(mem Allocator) *Buffer {
-	return &Buffer{mutable: true, mem: mem}
+	return &Buffer{refCount: 1, mutable: true, mem: mem}
 }
 
-// Buf returns the slice of memory allocated by the Buffer.
+// Retain increases the reference count by 1.
+func (b *Buffer) Retain() {
+	if b.mem != nil {
+		atomic.AddInt64(&b.refCount, 1)
+	}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Buffer) Release() {
+	if b.mem != nil {
+		debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+		if atomic.AddInt64(&b.refCount, -1) == 0 {
+			b.mem.Free(b.buf)
+			b.buf, b.length = nil, 0
+		}
+	}
+}
+
+// Buf returns the slice of memory allocated by the Buffer, which is adjusted by calling Reserve.
 func (b *Buffer) Buf() []byte { return b.buf }
 
-// Bytes returns a slice of size Len.
+// Bytes returns a slice of size Len, which is adjusted by calling Resize.
 func (b *Buffer) Bytes() []byte { return b.buf[:b.length] }
 func (b *Buffer) Mutable() bool { return b.mutable }
 func (b *Buffer) Len() int      { return b.length }

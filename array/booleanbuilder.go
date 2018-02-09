@@ -1,8 +1,11 @@
 package array
 
 import (
+	"sync/atomic"
+
 	"github.com/influxdata/arrow"
 	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/internal/debug"
 	"github.com/influxdata/arrow/memory"
 )
 
@@ -14,7 +17,24 @@ type BooleanBuilder struct {
 }
 
 func NewBooleanBuilder(mem memory.Allocator) *BooleanBuilder {
-	return &BooleanBuilder{builder: builder{mem: mem}}
+	return &BooleanBuilder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *BooleanBuilder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *BooleanBuilder) Append(v bool) {
@@ -85,9 +105,11 @@ func (b *BooleanBuilder) Resize(n int) {
 	}
 }
 
-func (b *BooleanBuilder) Finish() *Boolean {
+func (b *BooleanBuilder) Finish() (a *Boolean) {
 	data := b.finishInternal()
-	return NewBooleanData(data)
+	a = NewBooleanData(data)
+	data.Release()
+	return
 }
 
 func (b *BooleanBuilder) finishInternal() *Data {
@@ -98,6 +120,10 @@ func (b *BooleanBuilder) finishInternal() *Data {
 	}
 	res := NewData(arrow.FixedWidthTypes.Boolean, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
+
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
 
 	return res
 }

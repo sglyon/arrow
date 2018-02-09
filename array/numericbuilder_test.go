@@ -9,7 +9,9 @@ import (
 )
 
 func TestNewFloat64Builder(t *testing.T) {
-	mem := memory.NewGoAllocator()
+	mem := memory.NewCheckedAllocator(memory.NewGoAllocator())
+	defer mem.AssertSize(t, 0)
+
 	ab := array.NewFloat64Builder(mem)
 
 	ab.Append(1)
@@ -40,6 +42,8 @@ func TestNewFloat64Builder(t *testing.T) {
 	assert.Equal(t, []byte{0xb7}, a.NullBitmapBytes()[:1]) // 4 bytes due to minBuilderCapacity
 	assert.Len(t, a.Float64Values(), 10, "unexpected length of Float64Values")
 
+	a.Release()
+
 	ab.Append(7)
 	ab.Append(8)
 
@@ -48,4 +52,6 @@ func TestNewFloat64Builder(t *testing.T) {
 	assert.Equal(t, 0, a.NullN())
 	assert.Equal(t, []float64{7, 8}, a.Float64Values())
 	assert.Len(t, a.Float64Values(), 2)
+
+	a.Release()
 }

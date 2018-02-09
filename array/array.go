@@ -1,8 +1,11 @@
 package array
 
 import (
+	"sync/atomic"
+
 	"github.com/influxdata/arrow"
 	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/internal/debug"
 )
 
 // A type which satisfies array.Interface represents an immutable sequence of values.
@@ -28,6 +31,13 @@ type Interface interface {
 
 	// Len returns the number of elements in the array.
 	Len() int
+
+	// Retain increases the reference count by 1.
+	Retain()
+
+	// Release decreases the reference count by 1.
+	// When the reference count goes to zero, the memory is freed.
+	Release()
 }
 
 const (
@@ -36,8 +46,25 @@ const (
 )
 
 type array struct {
+	refCount        int64
 	data            *Data
 	nullBitmapBytes []byte
+}
+
+// Retain increases the reference count by 1.
+func (a *array) Retain() {
+	atomic.AddInt64(&a.refCount, 1)
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (a *array) Release() {
+	debug.Assert(atomic.LoadInt64(&a.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&a.refCount, -1) == 0 {
+		a.data.Release()
+		a.data, a.nullBitmapBytes = nil, nil
+	}
 }
 
 // DataType returns the type metadata for this instance.
@@ -72,6 +99,11 @@ func (a *array) IsValid(i int) bool {
 }
 
 func (a *array) setData(data *Data) {
+	if a.data != nil {
+		a.data.Release()
+	}
+
+	data.Retain()
 	if len(data.buffers) > 0 && data.buffers[0] != nil {
 		a.nullBitmapBytes = data.buffers[0].Bytes()
 	}

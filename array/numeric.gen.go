@@ -15,6 +15,7 @@ type Int64 struct {
 
 func NewInt64Data(data *Data) *Int64 {
 	a := &Int64{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -38,6 +39,7 @@ type Uint64 struct {
 
 func NewUint64Data(data *Data) *Uint64 {
 	a := &Uint64{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -61,6 +63,7 @@ type Float64 struct {
 
 func NewFloat64Data(data *Data) *Float64 {
 	a := &Float64{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -84,6 +87,7 @@ type Int32 struct {
 
 func NewInt32Data(data *Data) *Int32 {
 	a := &Int32{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -107,6 +111,7 @@ type Uint32 struct {
 
 func NewUint32Data(data *Data) *Uint32 {
 	a := &Uint32{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -130,6 +135,7 @@ type Float32 struct {
 
 func NewFloat32Data(data *Data) *Float32 {
 	a := &Float32{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -153,6 +159,7 @@ type Int16 struct {
 
 func NewInt16Data(data *Data) *Int16 {
 	a := &Int16{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -176,6 +183,7 @@ type Uint16 struct {
 
 func NewUint16Data(data *Data) *Uint16 {
 	a := &Uint16{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -199,6 +207,7 @@ type Int8 struct {
 
 func NewInt8Data(data *Data) *Int8 {
 	a := &Int8{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -222,6 +231,7 @@ type Uint8 struct {
 
 func NewUint8Data(data *Data) *Uint8 {
 	a := &Uint8{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }
@@ -245,6 +255,7 @@ type Timestamp struct {
 
 func NewTimestampData(data *Data) *Timestamp {
 	a := &Timestamp{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }

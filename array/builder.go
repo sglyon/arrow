@@ -1,6 +1,8 @@
 package array
 
 import (
+	"sync/atomic"
+
 	"github.com/influxdata/arrow/internal/bitutil"
 	"github.com/influxdata/arrow/memory"
 )
@@ -11,11 +13,17 @@ const (
 
 // builder provides common functionality for managing the validity bitmap (nulls) when building arrays.
 type builder struct {
+	refCount   int64
 	mem        memory.Allocator
 	nullBitmap *memory.Buffer
 	nullN      int
 	length     int
 	capacity   int
+}
+
+// Retain increases the reference count by 1.
+func (b *builder) Retain() {
+	atomic.AddInt64(&b.refCount, 1)
 }
 
 // Len returns the number of elements in the array builder.
@@ -36,7 +44,11 @@ func (b *builder) init(capacity int) {
 }
 
 func (b *builder) reset() {
-	b.nullBitmap = nil
+	if b.nullBitmap != nil {
+		b.nullBitmap.Release()
+		b.nullBitmap = nil
+	}
+
 	b.nullN = 0
 	b.length = 0
 	b.capacity = 0

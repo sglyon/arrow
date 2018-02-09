@@ -10,7 +10,9 @@ import (
 )
 
 func TestBooleanBuilder_AppendValues(t *testing.T) {
-	mem := memory.NewGoAllocator()
+	mem := memory.NewCheckedAllocator(memory.NewGoAllocator())
+	defer mem.AssertSize(t, 0)
+
 	b := array.NewBooleanBuilder(mem)
 
 	exp := tools.Bools(1, 1, 0, 1, 1, 0, 1, 0)
@@ -18,8 +20,10 @@ func TestBooleanBuilder_AppendValues(t *testing.T) {
 
 	b.AppendValues(exp, nil)
 	a := b.Finish()
+	b.Release()
 	for i := 0; i < a.Len(); i++ {
 		got[i] = a.Value(i)
 	}
 	assert.Equal(t, exp, got)
+	a.Release()
 }

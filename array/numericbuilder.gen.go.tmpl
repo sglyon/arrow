@@ -2,6 +2,7 @@ package array
 
 import (
 	"github.com/influxdata/arrow"
+	"github.com/influxdata/arrow/internal/debug"
 	"github.com/influxdata/arrow/memory"
 )
 
@@ -19,13 +20,30 @@ type {{.Name}}Builder struct {
 
 {{if .Opt.Parametric}}
 func New{{.Name}}Builder(mem memory.Allocator, typE *arrow.{{.Name}}Type) *{{.Name}}Builder {
-	return &{{.Name}}Builder{builder: builder{mem: mem}, typE: typE}
+	return &{{.Name}}Builder{builder: builder{refCount:1, mem: mem}, typE: typE}
 }
 {{else}}
 func New{{.Name}}Builder(mem memory.Allocator) *{{.Name}}Builder {
-	return &{{.Name}}Builder{builder: builder{mem: mem}}
+	return &{{.Name}}Builder{builder: builder{refCount:1, mem: mem}}
 }
 {{end}}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *{{.Name}}Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
+}
 
 func (b *{{.Name}}Builder) Append(v {{or .QualifiedType .Type}}) {
 	b.Reserve(1)
@@ -98,24 +116,30 @@ func (b *{{.Name}}Builder) Resize(n int) {
 	}
 }
 
-func (b *{{.Name}}Builder) Finish() *{{.Name}} {
+func (b *{{.Name}}Builder) Finish() (a *{{.Name}}) {
 	data := b.finishInternal()
-	return New{{.Name}}Data(data)
+	a = New{{.Name}}Data(data)
+	data.Release()
+	return
 }
 
-func (b *{{.Name}}Builder) finishInternal() *Data {
+func (b *{{.Name}}Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.{{.Name}}Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
 {{if .Opt.Parametric -}}
-	res := NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 {{else -}}
-	res := NewData(arrow.PrimitiveTypes.{{.Name}}, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.{{.Name}}, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 {{end -}}
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 {{end}}

@@ -16,6 +16,7 @@ type Binary struct {
 // NewBinaryData constructs a new Binary array from data.
 func NewBinaryData(data *Data) *Binary {
 	a := &Binary{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }

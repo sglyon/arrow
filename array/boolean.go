@@ -21,6 +21,7 @@ func NewBoolean(length int, data *memory.Buffer, nullBitmap *memory.Buffer, null
 
 func NewBooleanData(data *Data) *Boolean {
 	a := &Boolean{}
+	a.refCount = 1
 	a.setData(data)
 	return a
 }

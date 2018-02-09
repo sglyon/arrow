@@ -7,7 +7,7 @@ type byteBufferBuilder struct {
 }
 
 func newByteBufferBuilder(mem memory.Allocator) *byteBufferBuilder {
-	return &byteBufferBuilder{bufferBuilder: bufferBuilder{mem: mem}}
+	return &byteBufferBuilder{bufferBuilder: bufferBuilder{refCount: 1, mem: mem}}
 }
 
 func (b *byteBufferBuilder) Values() []byte   { return b.Bytes() }

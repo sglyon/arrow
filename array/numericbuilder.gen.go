@@ -4,8 +4,11 @@
 package array
 
 import (
+	"sync/atomic"
+
 	"github.com/influxdata/arrow"
 	"github.com/influxdata/arrow/internal/bitutil"
+	"github.com/influxdata/arrow/internal/debug"
 	"github.com/influxdata/arrow/memory"
 )
 
@@ -17,7 +20,24 @@ type Int64Builder struct {
 }
 
 func NewInt64Builder(mem memory.Allocator) *Int64Builder {
-	return &Int64Builder{builder: builder{mem: mem}}
+	return &Int64Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Int64Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Int64Builder) Append(v int64) {
@@ -91,21 +111,27 @@ func (b *Int64Builder) Resize(n int) {
 	}
 }
 
-func (b *Int64Builder) Finish() *Int64 {
+func (b *Int64Builder) Finish() (a *Int64) {
 	data := b.finishInternal()
-	return NewInt64Data(data)
+	a = NewInt64Data(data)
+	data.Release()
+	return
 }
 
-func (b *Int64Builder) finishInternal() *Data {
+func (b *Int64Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Int64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Int64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Int64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Uint64Builder struct {
@@ -116,7 +142,24 @@ type Uint64Builder struct {
 }
 
 func NewUint64Builder(mem memory.Allocator) *Uint64Builder {
-	return &Uint64Builder{builder: builder{mem: mem}}
+	return &Uint64Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Uint64Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Uint64Builder) Append(v uint64) {
@@ -190,21 +233,27 @@ func (b *Uint64Builder) Resize(n int) {
 	}
 }
 
-func (b *Uint64Builder) Finish() *Uint64 {
+func (b *Uint64Builder) Finish() (a *Uint64) {
 	data := b.finishInternal()
-	return NewUint64Data(data)
+	a = NewUint64Data(data)
+	data.Release()
+	return
 }
 
-func (b *Uint64Builder) finishInternal() *Data {
+func (b *Uint64Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Uint64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Uint64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Uint64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Float64Builder struct {
@@ -215,7 +264,24 @@ type Float64Builder struct {
 }
 
 func NewFloat64Builder(mem memory.Allocator) *Float64Builder {
-	return &Float64Builder{builder: builder{mem: mem}}
+	return &Float64Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Float64Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Float64Builder) Append(v float64) {
@@ -289,21 +355,27 @@ func (b *Float64Builder) Resize(n int) {
 	}
 }
 
-func (b *Float64Builder) Finish() *Float64 {
+func (b *Float64Builder) Finish() (a *Float64) {
 	data := b.finishInternal()
-	return NewFloat64Data(data)
+	a = NewFloat64Data(data)
+	data.Release()
+	return
 }
 
-func (b *Float64Builder) finishInternal() *Data {
+func (b *Float64Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Float64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Float64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Float64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Int32Builder struct {
@@ -314,7 +386,24 @@ type Int32Builder struct {
 }
 
 func NewInt32Builder(mem memory.Allocator) *Int32Builder {
-	return &Int32Builder{builder: builder{mem: mem}}
+	return &Int32Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Int32Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Int32Builder) Append(v int32) {
@@ -388,21 +477,27 @@ func (b *Int32Builder) Resize(n int) {
 	}
 }
 
-func (b *Int32Builder) Finish() *Int32 {
+func (b *Int32Builder) Finish() (a *Int32) {
 	data := b.finishInternal()
-	return NewInt32Data(data)
+	a = NewInt32Data(data)
+	data.Release()
+	return
 }
 
-func (b *Int32Builder) finishInternal() *Data {
+func (b *Int32Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Int32Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Int32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Int32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Uint32Builder struct {
@@ -413,7 +508,24 @@ type Uint32Builder struct {
 }
 
 func NewUint32Builder(mem memory.Allocator) *Uint32Builder {
-	return &Uint32Builder{builder: builder{mem: mem}}
+	return &Uint32Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Uint32Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Uint32Builder) Append(v uint32) {
@@ -487,21 +599,27 @@ func (b *Uint32Builder) Resize(n int) {
 	}
 }
 
-func (b *Uint32Builder) Finish() *Uint32 {
+func (b *Uint32Builder) Finish() (a *Uint32) {
 	data := b.finishInternal()
-	return NewUint32Data(data)
+	a = NewUint32Data(data)
+	data.Release()
+	return
 }
 
-func (b *Uint32Builder) finishInternal() *Data {
+func (b *Uint32Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Uint32Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Uint32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Uint32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Float32Builder struct {
@@ -512,7 +630,24 @@ type Float32Builder struct {
 }
 
 func NewFloat32Builder(mem memory.Allocator) *Float32Builder {
-	return &Float32Builder{builder: builder{mem: mem}}
+	return &Float32Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Float32Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Float32Builder) Append(v float32) {
@@ -586,21 +721,27 @@ func (b *Float32Builder) Resize(n int) {
 	}
 }
 
-func (b *Float32Builder) Finish() *Float32 {
+func (b *Float32Builder) Finish() (a *Float32) {
 	data := b.finishInternal()
-	return NewFloat32Data(data)
+	a = NewFloat32Data(data)
+	data.Release()
+	return
 }
 
-func (b *Float32Builder) finishInternal() *Data {
+func (b *Float32Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Float32Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Float32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Float32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Int16Builder struct {
@@ -611,7 +752,24 @@ type Int16Builder struct {
 }
 
 func NewInt16Builder(mem memory.Allocator) *Int16Builder {
-	return &Int16Builder{builder: builder{mem: mem}}
+	return &Int16Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Int16Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Int16Builder) Append(v int16) {
@@ -685,21 +843,27 @@ func (b *Int16Builder) Resize(n int) {
 	}
 }
 
-func (b *Int16Builder) Finish() *Int16 {
+func (b *Int16Builder) Finish() (a *Int16) {
 	data := b.finishInternal()
-	return NewInt16Data(data)
+	a = NewInt16Data(data)
+	data.Release()
+	return
 }
 
-func (b *Int16Builder) finishInternal() *Data {
+func (b *Int16Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Int16Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Int16, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Int16, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Uint16Builder struct {
@@ -710,7 +874,24 @@ type Uint16Builder struct {
 }
 
 func NewUint16Builder(mem memory.Allocator) *Uint16Builder {
-	return &Uint16Builder{builder: builder{mem: mem}}
+	return &Uint16Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Uint16Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Uint16Builder) Append(v uint16) {
@@ -784,21 +965,27 @@ func (b *Uint16Builder) Resize(n int) {
 	}
 }
 
-func (b *Uint16Builder) Finish() *Uint16 {
+func (b *Uint16Builder) Finish() (a *Uint16) {
 	data := b.finishInternal()
-	return NewUint16Data(data)
+	a = NewUint16Data(data)
+	data.Release()
+	return
 }
 
-func (b *Uint16Builder) finishInternal() *Data {
+func (b *Uint16Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Uint16Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Uint16, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Uint16, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Int8Builder struct {
@@ -809,7 +996,24 @@ type Int8Builder struct {
 }
 
 func NewInt8Builder(mem memory.Allocator) *Int8Builder {
-	return &Int8Builder{builder: builder{mem: mem}}
+	return &Int8Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Int8Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Int8Builder) Append(v int8) {
@@ -883,21 +1087,27 @@ func (b *Int8Builder) Resize(n int) {
 	}
 }
 
-func (b *Int8Builder) Finish() *Int8 {
+func (b *Int8Builder) Finish() (a *Int8) {
 	data := b.finishInternal()
-	return NewInt8Data(data)
+	a = NewInt8Data(data)
+	data.Release()
+	return
 }
 
-func (b *Int8Builder) finishInternal() *Data {
+func (b *Int8Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Int8Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Int8, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Int8, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type Uint8Builder struct {
@@ -908,7 +1118,24 @@ type Uint8Builder struct {
 }
 
 func NewUint8Builder(mem memory.Allocator) *Uint8Builder {
-	return &Uint8Builder{builder: builder{mem: mem}}
+	return &Uint8Builder{builder: builder{refCount: 1, mem: mem}}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *Uint8Builder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *Uint8Builder) Append(v uint8) {
@@ -982,21 +1209,27 @@ func (b *Uint8Builder) Resize(n int) {
 	}
 }
 
-func (b *Uint8Builder) Finish() *Uint8 {
+func (b *Uint8Builder) Finish() (a *Uint8) {
 	data := b.finishInternal()
-	return NewUint8Data(data)
+	a = NewUint8Data(data)
+	data.Release()
+	return
 }
 
-func (b *Uint8Builder) finishInternal() *Data {
+func (b *Uint8Builder) finishInternal() (data *Data) {
 	bytesRequired := arrow.Uint8Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(arrow.PrimitiveTypes.Uint8, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(arrow.PrimitiveTypes.Uint8, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
 
 type TimestampBuilder struct {
@@ -1008,7 +1241,24 @@ type TimestampBuilder struct {
 }
 
 func NewTimestampBuilder(mem memory.Allocator, typE *arrow.TimestampType) *TimestampBuilder {
-	return &TimestampBuilder{builder: builder{mem: mem}, typE: typE}
+	return &TimestampBuilder{builder: builder{refCount: 1, mem: mem}, typE: typE}
+}
+
+// Release decreases the reference count by 1.
+// When the reference count goes to zero, the memory is freed.
+func (b *TimestampBuilder) Release() {
+	debug.Assert(atomic.LoadInt64(&b.refCount) > 0, "too many releases")
+
+	if atomic.AddInt64(&b.refCount, -1) == 0 {
+		if b.nullBitmap != nil {
+			b.nullBitmap.Release()
+			b.nullBitmap = nil
+		}
+		if b.data != nil {
+			b.data.Release()
+			b.data = nil
+		}
+	}
 }
 
 func (b *TimestampBuilder) Append(v arrow.Timestamp) {
@@ -1082,19 +1332,25 @@ func (b *TimestampBuilder) Resize(n int) {
 	}
 }
 
-func (b *TimestampBuilder) Finish() *Timestamp {
+func (b *TimestampBuilder) Finish() (a *Timestamp) {
 	data := b.finishInternal()
-	return NewTimestampData(data)
+	a = NewTimestampData(data)
+	data.Release()
+	return
 }
 
-func (b *TimestampBuilder) finishInternal() *Data {
+func (b *TimestampBuilder) finishInternal() (data *Data) {
 	bytesRequired := arrow.TimestampTraits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
 		b.data.Resize(bytesRequired)
 	}
-	res := NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
+	data = NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	return res
+	b.data.Release()
+	b.data = nil
+	b.rawData = nil
+
+	return
 }
