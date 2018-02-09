@@ -6,6 +6,29 @@ standardized language-independent columnar memory format for flat and hierarchic
 organized for efficient analytic operations on modern hardware. It also provides computational 
 libraries and zero-copy streaming messaging and inter-process communication.
 
+
+Reference Counting
+------------------
+
+arrow makes use of reference counting so that it can track when memory buffers are no longer used. This allows 
+arrow to update resource accounting, pool memory such and track overall memory usage as objects are created 
+and released. Types expose two methods to deal with this pattern. The `Retain` method will increase the 
+reference count by 1 and `Release` method will reduce the count by 1. Once the reference count of an object 
+is zero, any associated object will be freed. `Retain` and `Release` are safe to call from multiple goroutines.
+
+### When to call `Retain` / `Release`?
+
+* If you are passed an object and wish to take ownership of it, you must call `Retain`. You must later pair this 
+  with a call to `Release` when you no longer need the object.  "Taking ownership" typically means you
+  wish to access the object outside the scope of the current function call.
+  
+* You own any object you create via functions whose name begins with `New` or `Copy` or when receiving
+  an object over a channel. Therefore you must call `Release` once you no longer need the object.
+  
+* If you send an object over a channel, you must call `Retain` before sending it as the receiver is
+  assumed to own the object and will later call `Release` when it no longer needs the object. 
+
+
 Performance
 -----------
 
