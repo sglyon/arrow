@@ -85,6 +85,9 @@ func (b *bufferBuilder) Append(v []byte) {
 
 // Reset returns the buffer to an empty state. Reset releases the memory and sets the length and capacity to zero.
 func (b *bufferBuilder) Reset() {
+	if b.buffer != nil {
+		b.buffer.Release()
+	}
 	b.buffer, b.bytes = nil, nil
 	b.capacity, b.length = 0, 0
 }
@@ -95,6 +98,7 @@ func (b *bufferBuilder) Finish() (buffer *memory.Buffer) {
 		b.buffer.ResizeNoShrink(b.length)
 	}
 	buffer = b.buffer
+	b.buffer = nil
 	b.Reset()
 	return
 }
