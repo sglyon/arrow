@@ -39,7 +39,7 @@ func TestBinaryBuilder(t *testing.T) {
 	ar.Release()
 
 	// check state of builder after finish
-	assert.Zero(t, ab.Len(), "unexpected ArrayBuilder.Len(), Finish did not reset state")
-	assert.Zero(t, ab.Cap(), "unexpected ArrayBuilder.Cap(), Finish did not reset state")
-	assert.Zero(t, ab.NullN(), "unexpected ArrayBuilder.NullN(), Finish did not reset state")
+	assert.Zero(t, ab.Len(), "unexpected ArrayBuilder.Len(), NewArray did not reset state")
+	assert.Zero(t, ab.Cap(), "unexpected ArrayBuilder.Cap(), NewArray did not reset state")
+	assert.Zero(t, ab.NullN(), "unexpected ArrayBuilder.NullN(), NewArray did not reset state")
 }

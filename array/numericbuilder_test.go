@@ -25,16 +25,16 @@ func TestNewFloat64Builder(t *testing.T) {
 	ab.Append(9)
 	ab.Append(10)
 
-	// check state of builder before Finish
+	// check state of builder before NewArray
 	assert.Equal(t, 10, ab.Len(), "unexpected Len()")
 	assert.Equal(t, 2, ab.NullN(), "unexpected NullN()")
 
 	a := ab.NewArray()
 
-	// check state of builder after Finish
-	assert.Zero(t, ab.Len(), "unexpected ArrayBuilder.Len(), Finish did not reset state")
-	assert.Zero(t, ab.Cap(), "unexpected ArrayBuilder.Cap(), Finish did not reset state")
-	assert.Zero(t, ab.NullN(), "unexpected ArrayBuilder.NullN(), Finish did not reset state")
+	// check state of builder after NewArray
+	assert.Zero(t, ab.Len(), "unexpected ArrayBuilder.Len(), NewArray did not reset state")
+	assert.Zero(t, ab.Cap(), "unexpected ArrayBuilder.Cap(), NewArray did not reset state")
+	assert.Zero(t, ab.NullN(), "unexpected ArrayBuilder.NullN(), NewArray did not reset state")
 
 	// check state of array
 	assert.Equal(t, 2, a.NullN(), "unexpected null count")
