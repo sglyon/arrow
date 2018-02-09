@@ -19,7 +19,7 @@ func TestBooleanBuilder_AppendValues(t *testing.T) {
 	got := make([]bool, len(exp))
 
 	b.AppendValues(exp, nil)
-	a := b.Finish()
+	a := b.NewArray()
 	b.Release()
 	for i := 0; i < a.Len(); i++ {
 		got[i] = a.Value(i)

@@ -116,14 +116,16 @@ func (b *{{.Name}}Builder) Resize(n int) {
 	}
 }
 
-func (b *{{.Name}}Builder) Finish() (a *{{.Name}}) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the {{.Name}}Builder
+// so it can be used to build a new array.
+func (b *{{.Name}}Builder) NewArray() (a *{{.Name}}) {
+	data := b.newData()
 	a = New{{.Name}}Data(data)
 	data.Release()
 	return
 }
 
-func (b *{{.Name}}Builder) finishInternal() (data *Data) {
+func (b *{{.Name}}Builder) newData() (data *Data) {
 	bytesRequired := arrow.{{.Name}}Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers

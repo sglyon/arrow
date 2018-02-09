@@ -111,14 +111,16 @@ func (b *Int64Builder) Resize(n int) {
 	}
 }
 
-func (b *Int64Builder) Finish() (a *Int64) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Int64Builder
+// so it can be used to build a new array.
+func (b *Int64Builder) NewArray() (a *Int64) {
+	data := b.newData()
 	a = NewInt64Data(data)
 	data.Release()
 	return
 }
 
-func (b *Int64Builder) finishInternal() (data *Data) {
+func (b *Int64Builder) newData() (data *Data) {
 	bytesRequired := arrow.Int64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -233,14 +235,16 @@ func (b *Uint64Builder) Resize(n int) {
 	}
 }
 
-func (b *Uint64Builder) Finish() (a *Uint64) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Uint64Builder
+// so it can be used to build a new array.
+func (b *Uint64Builder) NewArray() (a *Uint64) {
+	data := b.newData()
 	a = NewUint64Data(data)
 	data.Release()
 	return
 }
 
-func (b *Uint64Builder) finishInternal() (data *Data) {
+func (b *Uint64Builder) newData() (data *Data) {
 	bytesRequired := arrow.Uint64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -355,14 +359,16 @@ func (b *Float64Builder) Resize(n int) {
 	}
 }
 
-func (b *Float64Builder) Finish() (a *Float64) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Float64Builder
+// so it can be used to build a new array.
+func (b *Float64Builder) NewArray() (a *Float64) {
+	data := b.newData()
 	a = NewFloat64Data(data)
 	data.Release()
 	return
 }
 
-func (b *Float64Builder) finishInternal() (data *Data) {
+func (b *Float64Builder) newData() (data *Data) {
 	bytesRequired := arrow.Float64Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -477,14 +483,16 @@ func (b *Int32Builder) Resize(n int) {
 	}
 }
 
-func (b *Int32Builder) Finish() (a *Int32) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Int32Builder
+// so it can be used to build a new array.
+func (b *Int32Builder) NewArray() (a *Int32) {
+	data := b.newData()
 	a = NewInt32Data(data)
 	data.Release()
 	return
 }
 
-func (b *Int32Builder) finishInternal() (data *Data) {
+func (b *Int32Builder) newData() (data *Data) {
 	bytesRequired := arrow.Int32Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -599,14 +607,16 @@ func (b *Uint32Builder) Resize(n int) {
 	}
 }
 
-func (b *Uint32Builder) Finish() (a *Uint32) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Uint32Builder
+// so it can be used to build a new array.
+func (b *Uint32Builder) NewArray() (a *Uint32) {
+	data := b.newData()
 	a = NewUint32Data(data)
 	data.Release()
 	return
 }
 
-func (b *Uint32Builder) finishInternal() (data *Data) {
+func (b *Uint32Builder) newData() (data *Data) {
 	bytesRequired := arrow.Uint32Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -721,14 +731,16 @@ func (b *Float32Builder) Resize(n int) {
 	}
 }
 
-func (b *Float32Builder) Finish() (a *Float32) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Float32Builder
+// so it can be used to build a new array.
+func (b *Float32Builder) NewArray() (a *Float32) {
+	data := b.newData()
 	a = NewFloat32Data(data)
 	data.Release()
 	return
 }
 
-func (b *Float32Builder) finishInternal() (data *Data) {
+func (b *Float32Builder) newData() (data *Data) {
 	bytesRequired := arrow.Float32Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -843,14 +855,16 @@ func (b *Int16Builder) Resize(n int) {
 	}
 }
 
-func (b *Int16Builder) Finish() (a *Int16) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Int16Builder
+// so it can be used to build a new array.
+func (b *Int16Builder) NewArray() (a *Int16) {
+	data := b.newData()
 	a = NewInt16Data(data)
 	data.Release()
 	return
 }
 
-func (b *Int16Builder) finishInternal() (data *Data) {
+func (b *Int16Builder) newData() (data *Data) {
 	bytesRequired := arrow.Int16Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -965,14 +979,16 @@ func (b *Uint16Builder) Resize(n int) {
 	}
 }
 
-func (b *Uint16Builder) Finish() (a *Uint16) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Uint16Builder
+// so it can be used to build a new array.
+func (b *Uint16Builder) NewArray() (a *Uint16) {
+	data := b.newData()
 	a = NewUint16Data(data)
 	data.Release()
 	return
 }
 
-func (b *Uint16Builder) finishInternal() (data *Data) {
+func (b *Uint16Builder) newData() (data *Data) {
 	bytesRequired := arrow.Uint16Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -1087,14 +1103,16 @@ func (b *Int8Builder) Resize(n int) {
 	}
 }
 
-func (b *Int8Builder) Finish() (a *Int8) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Int8Builder
+// so it can be used to build a new array.
+func (b *Int8Builder) NewArray() (a *Int8) {
+	data := b.newData()
 	a = NewInt8Data(data)
 	data.Release()
 	return
 }
 
-func (b *Int8Builder) finishInternal() (data *Data) {
+func (b *Int8Builder) newData() (data *Data) {
 	bytesRequired := arrow.Int8Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -1209,14 +1227,16 @@ func (b *Uint8Builder) Resize(n int) {
 	}
 }
 
-func (b *Uint8Builder) Finish() (a *Uint8) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the Uint8Builder
+// so it can be used to build a new array.
+func (b *Uint8Builder) NewArray() (a *Uint8) {
+	data := b.newData()
 	a = NewUint8Data(data)
 	data.Release()
 	return
 }
 
-func (b *Uint8Builder) finishInternal() (data *Data) {
+func (b *Uint8Builder) newData() (data *Data) {
 	bytesRequired := arrow.Uint8Traits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
@@ -1332,14 +1352,16 @@ func (b *TimestampBuilder) Resize(n int) {
 	}
 }
 
-func (b *TimestampBuilder) Finish() (a *Timestamp) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the TimestampBuilder
+// so it can be used to build a new array.
+func (b *TimestampBuilder) NewArray() (a *Timestamp) {
+	data := b.newData()
 	a = NewTimestampData(data)
 	data.Release()
 	return
 }
 
-func (b *TimestampBuilder) finishInternal() (data *Data) {
+func (b *TimestampBuilder) newData() (data *Data) {
 	bytesRequired := arrow.TimestampTraits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers

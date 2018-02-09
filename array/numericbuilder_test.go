@@ -29,7 +29,7 @@ func TestNewFloat64Builder(t *testing.T) {
 	assert.Equal(t, 10, ab.Len(), "unexpected Len()")
 	assert.Equal(t, 2, ab.NullN(), "unexpected NullN()")
 
-	a := ab.Finish()
+	a := ab.NewArray()
 
 	// check state of builder after Finish
 	assert.Zero(t, ab.Len(), "unexpected ArrayBuilder.Len(), Finish did not reset state")
@@ -47,7 +47,7 @@ func TestNewFloat64Builder(t *testing.T) {
 	ab.Append(7)
 	ab.Append(8)
 
-	a = ab.Finish()
+	a = ab.NewArray()
 
 	assert.Equal(t, 0, a.NullN())
 	assert.Equal(t, []float64{7, 8}, a.Float64Values())

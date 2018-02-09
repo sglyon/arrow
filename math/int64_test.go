@@ -24,7 +24,7 @@ func makeArrayInt64(l int) *array.Int64 {
 	for i := 0; i < l; i++ {
 		fb.Append(int64(i))
 	}
-	return fb.Finish()
+	return fb.NewArray()
 }
 
 func benchmarkInt64Funcs_Sum(b *testing.B, n int) {

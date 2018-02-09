@@ -135,15 +135,16 @@ func (b *BinaryBuilder) Resize(n int) {
 	b.builder.resize(n, b.init)
 }
 
-// Finish completes the transfers ownership of the buffers used to build the arrow
-func (b *BinaryBuilder) Finish() (a *Binary) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the BinaryBuilder
+// so it can be used to build a new array.
+func (b *BinaryBuilder) NewArray() (a *Binary) {
+	data := b.newData()
 	a = NewBinaryData(data)
 	data.Release()
 	return
 }
 
-func (b *BinaryBuilder) finishInternal() (data *Data) {
+func (b *BinaryBuilder) newData() (data *Data) {
 	b.appendNextOffset()
 	offsets, values := b.offsets.Finish(), b.values.Finish()
 	data = NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, offsets, values}, b.nullN)

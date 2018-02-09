@@ -34,7 +34,7 @@ func TestBinaryBuilder(t *testing.T) {
 		assert.Equal(t, v, ab.Value(i), "unexpected BinaryArrayBuilder.Value(%d)", i)
 	}
 
-	ar := ab.Finish()
+	ar := ab.NewArray()
 	ab.Release()
 	ar.Release()
 

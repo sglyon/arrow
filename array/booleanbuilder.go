@@ -106,14 +106,16 @@ func (b *BooleanBuilder) Resize(n int) {
 	}
 }
 
-func (b *BooleanBuilder) Finish() (a *Boolean) {
-	data := b.finishInternal()
+// NewArray creates an array from the memory buffers used by the builder and resets the BooleanBuilder
+// so it can be used to build a new array.
+func (b *BooleanBuilder) NewArray() (a *Boolean) {
+	data := b.newData()
 	a = NewBooleanData(data)
 	data.Release()
 	return
 }
 
-func (b *BooleanBuilder) finishInternal() *Data {
+func (b *BooleanBuilder) newData() *Data {
 	bytesRequired := arrow.BooleanTraits.BytesRequired(b.length)
 	if bytesRequired > 0 && bytesRequired < b.data.Len() {
 		// trim buffers
