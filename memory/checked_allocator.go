@@ -26,14 +26,14 @@ func (a *CheckedAllocator) Free(b []byte) {
 }
 
 type TestingT interface {
-	Fatalf(format string, args ...interface{})
+	Errorf(format string, args ...interface{})
 	Helper()
 }
 
 func (a *CheckedAllocator) AssertSize(t TestingT, sz int) {
 	if a.sz != sz {
 		t.Helper()
-		t.Fatalf("invalid memory size exp=%d, got=%d", sz, a.sz)
+		t.Errorf("invalid memory size exp=%d, got=%d", sz, a.sz)
 	}
 }
 
@@ -49,6 +49,6 @@ func NewCheckedAllocatorScope(alloc *CheckedAllocator) *CheckedAllocatorScope {
 func (c *CheckedAllocatorScope) CheckSize(t TestingT) {
 	if c.sz != c.alloc.sz {
 		t.Helper()
-		t.Fatalf("invalid memory size exp=%d, got=%d", c.sz, c.alloc.sz)
+		t.Errorf("invalid memory size exp=%d, got=%d", c.sz, c.alloc.sz)
 	}
 }
