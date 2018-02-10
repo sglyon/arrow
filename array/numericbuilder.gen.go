@@ -129,9 +129,11 @@ func (b *Int64Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Int64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -253,9 +255,11 @@ func (b *Uint64Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Uint64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -377,9 +381,11 @@ func (b *Float64Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Float64, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -501,9 +507,11 @@ func (b *Int32Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Int32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -625,9 +633,11 @@ func (b *Uint32Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Uint32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -749,9 +759,11 @@ func (b *Float32Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Float32, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -873,9 +885,11 @@ func (b *Int16Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Int16, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -997,9 +1011,11 @@ func (b *Uint16Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Uint16, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -1121,9 +1137,11 @@ func (b *Int8Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Int8, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -1245,9 +1263,11 @@ func (b *Uint8Builder) newData() (data *Data) {
 	data = NewData(arrow.PrimitiveTypes.Uint8, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }
@@ -1370,9 +1390,11 @@ func (b *TimestampBuilder) newData() (data *Data) {
 	data = NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }

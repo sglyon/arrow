@@ -148,8 +148,13 @@ func (b *BinaryBuilder) newData() (data *Data) {
 	b.appendNextOffset()
 	offsets, values := b.offsets.Finish(), b.values.Finish()
 	data = NewData(b.typE, b.length, []*memory.Buffer{b.nullBitmap, offsets, values}, b.nullN)
-	offsets.Release()
-	values.Release()
+	if offsets != nil {
+		offsets.Release()
+	}
+
+	if values != nil {
+		values.Release()
+	}
 
 	b.builder.reset()
 

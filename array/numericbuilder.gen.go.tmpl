@@ -138,9 +138,11 @@ func (b *{{.Name}}Builder) newData() (data *Data) {
 {{end -}}
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return
 }

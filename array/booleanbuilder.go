@@ -124,9 +124,11 @@ func (b *BooleanBuilder) newData() *Data {
 	res := NewData(arrow.FixedWidthTypes.Boolean, b.length, []*memory.Buffer{b.nullBitmap, b.data}, b.nullN)
 	b.reset()
 
-	b.data.Release()
-	b.data = nil
-	b.rawData = nil
+	if b.data != nil {
+		b.data.Release()
+		b.data = nil
+		b.rawData = nil
+	}
 
 	return res
 }
