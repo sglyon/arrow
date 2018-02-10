@@ -55,3 +55,18 @@ func TestNewFloat64Builder(t *testing.T) {
 
 	a.Release()
 }
+
+func TestFloat32Builder_AppendValues(t *testing.T) {
+	mem := memory.NewCheckedAllocator(memory.NewGoAllocator())
+	defer mem.AssertSize(t, 0)
+
+	ab := array.NewFloat64Builder(mem)
+
+	exp := []float64{1.0, 1.1, 1.2, 1.3}
+	ab.AppendValues(exp, nil)
+	a := ab.NewFloat64Array()
+	assert.Equal(t, exp, a.Float64Values())
+
+	a.Release()
+	ab.Release()
+}
