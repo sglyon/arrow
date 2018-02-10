@@ -8,6 +8,10 @@ import "unsafe"
 func _memset_avx2(buf, len, c unsafe.Pointer)
 
 func memory_memset_avx2(buf []byte, c byte) {
+	if len(buf) == 0 {
+		return
+	}
+
 	var (
 		p1 = unsafe.Pointer(&buf[0])
 		p2 = unsafe.Pointer(uintptr(len(buf)))

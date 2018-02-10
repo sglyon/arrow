@@ -22,6 +22,7 @@ func TestSet(t *testing.T) {
 		lo, hi int
 		c      byte
 	}{
+		{"sz=0", 0, 0, 0, 0x00},
 		{"all,sz=7", 7, 0, 7, 0x1f},
 		{"part,sz=7", 7, 3, 4, 0x1f},
 		{"last,sz=7", 7, 6, 7, 0x1f},
