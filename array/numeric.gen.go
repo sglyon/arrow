@@ -31,6 +31,11 @@ func (a *Int64) setData(data *Data) {
 	}
 }
 
+type Int64Valer interface {
+	Value(int) int64
+	Values() []int64
+}
+
 // A type which represents an immutable sequence of uint64 values.
 type Uint64 struct {
 	array
@@ -53,6 +58,11 @@ func (a *Uint64) setData(data *Data) {
 	if vals != nil {
 		a.values = arrow.Uint64Traits.CastFromBytes(vals.Bytes())
 	}
+}
+
+type Uint64Valer interface {
+	Value(int) uint64
+	Values() []uint64
 }
 
 // A type which represents an immutable sequence of float64 values.
@@ -79,6 +89,11 @@ func (a *Float64) setData(data *Data) {
 	}
 }
 
+type Float64Valer interface {
+	Value(int) float64
+	Values() []float64
+}
+
 // A type which represents an immutable sequence of int32 values.
 type Int32 struct {
 	array
@@ -101,6 +116,11 @@ func (a *Int32) setData(data *Data) {
 	if vals != nil {
 		a.values = arrow.Int32Traits.CastFromBytes(vals.Bytes())
 	}
+}
+
+type Int32Valer interface {
+	Value(int) int32
+	Values() []int32
 }
 
 // A type which represents an immutable sequence of uint32 values.
@@ -127,6 +147,11 @@ func (a *Uint32) setData(data *Data) {
 	}
 }
 
+type Uint32Valer interface {
+	Value(int) uint32
+	Values() []uint32
+}
+
 // A type which represents an immutable sequence of float32 values.
 type Float32 struct {
 	array
@@ -149,6 +174,11 @@ func (a *Float32) setData(data *Data) {
 	if vals != nil {
 		a.values = arrow.Float32Traits.CastFromBytes(vals.Bytes())
 	}
+}
+
+type Float32Valer interface {
+	Value(int) float32
+	Values() []float32
 }
 
 // A type which represents an immutable sequence of int16 values.
@@ -175,6 +205,11 @@ func (a *Int16) setData(data *Data) {
 	}
 }
 
+type Int16Valer interface {
+	Value(int) int16
+	Values() []int16
+}
+
 // A type which represents an immutable sequence of uint16 values.
 type Uint16 struct {
 	array
@@ -197,6 +232,11 @@ func (a *Uint16) setData(data *Data) {
 	if vals != nil {
 		a.values = arrow.Uint16Traits.CastFromBytes(vals.Bytes())
 	}
+}
+
+type Uint16Valer interface {
+	Value(int) uint16
+	Values() []uint16
 }
 
 // A type which represents an immutable sequence of int8 values.
@@ -223,6 +263,11 @@ func (a *Int8) setData(data *Data) {
 	}
 }
 
+type Int8Valer interface {
+	Value(int) int8
+	Values() []int8
+}
+
 // A type which represents an immutable sequence of uint8 values.
 type Uint8 struct {
 	array
@@ -247,6 +292,11 @@ func (a *Uint8) setData(data *Data) {
 	}
 }
 
+type Uint8Valer interface {
+	Value(int) uint8
+	Values() []uint8
+}
+
 // A type which represents an immutable sequence of arrow.Timestamp values.
 type Timestamp struct {
 	array
@@ -269,4 +319,9 @@ func (a *Timestamp) setData(data *Data) {
 	if vals != nil {
 		a.values = arrow.TimestampTraits.CastFromBytes(vals.Bytes())
 	}
+}
+
+type TimestampValer interface {
+	Value(int) arrow.Timestamp
+	Values() []arrow.Timestamp
 }

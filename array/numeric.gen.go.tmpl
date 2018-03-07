@@ -29,4 +29,10 @@ func (a *{{.Name}}) setData(data *Data) {
 		a.values = arrow.{{.Name}}Traits.CastFromBytes(vals.Bytes())
 	}
 }
+
+type {{.Name}}Valer interface {
+    Value(int) {{or .QualifiedType .Type}}
+    Values() []{{or .QualifiedType .Type}}
+}
+
 {{end}}

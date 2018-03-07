@@ -1,0 +1,66 @@
+package array
+
+import (
+	"github.com/influxdata/arrow"
+)
+
+{{range .In}}
+
+// A type which represents an immutable sequence of {{or .QualifiedType .Type}} values, encoded using DictEncoding
+type {{.Name}}Dict struct {
+	array
+    poolData *Data
+    Refs []int32
+	Pool []{{or .QualifiedType .Type}}
+}
+
+// New{{.Name}}DictData construct a new dict encoded array using reference and Pool data
+func New{{.Name}}DictData(data, poolData *Data) *{{.Name}}Dict {
+	d := &{{.Name}}Dict{}
+	d.refCount = 1
+	d.setData(data)
+    d.setPoolData(poolData)
+	return d
+}
+
+func (d *{{.Name}}Dict) PoolData() *Data { return d.poolData }
+
+// Value returns the value of the DictEncoded variable at index i by first consulting the reference and then extracting the appropriate element from the Pool
+func (d *{{.Name}}Dict) Value(i int) {{or .QualifiedType .Type}} { return d.Pool[d.Refs[i]] }
+
+// Values returns the all values in the DictEncoded column (see Value for more information)
+func (d *{{.Name}}Dict) {{.Name}}Values() []{{or .QualifiedType .Type}} {
+  out := make([]{{or .QualifiedType .Type}}, len(d.Refs))
+  for ix := 0; ix < len(d.Refs); ix++ {
+      out[ix] = d.Pool[d.Refs[ix]]
+  }
+  return out
+}
+
+// setData updates the references. The data must have type int32
+func (d *{{.Name}}Dict) setData(data *Data) {
+    if data.typE.ID() != arrow.INT32 {
+        panic("Can only call setData on {{.Name}}Dict with int32 data")
+    }
+	d.array.setData(data)
+	vals := data.buffers[1]
+	if vals != nil {
+		d.Refs = arrow.Int32Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+// setData updates the Pool. The data must be of type {{or .QualifiedType .Type}}
+func (d *{{.Name}}Dict) setPoolData(poolData *Data) {
+    if d.poolData != nil {
+        d.poolData.Release()
+    }
+
+    d.poolData = poolData
+    poolData.Retain()
+	vals := poolData.buffers[1]
+	if vals != nil {
+		d.Pool = arrow.{{.Name}}Traits.CastFromBytes(vals.Bytes())
+	}
+}
+
+{{end}}
